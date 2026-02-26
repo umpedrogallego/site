@@ -10,6 +10,11 @@
             --bg: #ecece9;
             --text: #0f0f0f;
             --border: #d1d1cf;
+            /* Fluid Typography: clamp(min, preferred, max) */
+            --font-header: clamp(18px, 4vw, 24px);
+            --font-grid: clamp(13px, 1.5vw, 15px);
+            --font-ficha-p: clamp(12px, 1.2vw, 14px);
+            --font-ficha-s: clamp(10px, 1vw, 12px);
         }
 
         body {
@@ -18,22 +23,20 @@
             color: var(--text);
             margin: 0;
             padding: 0;
-            font-size: 13px;
+            overflow-y: scroll;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Header sempre em MAIÚSCULO */
         header {
-            padding: 40px;
+            padding: clamp(20px, 5vw, 40px);
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
             text-transform: uppercase;
         }
+        header h1 { font-weight: 800; font-size: var(--font-header); margin: 0; letter-spacing: -1px; }
 
-        header h1 { font-weight: 500; font-size: 24px; margin: 0; letter-spacing: -1.38px; }
-
-        /* Grid Principal */
         #main-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -43,12 +46,15 @@
         .item-obra {
             border-right: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
-            padding: 20px;
+            padding: clamp(15px, 3vw, 25px);
             cursor: pointer;
             transition: background 0.2s;
+            display: flex;
+            flex-direction: column;
         }
-
-        .item-obra:hover { background: #e2e2df; }
+        
+        .item-obra.active { background: #dadada; }
+        .item-obra.active img { filter: grayscale(100%); }
 
         .img-thumb {
             width: 100%;
@@ -57,71 +63,78 @@
             margin-bottom: 15px;
             overflow: hidden;
         }
+        .img-thumb img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.3s; }
 
-        .img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .info-resumida { 
+            font-weight: 400; 
+            font-size: var(--font-grid);
+            line-height: 1.3;
+        }
+        .info-resumida strong { font-weight: 700; }
 
-        .info-resumida { font-weight: 300; text-transform: none; }
-        .info-resumida strong { font-weight: 600; }
-
-        /* Painel de Expansão (Carrossel) */
+        /* Painel Expansão */
         .detalhe-expansao {
-            grid-column: 1 / -1; /* Ocupa a linha toda */
+            grid-column: 1 / -1;
             background: #f5f5f3;
             border-bottom: 1px solid var(--border);
-            display: none; /* Escondido por padrão */
-            padding: 40px;
-            animation: fadeIn 0.3s ease-out;
+            display: none;
+            padding: clamp(30px, 6vw, 60px) 0;
+            order: 0; /* A ordem será controlada via JS */
         }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .carrossel {
             display: flex;
             gap: 20px;
             overflow-x: auto;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-            scrollbar-width: thin;
+            padding: 0 clamp(20px, 5vw, 40px) 30px clamp(20px, 5vw, 40px);
+            margin-bottom: 20px;
         }
-
+        /* Scrollbar Minimalista */
+        .carrossel::-webkit-scrollbar { height: 4px; }
+        .carrossel::-webkit-scrollbar-track { background: transparent; }
+        .carrossel::-webkit-scrollbar-thumb { background: var(--text); }
+        
         .carrossel img {
-            height: 400px; /* Altura fixa para manter o alinhamento */
+            height: clamp(250px, 60vh, 550px);
             width: auto;
-            object-fit: contain; /* NUNCA CROPADO */
-            background: #eee;
+            object-fit: contain;
         }
 
-        .ficha-completa {
-            max-width: 800px;
-            text-transform: none; /* Garante que não use uppercase */
-            line-height: 1.6;
+        .texto-detalhe-wrapper {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 clamp(20px, 5vw, 40px);
         }
+
+        .ficha-primaria { font-size: var(--font-ficha-p); font-weight: 500; margin-bottom: 6px; }
+        .ficha-secundaria { font-size: var(--font-ficha-s); color: #555; line-height: 1.5; }
 
         .btn-sobre {
             background: none;
             border: 1px solid var(--text);
-            padding: 5px 10px;
+            padding: 4px 10px;
             font-family: inherit;
-            font-size: 11px;
+            font-size: 10px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 20px;
         }
-
         .texto-sobre {
             margin-top: 15px;
             display: none;
-            font-size: 12px;
-            color: #555;
+            font-size: 11px;
+            color: #666;
             border-top: 1px dashed var(--border);
             padding-top: 15px;
+            max-width: 800px;
+            line-height: 1.6;
         }
 
-        /* Utilitários */
         .show { display: block !important; }
 
         @media (max-width: 600px) {
-            #main-grid { grid-template-columns: 1fr; }
-            .carrossel img { height: 250px; }
+            #main-grid { grid-template-columns: 1fr 1fr; } /* Dois itens por linha no mobile */
+            header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .item-obra { border-right: 1px solid var(--border) !important; }
         }
     </style>
 </head>
@@ -136,22 +149,24 @@
 
 <div id="painel-detalhe" class="detalhe-expansao">
     <div class="carrossel" id="carrossel-imgs"></div>
-    <div class="ficha-completa" id="ficha-texto"></div>
-    <div id="container-sobre"></div>
+    <div class="texto-detalhe-wrapper">
+        <div id="ficha-texto"></div>
+        <div id="container-sobre"></div>
+    </div>
 </div>
 
 <script>
 const imgBase = "https://raw.githubusercontent.com/umpedrogallego/site/main/img/";
 let data = [];
+let itemAtivo = null;
 
-// Função para buscar o JSON do seu GitHub
 async function carregarDados() {
     const url = "https://raw.githubusercontent.com/umpedrogallego/site/main/json/trabalhos.json";
     try {
         const res = await fetch(url);
         data = await res.json();
         renderGrid();
-    } catch (e) { console.error("Erro ao carregar JSON", e); }
+    } catch (e) { console.error("Erro no JSON:", e); }
 }
 
 function formatarData(o) {
@@ -159,82 +174,87 @@ function formatarData(o) {
     return o.FIM === "-" ? `${o.ANO}-` : `${o.ANO}-${o.FIM}`;
 }
 
-function gerarFichaTecnica(o) {
-    let f = `<strong>${o.TITULO}</strong>, ${formatarData(o)}`;
-    if (o.SERIE) f += `, série ${o.SERIE}`;
-    f += `.`;
-    
-    let corpo = [];
-    if (o.TECNICA) corpo.push(o.TECNICA);
-    if (o.DIMENSAO) corpo.push(o.DIMENSAO);
-    if (corpo.length > 0) f += ` ${corpo.join(", ")}.`;
-    
-    if (o.EDIÇÃO) f += ` ${o.EDIÇÃO}.`;
-    if (o.PARCERIA) f += ` em parceria com ${o.PARCERIA}.`;
-    
-    return f;
-}
-
 function renderGrid() {
     const grid = document.getElementById('main-grid');
-    
     const sorted = data.sort((a,b) => (a.DESTAQUE || 999) - (b.DESTAQUE || 999) || b.ANO - a.ANO);
 
     grid.innerHTML = sorted.map((obra, i) => `
-        <div class="item-obra" onclick="abrirDetalhe(this, ${i})">
+        <div class="item-obra" id="item-${i}" data-index="${i}" onclick="toggleObra(this, ${i}, event)">
             <div class="img-thumb">
                 <img src="${imgBase}${obra.ID}a.jpg" onerror="this.src='${imgBase}${obra.ID}a.avif'; this.onerror=function(){this.src='${imgBase}z-error.png'}">
             </div>
             <div class="info-resumida">
-                <strong>${obra.TITULO}</strong><br>${formatarData(obra)}
+                <strong>${obra.TITULO}</strong>, ${formatarData(obra)}
             </div>
         </div>
     `).join('');
 }
 
-function abrirDetalhe(elemento, index) {
-    const obra = data[index];
+function toggleObra(elemento, index, event) {
+    event.stopPropagation();
     const painel = document.getElementById('painel-detalhe');
+    const grid = document.getElementById('main-grid');
+
+    if (itemAtivo === elemento) { fecharDetalhe(); return; }
+
+    if (itemAtivo) itemAtivo.classList.remove('active');
+    itemAtivo = elemento;
+    itemAtivo.classList.add('active');
+
+    // Lógica para manter o grid intacto: inserir após o último item da linha
+    const itens = Array.from(grid.querySelectorAll('.item-obra'));
+    const colunas = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+    const linhaAtual = Math.floor(itens.indexOf(elemento) / colunas);
+    const ultimoDaLinhaIdx = Math.min((linhaAtual + 1) * colunas - 1, itens.length - 1);
     
-    // Lógica para inserir o painel após a linha correta
-    // No grid auto-fill, precisamos colocar o painel após o elemento clicado
-    // mas o CSS grid-column: 1/-1 fará ele ocupar a linha toda abaixo.
-    elemento.after(painel);
+    itens[ultimoDaLinhaIdx].after(painel);
     painel.classList.add('show');
 
-    // Montar Carrossel (Tenta letras a, b, c, d, e)
+    // Popular Painel
+    const obra = data[index];
     const carrossel = document.getElementById('carrossel-imgs');
-    const letras = ['a', 'b', 'c', 'd', 'e'];
-    carrossel.innerHTML = letras.map(l => `
-        <img src="${imgBase}${obra.ID}${l}.jpg" 
-             onerror="tentarAvif(this, '${obra.ID}${l}')" 
-             alt="${obra.TITULO}">
-    `).join('');
+    carrossel.innerHTML = ['a','b','c','d','e','f'].map(l => 
+        `<img src="${imgBase}${obra.ID}${l}.jpg" onerror="tentarAvif(this, '${obra.ID}${l}')">`
+    ).join('');
 
-    // Montar Ficha
-    document.getElementById('ficha-texto').innerHTML = gerarFichaTecnica(obra);
+    const fichaContainer = document.getElementById('ficha-texto');
+    let linha1 = `<strong>${obra.TITULO}</strong>, ${formatarData(obra)}${obra.SERIE ? `, série ${obra.SERIE}` : ''}`;
+    let l2Arr = [];
+    if (obra.TECNICA) l2Arr.push(obra.TECNICA);
+    if (obra.DIMENSAO) l2Arr.push(obra.DIMENSAO);
+    if (obra.EDIÇÃO) l2Arr.push(obra.EDIÇÃO);
+    if (obra.PARCERIA) l2Arr.push(`em parceria com ${obra.PARCERIA}`);
+    
+    fichaContainer.innerHTML = `
+        <div class="ficha-primaria">${linha1}</div>
+        <div class="ficha-secundaria">${l2Arr.join(', ')}${l2Arr.length ? '.' : ''}</div>
+    `;
 
-    // Montar Sobre
-    const containerSobre = document.getElementById('container-sobre');
-    containerSobre.innerHTML = obra.SOBRE ? `
-        <button class="btn-sobre" onclick="document.getElementById('txt-sb').classList.toggle('show')">+ sobre</button>
-        <div id="txt-sb" class="texto-sobre">${obra.SOBRE}</div>
-    ` : '';
+    document.getElementById('container-sobre').innerHTML = obra.SOBRE ? 
+        `<button class="btn-sobre" onclick="document.getElementById('txt-sb').classList.toggle('show')">+ sobre</button>
+         <div id="txt-sb" class="texto-sobre">${obra.SOBRE}</div>` : '';
 
-    // Scroll suave para o painel
-    setTimeout(() => painel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+    setTimeout(() => { painel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 150);
+}
+
+function fecharDetalhe() {
+    document.getElementById('painel-detalhe').classList.remove('show');
+    if (itemAtivo) itemAtivo.classList.remove('active');
+    itemAtivo = null;
 }
 
 function tentarAvif(img, id) {
-    if (img.src.endsWith('.jpg')) {
-        img.src = `${imgBase}${id}.avif`;
-    } else {
-        img.remove(); // Se não tem nem jpg nem avif, remove do carrossel
-    }
+    if (img.src.endsWith('.jpg')) img.src = `${imgBase}${id}.avif`;
+    else img.remove();
 }
+
+window.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharDetalhe(); });
+window.addEventListener('click', (e) => {
+    const painel = document.getElementById('painel-detalhe');
+    if (itemAtivo && !painel.contains(e.target) && !itemAtivo.contains(e.target)) fecharDetalhe();
+});
 
 carregarDados();
 </script>
-
 </body>
 </html>
