@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SANTACOSTA</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --verde-vivo: #e2ff8f;
+            --verde-escuro: #505a50;
+            --verde-medio: #697369;
+            --fundo-claro: #f5f7f6;
+            --fundo-medio: #e5eae7;
+            --verde-escuro-fundo: #202420;
+            --zoom: 1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--verde-escuro-fundo);
+            height: 100vh;
+            overflow: hidden; /* Bloqueia scrollbar [cite: 6] */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- BACKGROUND DINÂMICO --- */
+        #bg-performance {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            /* Imagem controlada pelo JS agora */
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            transform: scale(var(--zoom));
+            transition: transform 0.1s ease-out;
+            cursor: crosshair; /* Feedback visual de que é clicável [cite: 84] */
+        }
+
+        /* --- HERO CONTAINER --- */
+        .hero-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: fit-content;
+            pointer-events: none; /* Permite clicar no BG através do container */
+        }
+
+        .logo, .nav-curadoria {
+            pointer-events: auto; /* Devolve o clique apenas para o que importa  */
+        }
+
+        @keyframes pulsacaoSaturada {
+            0% { color: var(--verde-vivo);  }
+            100% { color: var(--fundo-medio); }
+        }
+
+        .logo {
+            font-weight: 800;
+            letter-spacing: -4px;
+            font-size: clamp(4rem, 15vw, 8.8rem);
+            line-height: 0.85;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 18vh;
+            animation: pulsacaoSaturada 30s ease-in-out infinite alternate;
+            will-change: color;
+        }
+
+        .nav-curadoria {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.6em;
+        }
+
+        .nav-curadoria a {
+            text-decoration: none;
+            animation: pulsacaoSaturada 30s ease-in-out infinite alternate;
+            will-change: color;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: clamp(0.8rem, 1.88vw, 1.88rem);
+        }
+
+        .nav-curadoria a:hover {
+            text-decoration: underline;
+            text-decoration-color: var(--fundo-claro);
+            text-underline-offset: 1px;
+            text-decoration-thickness: 12px;
+        }
+ 
+        @media (max-width: 768px) {
+            .logo { margin-top: -8vh; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="bg-performance"></div>
+
+<div class="hero-container">
+    <div class="logo" style="cursor: default;">SANTACOSTA</div>
+    <br>
+    <nav class="nav-curadoria">
+        <a href="https://betshoptv.com/temp/santa-v3">Trabalhos</a>&nbsp;
+        <a href="https://betshoptv.com/temp/santa-expos">Exposições</a>&nbsp;
+        <a href="https://betshoptv.com/temp/santa-textos">Textos</a>&nbsp;
+        <a href="https://betshoptv.com/temp/santa-noticias">Notícias</a>&nbsp;
+        <a href="https://betshoptv.com/temp/santa-bio">Bio</a>
+    </nav>
+</div>
+      
+<script>
+    // LISTA DE IMAGENS ATUALIZADA
+    const imagensFundo = [
+        'https://betshoptv.com/temp/img/home/01a.jpg',
+        'https://betshoptv.com/temp/img/home/01b.jpg',
+        'https://betshoptv.com/temp/img/home/01c.jpg',
+        'https://betshoptv.com/temp/img/home/02a.jpg',
+        'https://betshoptv.com/temp/img/home/02b.jpg',
+        'https://betshoptv.com/temp/img/home/03a.jpg',
+        'https://betshoptv.com/temp/img/home/07a.jpg',
+        'https://betshoptv.com/temp/img/home/08a.jpg'
+        ];
+
+    const bgElement = document.getElementById('bg-performance');
+
+    // FUNÇÃO PARA MUDAR IMAGEM ALEATORIAMENTE
+    function mudarImagem() {
+        const indexAleatorio = Math.floor(Math.random() * imagensFundo.length);
+        bgElement.style.backgroundImage = `url('${imagensFundo[indexAleatorio]}')`;
+    }
+
+    // Inicializa a imagem no load
+    mudarImagem();
+
+    // Evento de clique no fundo (bg-performance)
+    bgElement.addEventListener('click', mudarImagem);
+
+    /* --- LÓGICA DE ZOOM (MANTIDA DO ORIGINAL) --- */
+    let currentZoom = 1;
+    const minZoom = 1;
+    const maxZoom = 2.4;
+    let direction = 1;
+    const totalCycleTime = 1180000;
+    const step = (maxZoom - minZoom) / (totalCycleTime / 2 / 16.67);
+
+    function animateBackground() {
+        currentZoom += step * direction;
+        if (currentZoom >= maxZoom) {
+            currentZoom = maxZoom;
+            direction = -1;
+        } else if (currentZoom <= minZoom) {
+            currentZoom = minZoom;
+            direction = 1;
+        }
+        updateZoom();
+        requestAnimationFrame(animateBackground);
+    }
+
+    function updateZoom() {
+        document.documentElement.style.setProperty('--zoom', currentZoom);
+    }
+
+    window.addEventListener('wheel', (e) => {
+        currentZoom += e.deltaY * 0.002;
+        currentZoom = Math.min(Math.max(currentZoom, minZoom), maxZoom);
+        updateZoom();
+    }, { passive: true });
+
+    requestAnimationFrame(animateBackground);
+
+    /* --- SUPORTE TOUCH --- */
+    let lastTouchY = 0;
+    window.addEventListener('touchstart', e => { lastTouchY = e.touches[0].clientY; });
+    window.addEventListener('touchmove', e => {
+        const delta = lastTouchY - e.touches[0].clientY;
+        currentZoom += delta * 0.005;
+        currentZoom = Math.min(Math.max(currentZoom, minZoom), maxZoom);
+        updateZoom();
+        lastTouchY = e.touches[0].clientY;
+    });
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v67327c56f0bb4ef8b305cae61679db8f1769101564043" integrity="sha512-rdcWY47ByXd76cbCFzznIcEaCN71jqkWBBqlwhF1SY7KubdLKZiEGeP7AyieKZlGP9hbY/MhGrwXzJC/HulNyg==" data-cf-beacon='{"version":"2024.11.0","token":"f27ea51c9a684f4fbfb255dbc4c4de38","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
