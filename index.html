@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedro Gallego - V6 Estabilizada</title>
+    <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@300;400;500;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ecece9;
+            --text: #0f0f0f;
+            --border: #000;
+            --cinzinha-vermeio: #d8d8d6;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Martian Mono', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            font-size: 11px;
+            line-height: 1.4;
+            scroll-behavior: smooth;
+        }
+
+        #site-wrapper {
+            max-width: 1338px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            text-transform: uppercase;
+        }
+
+        header h1 { font-size: 28px; font-weight: 500; margin: 0; letter-spacing: -1.5px; }
+
+        /* GRID BURACO DE QUEIJO */
+        #main-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 100px 30px;
+            align-items: start;
+        }
+
+        .item-obra {
+            grid-column: span 4;
+            cursor: pointer;
+            will-change: transform;
+        }
+
+        /* Anti-Layout Desktop */
+        .item-obra:nth-child(5n+1) { grid-column: span 5; transform: translateY(60px); }
+        .item-obra:nth-child(5n+2) { grid-column: span 3; transform: translateY(-30px); }
+        .item-obra:nth-child(5n+4) { grid-column: span 6; padding-left: 10%; }
+
+        .spacer { grid-column: span 2; height: 1px; pointer-events: none; }
+
+        .img-box {
+            width: 100%;
+            background: var(--bg);
+            transition: filter .24s;
+            overflow: hidden;
+            display: block;
+        }
+
+        .item-obra:hover .img-box { filter: saturate(138%) blur(1px) opacity(98%)  ;}
+        .img-box img { width: 100%; height: auto; display: block; }
+
+        .meta { margin-top: 15px; }
+        .meta strong { display: block; font-size: clamp(0.88em, 2vw, 1.3em); margin-bottom: 5px; }
+
+        /* PAINEL DE EXPANSÃO */
+        #painel-detalhe {
+            grid-column: 1 / -1;
+            display: none;
+            background: #fdfdfc;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 60px 40px;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        #painel-detalhe.active { display: block; }
+
+        .carrossel {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            scrollbar-width: thin;
+        }
+
+        .carrossel img { height: 480px; width: auto; background: #eee; flex-shrink: 0; object-fit: contain; }
+
+        .ficha { max-width: 800px; font-size: 13px; line-height: 1.6; }
+
+        .fechar {
+            position: absolute; top: 20px; right: 20px;
+            background: none; border: none; font-size: 24px; cursor: pointer;
+        }
+
+        /* MOBILE: 1 E 2 POR LINHA */
+        @media (max-width: 800px) {
+            #main-grid { grid-template-columns: repeat(6, 1fr); gap: 60px 15px; }
+            .item-obra { grid-column: span 6 !important; transform: none !important; padding: 0 !important; }
+            .item-obra:nth-child(3n+2), .item-obra:nth-child(3n+3) { grid-column: span 3 !important; }
+            .spacer { display: none; }
+            header { flex-direction: column; align-items: flex-start; gap: 20px; }
+            .carrossel img { height: 320px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="site-wrapper">
+    <header>
+        <h1>Pedro Gallego</h1>
+        <nav>obras / cv / info</nav>
+    </header>
+    <main id="main-grid"></main>
+    <div id="painel-detalhe">
+        <button class="fechar" onclick="fecharPainel()">⛌</button>
+        <div class="carrossel" id="carrossel-imgs"></div>
+        <div class="ficha" id="ficha-texto"></div>
+    </div>
+</div>
+
+<script>
+const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
+const IMG_BASE = "https://umpedrogallego.github.io/site/img/";
+let listaObras = [];
+
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharPainel(); });
+
+async function init() {
+    try {
+        const res = await fetch(URL_JSON);
+        if (!res.ok) throw new Error("Erro ao carregar arquivo JSON");
+        listaObras = await res.json();
+        
+        listaObras.sort((a,b) => (a.DESTAQUE || 20) - (b.DESTAQUE || 20) || b.ANO - a.ANO);
+        render();
+    } catch(e) {
+        console.error(e);
+        document.getElementById('main-grid').innerHTML = "<p style='grid-column: 1/-1'>Erro ao carregar dados. Verifique a URL do JSON.</p>";
+    }
+}
+
+function render() {
+    const grid = document.getElementById('main-grid');
+    let html = '';
+
+    listaObras.forEach((o, i) => {
+        if (i > 0 && i % 4 === 0) html += '<div class="spacer"></div>';
+
+        const ratio = o.W && o.H ? `style="aspect-ratio: ${o.W} / ${o.H}"` : '';
+
+        html += `
+            <article class="item-obra" onclick="abrir(${i}, this)">
+                <div class="img-box" ${ratio}>
+                    <img src="${IMG_BASE}${o.ID}a.jpg" loading="lazy" 
+                         onerror="this.src='${IMG_BASE}${o.ID}a.avif'; this.onerror=function(){this.closest('.item-obra').style.display='none'}">
+                </div>
+                <div class="meta">
+                    <strong>${o.TITULO}</strong>
+                    <span>${o.ANO}</span>
+                </div>
+            </article>
+        `;
+    });
+    grid.innerHTML = html;
+}
+
+function abrir(idx, el) {
+    const o = listaObras[idx];
+    const p = document.getElementById('painel-detalhe');
+    el.after(p);
+    p.classList.add('active');
+
+    const carrossel = document.getElementById('carrossel-imgs');
+    carrossel.innerHTML = '';
+    
+    const count = o.IMG_COUNT || 1;
+    for (let i = 0; i < count; i++) {
+        const letra = String.fromCharCode(97 + i);
+        const img = document.createElement('img');
+        const idFull = o.ID + letra;
+        img.src = `${IMG_BASE}${idFull}.jpg`;
+        img.onerror = () => { if (img.src.endsWith('.jpg')) img.src = `${IMG_BASE}${idFull}.avif`; };
+        carrossel.appendChild(img);
+    }
+
+    document.getElementById('ficha-texto').innerHTML = `
+        <p><strong>${o.TITULO}</strong>, ${o.ANO}${o.SERIE ? ', série '+o.SERIE : ''}.</p>
+        <p>${o.TECNICA || ''}. ${o.DIMENSAO || ''}.</p>
+        <div style="margin-top:30px; border-top:1px dashed #000; padding-top:20px; opacity:0.8;">${o.SOBRE || ''}</div>
+    `;
+
+    setTimeout(() => p.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+}
+
+function fecharPainel() { document.getElementById('painel-detalhe').classList.remove('active'); }
+
+init();
+</script>
+</body>
+</html>
