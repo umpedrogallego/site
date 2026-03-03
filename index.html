@@ -3,44 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro Gallego - V7</title>
+    <title>Pedro Gallego - V8</title>
     <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #ecece9; /* [cite: 1, 3] */
-            --text: #0f0f0f; /* [cite: 1, 2] */
-            --border: #d1d1cf; /* [cite: 1] */
+            --bg: #ecece9;
+            --text: #0f0f0f;
+            --border: #000;
+            --meta-color: #948a8d;
         }
 
         * { box-sizing: border-box; }
         
         body {
-            font-family: 'Martian Mono', monospace; /* [cite: 1, 3] */
-            background-color: var(--bg); /* [cite: 1, 3] */
-            color: var(--text); /* [cite: 1, 2] */
+            font-family: 'Martian Mono', monospace;
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
             padding: 0;
-            font-size: 13px; /* [cite: 1] */
+            font-size: 11px;
             scroll-behavior: smooth;
         }
 
         #site-wrapper {
-            max-width: 1338px; /* [cite: 56] */
+            max-width: 1338px;
             margin: 0 auto;
             padding: 40px 20px;
         }
 
         header {
-            border-bottom: 1px solid var(--border); /* [cite: 1, 5] */
-            padding-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background-color: var(--bg);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
             margin-bottom: 80px;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            text-transform: uppercase; /* [cite: 1, 5] */
+            text-transform: uppercase;
         }
 
-        header h1 { font-weight: 500; font-size: 24px; margin: 0; letter-spacing: -1.38px; } /* [cite: 1, 7] */
+        header h1 { font-size: 28px; font-weight: 500; margin: 0; letter-spacing: -1.5px; }
 
         #main-grid {
             display: grid;
@@ -57,23 +62,20 @@
         /* Anti-Layout Desktop */
         .item-obra:nth-child(5n+1) { grid-column: span 5; transform: translateY(60px); }
         .item-obra:nth-child(5n+2) { grid-column: span 3; transform: translateY(-30px); }
-        .item-obra:nth-child(5n+4) { grid-column: span 6; padding-left: 10%;}
+        .item-obra:nth-child(5n+4) { grid-column: span 6; padding-left: 10%; width: 90%; }
 
         .spacer { grid-column: span 2; height: 1px; pointer-events: none; }
 
-        /* CONTEINER DA GALERIA NO THUMB */
         .img-box {
-            max-height: 90vh; /* Limita a altura a 70% da altura da tela */
             width: 100%;
-            background: transparent; /* Preservado conforme pedido */
-            border: 0px solid transparent; /* Preservado conforme pedido */
+            background: transparent;
+            border: 0px solid transparent;
             overflow-x: auto; 
             display: flex;
             align-items: flex-end; 
-            gap: 8px; /* Gap solicitado */
+            gap: 8px;
             scroll-snap-type: x mandatory; 
             scrollbar-width: none; 
-            -ms-overflow-style: none;
         }
 
         .img-box::-webkit-scrollbar { display: none; }
@@ -84,15 +86,24 @@
             flex-shrink: 0;
             scroll-snap-align: start;
             display: block;
-            object-fit: contain; /* [cite: 1, 24] */
-            object-position: left bottom; /* Alinhamento solicitado */
+            object-fit: contain; 
+            object-position: left bottom;
+        }
+        
+        .img-box img:hover{ cursor:ew-resize;}
+
+        .meta { margin-top: 15px; }
+        .meta strong { 
+            display: block; 
+            font-size: 18px; 
+            margin-bottom: 5px; 
+            color: var(--meta-color);
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
-        .meta { margin-top: 15px; text-transform: none; } /* [cite: 1, 15] */
-        .meta strong { display: block; font-size: 18px; margin-bottom: 5px; color: #948a8d;}
-
         @media (max-width: 800px) {
-            #main-grid { grid-template-columns: repeat(6, 1fr); }
+            #main-grid { grid-template-columns: repeat(6, 1fr); gap: 60px 15px; }
             .item-obra { grid-column: span 6 !important; transform: none !important; padding: 0 !important; }
         }
     </style>
@@ -102,81 +113,83 @@
 <div id="site-wrapper">
     <header>
         <h1>Pedro Gallego</h1>
-        <div>obras / cv / info</div>
+        <nav>obras / cv / info</nav>
     </header>
     <main id="main-grid"></main>
 </div>
 
 <script>
-// Usando as URLs do seu documento oficial [cite: 56]
 const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
 const IMG_BASE = "https://umpedrogallego.github.io/site/img/";
-
-let listaObras = [];
-
-// Fallback: Dados de segurança caso o fetch do GitHub falhe no CodeChef
-const fallbackData = [
-    { "ID": "25-pinoquio-", "TITULO": "Meu nariz vai crescer agora", "ANO": 2025, "IMG_COUNT": 3, "W": 1280, "H": 1920 },
-    { "ID": "25-torcida-", "TITULO": "Torcida", "ANO": 2025, "IMG_COUNT": 2, "W": 1000, "H": 1000 }
-];
+let listaAgrupada = [];
 
 async function init() {
     try {
         const res = await fetch(URL_JSON);
-        if (!res.ok) throw new Error();
-        listaObras = await res.json();
-    } catch(e) { 
-        console.warn("Usando dados de fallback local.");
-        listaObras = fallbackData; 
-    }
-    
-    // Ordenação [cite: 1, 44]
-    listaObras.sort((a,b) => (a.DESTAQUE || 999) - (b.DESTAQUE || 999) || b.ANO - a.ANO);
-    render();
+        const data = await res.json();
+        
+        // 1. Filtrar obras que não têm imagens antes de qualquer processamento
+        const dataFiltrada = data.filter(item => item.IMG_COUNT && item.IMG_COUNT > 0);
+
+        // 2. Agrupar por SERIE
+        const grupos = {};
+        dataFiltrada.forEach(item => {
+            const chave = (item.SERIE && item.SERIE.trim() !== "") ? item.SERIE : `AVULSO_${item.ID}`;
+            if (!grupos[chave]) grupos[chave] = [];
+            grupos[chave].push(item);
+        });
+
+        listaAgrupada = Object.values(grupos).map(items => ({
+            items: items,
+            destaque: items[0].DESTAQUE || 20,
+            ano: items[0].ANO
+        }));
+
+        listaAgrupada.sort((a,b) => a.destaque - b.destaque || b.ano - a.ano);
+        render();
+    } catch(e) { console.error("Erro ao carregar dados:", e); }
 }
 
 function render() {
     const grid = document.getElementById('main-grid');
     let html = '';
 
-    listaObras.forEach((o, i) => {
+    listaAgrupada.forEach((grupo, i) => {
         if (i > 0 && i % 4 === 0) html += '<div class="spacer"></div>';
 
-        // Aspect-ratio baseado na primeira imagem (a)
-        const ratio = o.W && o.H ? `style="aspect-ratio: ${o.W} / ${o.H}"` : 'style="aspect-ratio: 3/4"';
-        const count = o.IMG_COUNT || 1;
+        const ref = grupo.items[0];
+        const ratio = ref.W && ref.H ? `style="aspect-ratio: ${ref.W} / ${ref.H}"` : '';
         
+        let galleryHtml = '';
+        let todasImagensDoGrupo = [];
+        grupo.items.forEach(obra => {
+            for (let j = 0; j < obra.IMG_COUNT; j++) {
+                todasImagensDoGrupo.push({
+                    obra: obra,
+                    src: `${obra.ID}${String.fromCharCode(97 + j)}`
+                });
+            }
+        });
 
-let galleryHtml = '';
-const loops = count > 1 ? 3 : 1;
-
-for (let t = 0; t < loops; t++) {
-    for (let j = 0; j < count; j++) {
-        const letra = String.fromCharCode(97 + j);
-        
-        // LÓGICA DE SEGURANÇA:
-        // Se for a primeira imagem (letra 'a') do primeiro bloco (t=0), 
-        // e ela falhar, removemos a obra inteira (.item-obra).
-        // Se for qualquer outra imagem, apenas removemos a imagem falha.
-        const acaoDeErro = (t === 0 && j === 0) 
-            ? "this.closest('.item-obra').remove()" 
-            : "this.remove()";
-
-        galleryHtml += `
-            <img src="${IMG_BASE}${o.ID}${letra}.jpg" 
-                 loading="lazy" 
-                 onerror="this.src='${IMG_BASE}${o.ID}${letra}.avif'; this.onerror=function(){${acaoDeErro}}">
-        `;
-    }
-}
+        const loops = todasImagensDoGrupo.length > 1 ? 3 : 1;
+        for (let t = 0; t < loops; t++) {
+            todasImagensDoGrupo.forEach(imgData => {
+                galleryHtml += `
+                    <img src="${IMG_BASE}${imgData.src}.jpg" 
+                         loading="lazy" 
+                         data-titulo="${imgData.obra.TITULO}" 
+                         onerror="this.src='${IMG_BASE}${imgData.src}.avif'; this.onerror=function(){this.remove()}">
+                `;
+            });
+        }
 
         html += `
             <article class="item-obra">
-                <div class="img-box" ${ratio} onscroll="handleInfiniteScroll(this)">
+                <div class="img-box" ${ratio} onscroll="syncScroll(this)">
                     ${galleryHtml}
                 </div>
                 <div class="meta">
-                    <strong style="font-weight: 600;">${o.TITULO}</strong>
+                    <strong style="font-weight: 600;">${ref.TITULO}</strong>
                 </div>
             </article>
         `;
@@ -184,17 +197,41 @@ for (let t = 0; t < loops; t++) {
     grid.innerHTML = html;
 }
 
-function handleInfiniteScroll(el) {
+function syncScroll(el) {
     const scrollLeft = el.scrollLeft;
     const scrollWidth = el.scrollWidth;
-    const singleSetWidth = scrollWidth / 3;
+    const clientWidth = el.clientWidth;
+    const gap = 8;
 
-    // Reset silencioso para manter o loop sem pular
+    // Scroll Infinito
+    const setWidth = (scrollWidth + gap) / 3;
     if (scrollLeft <= 5) {
-        el.scrollTo({ left: singleSetWidth + 5 });
-    } 
-    else if (scrollLeft + el.clientWidth >= scrollWidth - 5) {
-        el.scrollTo({ left: singleSetWidth * 2 - el.clientWidth - 5 });
+        el.scrollLeft = setWidth + 5;
+    } else if (scrollLeft + clientWidth >= scrollWidth - 5) {
+        el.scrollLeft = setWidth - clientWidth + 5;
+    }
+
+    // Título Dinâmico (Busca a imagem mais próxima da borda esquerda)
+    const images = Array.from(el.querySelectorAll('img'));
+    if (images.length === 0) return;
+
+    // Encontra qual imagem está atualmente visível (baseado na posição relativa ao container)
+    let imagemAtiva = images[0];
+    let menorDistancia = Infinity;
+
+    images.forEach(img => {
+        const dist = Math.abs(img.offsetLeft - el.scrollLeft);
+        if (dist < menorDistancia) {
+            menorDistancia = dist;
+            imagemAtiva = img;
+        }
+    });
+    
+    const novoTitulo = imagemAtiva.getAttribute('data-titulo');
+    const metaStrong = el.nextElementSibling.querySelector('strong');
+    
+    if (metaStrong && metaStrong.innerText !== novoTitulo) {
+        metaStrong.innerText = novoTitulo;
     }
 }
 
