@@ -106,7 +106,7 @@
   },
   {
     "ID": "25-ppv-",
-    "DESTAQUE": 8,
+    "DESTAQUE": 9,
     "TITULO": "porta-porta-voz",
     "ANO": 2025,
     "FIM": "-",
@@ -253,7 +253,7 @@
   },
   {
     "ID": "22-miche-",
-    "DESTAQUE": 10,
+    "DESTAQUE": 11,
     "TITULO": "Nada machuca nem cansa",
     "ANO": 2022,
     "FIM": "",
@@ -274,7 +274,7 @@
   },
   {
     "ID": "20-itau-",
-    "DESTAQUE": 9,
+    "DESTAQUE": 10,
     "TITULO": "acordo de Emergência",
     "ANO": 2020,
     "FIM": "",
@@ -295,7 +295,7 @@
   },
   {
     "ID": "18-screensaver-",
-    "DESTAQUE": 11,
+    "DESTAQUE": 8,
     "TITULO": "Screensaver",
     "ANO": 2018,
     "FIM": "-",
@@ -782,7 +782,7 @@
     "TITULO": "Confronto final",
     "ANO": 2013,
     "FIM": "",
-    "SERIE": "Música incidental",
+    "SERIE": "",
     "TECNICA": "Vídeo",
     "DIMENSAO": "5'52''",
     "LINGUAGEM": "Vídeo",
@@ -803,7 +803,7 @@
     "TITULO": "Domingo maior",
     "ANO": 2013,
     "FIM": "",
-    "SERIE": "Música incidental",
+    "SERIE": "",
     "TECNICA": "Impressão em papel jornal",
     "DIMENSAO": "8 páginas, 21 x 14 cm",
     "LINGUAGEM": "Publicação",
