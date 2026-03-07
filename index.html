@@ -47,6 +47,40 @@
 
         header h1 { font-size: 28px; font-weight: 500; margin: 0; letter-spacing: -1.5px; }
 
+        /* Theme Editor Styles */
+        #theme-editor {
+            display: flex;
+            gap: 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+
+        .color-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 400;
+            text-transform: lowercase;
+        }
+
+        .color-control:hover { text-decoration: underline; }
+
+        .color-control input[type="color"] {
+            width: 0;
+            height: 0;
+            border: none;
+            padding: 0;
+            visibility: hidden;
+        }
+
+        .hex-preview {
+            color: var(--meta-color);
+            font-size: 9px;
+        }
+
         #main-grid {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
@@ -105,6 +139,12 @@
             .item-obra { grid-column: span 6 !important; transform: none !important; padding: 0 !important; }
         }
     </style>
+    
+      <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+    
 </head>
 <body>
 
@@ -113,6 +153,28 @@
         <h1>Pedro Gallego</h1>
         <nav>obras / cv / info</nav>
     </header>
+    
+        <section id="theme-editor">
+        <label class="color-control">
+            --bg <span id="val--bg" class="hex-preview">#ecece9</span>
+            <input type="color" value="#ecece9" oninput="updateTheme('--bg', this.value)">
+        </label>
+        <div class="animate__hinge"> 
+        <label class="color-control"> 
+            --text <span id="val--text" class="hex-preview">#0f0f0f</span>
+            <input type="color" value="#0f0f0f" oninput="updateTheme('--text', this.value)">
+        </label></div>
+        <label class="color-control">
+            --border <span id="val--border" class="hex-preview">#000000</span>
+            <input type="color" value="#000000" oninput="updateTheme('--border', this.value)">
+        </label>
+        <div class="animate__hinge">
+        <label class="color-control">
+            --meta-color <span id="val--meta-color" class="hex-preview">#948a8d</span>
+            <input type="color" value="#948a8d" oninput="updateTheme('--meta-color', this.value)">
+        </label></div>
+    </section> 
+    
     <main id="main-grid"></main>
 </div>
 
@@ -122,6 +184,12 @@ const IMG_BASE = "https://umpedrogallego.github.io/site/img/";
 const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
 
 let listaAgrupada = [];
+
+// Função de atualização em tempo real [cite: 17, 18]
+function updateTheme(variable, value) {
+    document.documentElement.style.setProperty(variable, value);
+    document.getElementById(`val${variable}`).innerText = value.toUpperCase();
+}
 
 async function init() {
     try {
