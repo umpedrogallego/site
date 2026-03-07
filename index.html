@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro Gallego - V8</title>
+    <title>Pedro Gallego - V10.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -59,7 +59,7 @@
             cursor: pointer;
         }
 
-        /* Anti-Layout Desktop */
+        /* Anti-Layout [cite: 139-141] */
         .item-obra:nth-child(5n+1) { grid-column: span 5; transform: translateY(60px); }
         .item-obra:nth-child(5n+2) { grid-column: span 3; transform: translateY(-30px); }
         .item-obra:nth-child(5n+4) { grid-column: span 6; padding-left: 10%; width: 90%; }
@@ -69,37 +69,35 @@
         .img-box {
             width: 100%;
             background: transparent;
-            border: 0px solid transparent;
             overflow-x: auto; 
             display: flex;
             align-items: flex-end; 
             gap: 8px;
             scroll-snap-type: x mandatory; 
-            scrollbar-width: none; 
+            scrollbar-width: none;
         }
 
         .img-box::-webkit-scrollbar { display: none; }
 
-        .img-box img {
-            width: 100%; 
-            height: 100%; 
+        .img-box img, .img-box video {
+            width: 100%;
+            height: 100%; /* Garante preenchimento do aspect-ratio [cite: 146] */
             flex-shrink: 0;
             scroll-snap-align: start;
             display: block;
             object-fit: contain; 
-            object-position: left bottom;
+            object-position: left bottom; 
         }
-        
-        .img-box img:hover{ cursor:ew-resize;}
+    
+        .img-box img:hover, .img-box video:hover { cursor:ew-resize;}
 
         .meta { margin-top: 15px; }
         .meta strong { 
-            display: block; 
+            display: block;
             font-size: 18px; 
             margin-bottom: 5px; 
             color: var(--meta-color);
-            font-weight: 600;
-            text-transform: uppercase;
+            font-weight: 400;
         }
 
         @media (max-width: 800px) {
@@ -121,6 +119,8 @@
 <script>
 const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
 const IMG_BASE = "https://umpedrogallego.github.io/site/img/";
+const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
+
 let listaAgrupada = [];
 
 async function init() {
@@ -128,10 +128,9 @@ async function init() {
         const res = await fetch(URL_JSON);
         const data = await res.json();
         
-        // 1. Filtrar obras que não têm imagens antes de qualquer processamento
-        const dataFiltrada = data.filter(item => item.IMG_COUNT && item.IMG_COUNT > 0);
+        // Filtra obras com imagem OU mídia [cite: 154]
+        const dataFiltrada = data.filter(item => (item.IMG_COUNT && item.IMG_COUNT > 0) || (item.MIDIA && item.MIDIA > 0));
 
-        // 2. Agrupar por SERIE
         const grupos = {};
         dataFiltrada.forEach(item => {
             const chave = (item.SERIE && item.SERIE.trim() !== "") ? item.SERIE : `AVULSO_${item.ID}`;
@@ -147,7 +146,7 @@ async function init() {
 
         listaAgrupada.sort((a,b) => a.destaque - b.destaque || b.ano - a.ano);
         render();
-    } catch(e) { console.error("Erro ao carregar dados:", e); }
+    } catch(e) { console.error("Erro no fetch:", e); }
 }
 
 function render() {
@@ -160,36 +159,63 @@ function render() {
         const ref = grupo.items[0];
         const ratio = ref.W && ref.H ? `style="aspect-ratio: ${ref.W} / ${ref.H}"` : '';
         
-        let galleryHtml = '';
-        let todasImagensDoGrupo = [];
+        let contentHtml = '';
+        let pool = [];
+
         grupo.items.forEach(obra => {
-            for (let j = 0; j < obra.IMG_COUNT; j++) {
-                todasImagensDoGrupo.push({
-                    obra: obra,
-                    src: `${obra.ID}${String.fromCharCode(97 + j)}`
-                });
+            // Vídeos primeiro [cite: 161]
+            if (obra.MIDIA && obra.MIDIA > 0) {
+                for (let v = 0; v < obra.MIDIA; v++) {
+                    pool.push({
+                        type: 'video',
+                        obra: obra,
+                        // Fix: Removemos o hífen extra pois o ID já o possui
+                        fileName: `${obra.ID}${String.fromCharCode(97 + v)}`
+                    });
+                }
+            }
+            // Imagens depois
+            if (obra.IMG_COUNT && obra.IMG_COUNT > 0) {
+                for (let j = 0; j < obra.IMG_COUNT; j++) {
+                    pool.push({
+                        type: 'image',
+                        obra: obra,
+                        fileName: `${obra.ID}${String.fromCharCode(97 + j)}`
+                    });
+                }
             }
         });
 
-        const loops = todasImagensDoGrupo.length > 1 ? 3 : 1;
+        // Loop Infinito
+        const loops = pool.length > 1 ? 3 : 1;
         for (let t = 0; t < loops; t++) {
-            todasImagensDoGrupo.forEach(imgData => {
-                galleryHtml += `
-                    <img src="${IMG_BASE}${imgData.src}.jpg" 
-                         loading="lazy" 
-                         data-titulo="${imgData.obra.TITULO}" 
-                         onerror="this.src='${IMG_BASE}${imgData.src}.avif'; this.onerror=function(){this.remove()}">
-                `;
+            pool.forEach(el => {
+                if (el.type === 'video') {
+                    contentHtml += `
+                        <video autoplay muted loop playsinline disablePictureInPicture
+                               data-titulo="${el.obra.TITULO}">
+                            <source src="${MIDIA_BASE}${el.fileName}.webm" type="video/webm">
+                            <source src="${MIDIA_BASE}${el.fileName}.mp4" type="video/mp4">
+                        </video>
+                    `;
+                } else {
+                    contentHtml += `
+                        <img src="${IMG_BASE}${el.fileName}.jpg" 
+                             loading="lazy" 
+                             data-titulo="${el.obra.TITULO}" 
+                             onerror="this.src='${IMG_BASE}${el.fileName}.avif';this.onerror=function(){this.remove()}">
+                    `;
+                }
             });
         }
 
         html += `
             <article class="item-obra">
                 <div class="img-box" ${ratio} onscroll="syncScroll(this)">
-                    ${galleryHtml}
+                    ${contentHtml}
                 </div>
                 <div class="meta">
-                    <strong style="font-weight: 600;">${ref.TITULO}</strong>
+                    <strong>${ref.TITULO}</strong>
                 </div>
             </article>
         `;
@@ -202,36 +228,32 @@ function syncScroll(el) {
     const scrollWidth = el.scrollWidth;
     const clientWidth = el.clientWidth;
     const gap = 8;
-
-    // Scroll Infinito
     const setWidth = (scrollWidth + gap) / 3;
+
     if (scrollLeft <= 5) {
         el.scrollLeft = setWidth + 5;
     } else if (scrollLeft + clientWidth >= scrollWidth - 5) {
         el.scrollLeft = setWidth - clientWidth + 5;
     }
+ 
+    const contents = Array.from(el.querySelectorAll('img, video'));
+    if (contents.length === 0) return;
 
-    // Título Dinâmico (Busca a imagem mais próxima da borda esquerda)
-    const images = Array.from(el.querySelectorAll('img'));
-    if (images.length === 0) return;
+    let elAtivo = contents[0];
+    let min = Infinity;
 
-    // Encontra qual imagem está atualmente visível (baseado na posição relativa ao container)
-    let imagemAtiva = images[0];
-    let menorDistancia = Infinity;
-
-    images.forEach(img => {
-        const dist = Math.abs(img.offsetLeft - el.scrollLeft);
-        if (dist < menorDistancia) {
-            menorDistancia = dist;
-            imagemAtiva = img;
+    contents.forEach(item => {
+        const dist = Math.abs(item.offsetLeft - el.scrollLeft);
+        if (dist < min) {
+            min = dist;
+            elAtivo = item;
         }
     });
-    
-    const novoTitulo = imagemAtiva.getAttribute('data-titulo');
-    const metaStrong = el.nextElementSibling.querySelector('strong');
-    
-    if (metaStrong && metaStrong.innerText !== novoTitulo) {
-        metaStrong.innerText = novoTitulo;
+
+    const novoTitulo = elAtivo.getAttribute('data-titulo');
+    const strong = el.nextElementSibling.querySelector('strong');
+    if (strong && strong.innerText !== novoTitulo) {
+        strong.innerText = novoTitulo;
     }
 }
 
