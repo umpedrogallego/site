@@ -196,8 +196,8 @@ async function init() {
         const res = await fetch(URL_JSON);
         const data = await res.json();
         
-        // Filtra obras com imagem OU mídia [cite: 154]
-        const dataFiltrada = data.filter(item => (item.IMG_COUNT && item.IMG_COUNT > 0) || (item.MIDIA && item.MIDIA > 0));
+        // Filtra se tem imagem ou se a coluna MIDIA tem uma extensão definida
+        const dataFiltrada = data.filter(item => (item.IMG_COUNT && item.IMG_COUNT > 0) || (item.MIDIA && item.MIDIA.length > 2));
 
         const grupos = {};
         dataFiltrada.forEach(item => {
@@ -231,30 +231,30 @@ function render() {
         let pool = [];
 
         grupo.items.forEach(obra => {
-            // Vídeos primeiro [cite: 161]
-            if (obra.MIDIA && obra.MIDIA > 0) {
-                for (let v = 0; v < obra.MIDIA; v++) {
-                    pool.push({
-                        type: 'video',
-                        obra: obra,
-                        // Fix: Removemos o hífen extra pois o ID já o possui
-                        fileName: `${obra.ID}${String.fromCharCode(97 + v)}`
-                    });
-                }
+            // Processa VÍDEO pela extensão na coluna MIDIA
+            if (obra.MIDIA && obra.MIDIA.trim() !== "") {
+                const ext = obra.MIDIA.toLowerCase().trim();
+                pool.push({
+                    type: 'video',
+                    obra: obra,
+                    // Monta o nome do arquivo: ID + sufixo 'a' + extensão (ex: 13-talking-a.mp4)
+                    fileUrl: `${MIDIA_BASE}${obra.ID}a.${ext}`
+                });
             }
-            // Imagens depois
+
+            // Processa IMAGENS
             if (obra.IMG_COUNT && obra.IMG_COUNT > 0) {
                 for (let j = 0; j < obra.IMG_COUNT; j++) {
                     pool.push({
                         type: 'image',
                         obra: obra,
-                        fileName: `${obra.ID}${String.fromCharCode(97 + j)}`
+                        fileUrl: `${IMG_BASE}${obra.ID}${String.fromCharCode(97 + j)}.jpg`,
+                        fallback: `${IMG_BASE}${obra.ID}${String.fromCharCode(97 + j)}.avif`
                     });
                 }
             }
         });
 
-        // Loop Infinito
         const loops = pool.length > 1 ? 3 : 1;
         for (let t = 0; t < loops; t++) {
             pool.forEach(el => {
@@ -262,16 +262,15 @@ function render() {
                     contentHtml += `
                         <video autoplay muted loop playsinline disablePictureInPicture
                                data-titulo="${el.obra.TITULO}">
-                            <source src="${MIDIA_BASE}${el.fileName}.webm" type="video/webm">
-                            <source src="${MIDIA_BASE}${el.fileName}.mp4" type="video/mp4">
+                            <source src="${el.fileUrl}" type="video/${el.fileUrl.split('.').pop()}">
                         </video>
                     `;
                 } else {
                     contentHtml += `
-                        <img src="${IMG_BASE}${el.fileName}.jpg" 
+                        <img src="${el.fileUrl}" 
                              loading="lazy" 
                              data-titulo="${el.obra.TITULO}" 
-                             onerror="this.src='${IMG_BASE}${el.fileName}.avif';this.onerror=function(){this.remove()}">
+                             onerror="this.src='${el.fallback}';this.onerror=function(){this.remove()}">
                     `;
                 }
             });
@@ -283,7 +282,7 @@ function render() {
                     ${contentHtml}
                 </div>
                 <div class="meta">
-                    <strong>${ref.TITULO}</strong>
+                    <strong style="font-weight: 600;">${ref.TITULO}</strong>
                 </div>
             </article>
         `;
@@ -303,7 +302,7 @@ function syncScroll(el) {
     } else if (scrollLeft + clientWidth >= scrollWidth - 5) {
         el.scrollLeft = setWidth - clientWidth + 5;
     }
- 
+
     const contents = Array.from(el.querySelectorAll('img, video'));
     if (contents.length === 0) return;
 
