@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedro Gallego - V10.2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Novas cores base fornecidas */
+            --bg: #DBE5C7;
+            --text: #F34FEB;
+            --border: #975F26;
+            --meta-color: #921658;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Martian Mono', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            font-size: 11px;
+            scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #site-wrapper {
+            max-width: 1338px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            background-color: var(--bg);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            text-transform: uppercase;
+        }
+
+        header h1 { font-size: 28px; font-weight: 500; margin: 0; letter-spacing: -1.5px; }
+
+        /* --- NOVO MENU DE CONTROLE --- */
+        #control-panel {
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 60px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 12px; }
+        .control-group h3 { 
+            margin: 0; 
+            font-size: 9px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        /* Botões */
+        .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        
+        button {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'Martian Mono', monospace;
+            font-size: 10px;
+            padding: 8px;
+            cursor: pointer;
+            text-transform: lowercase;
+            transition: all 0.2s ease;
+        }
+
+        button:hover { background-color: var(--text); color: var(--bg); }
+        button.wide { grid-column: span 2; }
+
+        /* Sliders */
+        .slider-container { display: flex; flex-direction: column; gap: 5px; }
+        .slider-container label { display: flex; justify-content: space-between; font-size: 9px; }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--text);
+            cursor: pointer;
+            border: 1px solid var(--bg);
+        }
+
+        /* Color Display */
+        .color-display-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+        .color-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            font-size: 10px;
+        }
+        .color-item input[type="color"] { border:none; width: 20px; height: 20px; cursor: pointer; background: none;}
+
+        /* Grid de Obras */
+        #main-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 100px 30px;
+            align-items: start;
+        }
+        .item-obra { grid-column: span 4; cursor: pointer; }
+        .item-obra:nth-child(5n+1) { grid-column: span 5; transform: translateY(60px); }
+        .item-obra:nth-child(5n+2) { grid-column: span 3; transform: translateY(-30px); }
+        .img-box { width: 100%; overflow-x: auto; display: flex; gap: 8px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .img-box img, .img-box video { width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: contain; }
+        .meta { margin-top: 15px; }
+        .meta strong { display: block; font-size: 18px; color: var(--meta-color); font-weight: 400; }
+
+        @media (max-width: 800px) {
+            #main-grid { grid-template-columns: repeat(6, 1fr); gap: 40px 15px; }
+            .item-obra { grid-column: span 6 !important; transform: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="site-wrapper">
+    <header>
+        <h1>Pedro Gallego</h1>
+        <nav>obras / cv / info</nav>
+    </header>
+
+    <section id="control-panel">
+        <div class="control-group">
+            <h3>Geradores de Paleta</h3>
+            <div class="button-grid">
+                <button onclick="randomizeTheme('random')" title="Totalmente aleatório">Aleatório ↻</button>
+                <button onclick="randomizeTheme('analogous')" title="Cores vizinhas no círculo">Análogas</button>
+                <button onclick="randomizeTheme('complementary')" title="Cores opostas no círculo">Complementares</button>
+                <button onclick="copyCurrentPalette()" class="wide">Copiar Configuração Hex</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Ajustes de Intensidade</h3>
+            <div class="slider-container">
+                <label>Saturação <span id="val-sat">100%</span></label>
+                <input type="range" id="slider-sat" min="0" max="100" value="70" oninput="applyAdjustments()">
+            </div>
+            <div class="slider-container">
+                <label>Brilho <span id="val-bri">100%</span></label>
+                <input type="range" id="slider-bri" min="0" max="100" value="50" oninput="applyAdjustments()">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>Cores Atuais</h3>  
+            <div class="color-display-grid">
+                <div class="color-item">
+                    <span>--bg: <b id="txt--bg">#DBE5C7</b></span>
+                    <input type="color" id="input--bg" oninput="manualUpdate('--bg', this.value)">
+                </div>
+                <div class="color-item">
+                    <span>--text: <b id="txt--text">#F34FEB</b></span>
+                    <input type="color" id="input--text" oninput="manualUpdate('--text', this.value)">
+                </div>
+                <div class="color-item">
+                    <span>--border: <b id="txt--border">#975F26</b></span>
+                    <input type="color" id="input--border" oninput="manualUpdate('--border', this.value)">
+                </div>
+                <div class="color-item">
+                    <span>--meta: <b id="txt--meta-color">#921658</b></span>
+                    <input type="color" id="input--meta-color" oninput="manualUpdate('--meta-color', this.value)">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main id="main-grid"></main>
+</div>
+
+<script>
+// --- CONFIGURAÇÃO INICIAL ---
+const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
+const IMG_BASE = "https://umpedrogallego.github.io/site/img/";
+const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
+
+// Estado global das cores (em HSL para fácil manipulação)
+let currentHues = [80, 300, 30, 330]; // Matizes iniciais aproximadas das cores fornecidas
+
+// Funções de Conversão
+function hexToHSL(hex) {
+    let r = parseInt(hex.slice(1,3), 16) / 255, g = parseInt(hex.slice(3,5), 16) / 255, b = parseInt(hex.slice(5,7), 16) / 255;
+    let max = Math.max(r, g, b), min = Math.min(r, g, b), h, s, l = (max + min) / 2;
+    if(max == min) h = s = 0;
+    else {
+        let d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch(max){
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    return { h: h * 360, s: s * 100, l: l * 100 };
+}
+
+function hslToHex(h, s, l) {
+    l /= 100; s /= 100;
+    const a = s * Math.min(l, 1 - l);
+    const f = n => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+}
+
+// Aplica o tema visualmente
+function updateTheme(variable, hex) {
+    document.documentElement.style.setProperty(variable, hex);
+    document.getElementById(`txt${variable}`).innerText = hex;
+    document.getElementById(`input${variable}`).value = hex;
+}
+
+// Manual (pelo seletor de cor)
+function manualUpdate(variable, hex) {
+    updateTheme(variable, hex);
+    const hsl = hexToHSL(hex);
+    // Atualiza o matiz no estado global baseado na variável alterada
+    const vars = ['--bg', '--text', '--border', '--meta-color'];
+    currentHues[vars.indexOf(variable)] = hsl.h;
+}
+
+// Lógica de Randomização
+function randomizeTheme(mode) {
+    const baseHue = Math.floor(Math.random() * 360);
+    
+    if (mode === 'random') {
+        currentHues = [baseHue, (baseHue+90)%360, (baseHue+180)%360, (baseHue+270)%360];
+    } else if (mode === 'analogous') {
+        currentHues = [baseHue, (baseHue+30)%360, (baseHue+15)%360, (baseHue-30+360)%360];
+    } else if (mode === 'complementary') {
+        currentHues = [baseHue, (baseHue+180)%360, baseHue, (baseHue+180)%360];
+    }
+    
+    applyAdjustments();
+}
+
+// Aplica Saturação e Brilho sobre as matizes atuais
+function applyAdjustments() {
+    const s = document.getElementById('slider-sat').value;
+    const l = document.getElementById('slider-bri').value;
+    
+    document.getElementById('val-sat').innerText = s + '%';
+    document.getElementById('val-bri').innerText = l + '%';
+
+    const vars = ['--bg', '--text', '--border', '--meta-color'];
+    
+    vars.forEach((v, i) => {
+        // Pequenas variações de brilho para não ficar tudo igual
+        let specificL = parseInt(l);
+        if(i === 0) specificL = Math.min(95, parseInt(l) + 20); // BG mais claro
+        if(i === 1) specificL = Math.max(10, parseInt(l) - 20); // Texto mais escuro
+        
+        const hex = hslToHex(currentHues[i], s, specificL);
+        updateTheme(v, hex);
+    });
+}
+
+function copyCurrentPalette() {
+    const bg = document.getElementById('txt--bg').innerText;
+    const tx = document.getElementById('txt--text').innerText;
+    const br = document.getElementById('txt--border').innerText;
+    const mt = document.getElementById('txt--meta-color').innerText;
+    
+    const config = `--bg: ${bg};\n--text: ${tx};\n--border: ${br};\n--meta-color: ${mt};`;
+    
+    navigator.clipboard.writeText(config).then(() => {
+        alert("Configuração copiada para a área de transferência!");
+    });
+}
+
+// --- RENDERIZAÇÃO DO CONTEÚDO (Mantida da sua versão) ---
+// --- RENDERIZAÇÃO DO CONTEÚDO (VERSÃO COMPLETA COM JPG/AVIF) ---
+async function init() {
+    // Definir cores iniciais
+    updateTheme('--bg', '#DBE5C7');
+    updateTheme('--text', '#F34FEB');
+    updateTheme('--border', '#975F26');
+    updateTheme('--meta-color', '#921658');
+
+    try {
+        const res = await fetch(URL_JSON);
+        const data = await res.json();
+        const dataFiltrada = data.filter(item => (item.IMG_COUNT && item.IMG_COUNT > 0) || (item.MIDIA && item.MIDIA.length > 2));
+        
+        const grupos = {};
+        dataFiltrada.forEach(item => {
+            const chave = (item.SERIE && item.SERIE.trim() !== "") ? item.SERIE : `AVULSO_${item.ID}`;
+            if (!grupos[chave]) grupos[chave] = [];
+            grupos[chave].push(item);
+        });
+
+        listaAgrupada = Object.values(grupos).map(items => ({
+            items: items, 
+            destaque: items[0].DESTAQUE || 20, 
+            ano: items[0].ANO
+        }));
+
+        listaAgrupada.sort((a,b) => a.destaque - b.destaque || b.ano - a.ano);
+        
+        render(); // Chama a função de renderização robusta
+    } catch(e) { console.error("Erro no fetch:", e); }
+}
+
+function render() {
+    const grid = document.getElementById('main-grid');
+    let html = '';
+
+    listaAgrupada.forEach((grupo, i) => {
+        if (i > 0 && i % 4 === 0) html += '<div class="spacer"></div>';
+        const ref = grupo.items[0];
+        const ratio = ref.W && ref.H ? `style="aspect-ratio: ${ref.W} / ${ref.H}"` : '';
+        
+        let contentHtml = '';
+        let pool = [];
+
+        grupo.items.forEach(obra => {
+            // Processa VÍDEO
+            if (obra.MIDIA && obra.MIDIA.trim() !== "") {
+                const ext = obra.MIDIA.toLowerCase().trim();
+                pool.push({
+                    type: 'video',
+                    obra: obra,
+                    fileUrl: `${MIDIA_BASE}${obra.ID}a.${ext}`
+                });
+            }
+
+            // Processa IMAGENS (JPG com fallback AVIF)
+            if (obra.IMG_COUNT && obra.IMG_COUNT > 0) {
+                for (let j = 0; j < obra.IMG_COUNT; j++) {
+                    const sufixo = String.fromCharCode(97 + j);
+                    pool.push({
+                        type: 'image',
+                        obra: obra,
+                        fileUrl: `${IMG_BASE}${obra.ID}${sufixo}.jpg`,
+                        fallback: `${IMG_BASE}${obra.ID}${sufixo}.avif`
+                    });
+                }
+            }
+        });
+
+        // Triplo loop para o scroll infinito lateral
+        const loops = pool.length > 1 ? 3 : 1;
+        for (let t = 0; t < loops; t++) {
+            pool.forEach(el => {
+                if (el.type === 'video') {
+                    contentHtml += `
+                        <video autoplay muted loop playsinline disablePictureInPicture data-titulo="${el.obra.TITULO}">
+                            <source src="${el.fileUrl}" type="video/${el.fileUrl.split('.').pop()}">
+                        </video>`;
+                } else {
+                    contentHtml += `
+                        <img src="${el.fileUrl}" 
+                             loading="lazy" 
+                             data-titulo="${el.obra.TITULO}" 
+                             onerror="this.src='${el.fallback}';this.onerror=function(){this.remove()}">`;
+                }
+            });
+        }
+
+        html += `
+            <article class="item-obra">
+                <div class="img-box" ${ratio} onscroll="syncScroll(this)">${contentHtml}</div>
+                <div class="meta"><strong>${ref.TITULO}</strong></div>
+            </article>`;
+    });
+    grid.innerHTML = html;
+}
+
+// Mantive a função syncScroll necessária para o título mudar ao scrollar
+function syncScroll(el) {
+    const scrollLeft = el.scrollLeft;
+    const scrollWidth = el.scrollWidth;
+    const clientWidth = el.clientWidth;
+    const setWidth = (scrollWidth + 8) / 3;
+
+    if (scrollLeft <= 5) el.scrollLeft = setWidth + 5;
+    else if (scrollLeft + clientWidth >= scrollWidth - 5) el.scrollLeft = setWidth - clientWidth + 5;
+
+    const contents = Array.from(el.querySelectorAll('img, video'));
+    if (contents.length === 0) return;
+    let elAtivo = contents[0];
+    let min = Infinity;
+    contents.forEach(item => {
+        const dist = Math.abs(item.offsetLeft - el.scrollLeft);
+        if (dist < min) { min = dist; elAtivo = item; }
+    });
+    const novoTitulo = elAtivo.getAttribute('data-titulo');
+    const strong = el.nextElementSibling.querySelector('strong');
+    if (strong && strong.innerText !== novoTitulo) strong.innerText = novoTitulo;
+}
+
+init();
+</script>
+</body>
+</html>
