@@ -64,7 +64,7 @@
   },
   {
     "ID": "25-bstv-",
-    "DESTAQUE": 6,
+    "DESTAQUE": "",
     "TITULO": "BetShopTV.com",
     "ANO": 2025,
     "FIM": "",
@@ -295,7 +295,7 @@
   },
   {
     "ID": "18-screensaver-",
-    "DESTAQUE": 2,
+    "DESTAQUE": 3,
     "TITULO": "Screensaver",
     "ANO": 2018,
     "FIM": "-",
@@ -421,7 +421,7 @@
   },
   {
     "ID": "15-capa-",
-    "DESTAQUE": 3,
+    "DESTAQUE": 2,
     "TITULO": "Capa",
     "ANO": 2015,
     "FIM": "",
@@ -757,7 +757,7 @@
   },
   {
     "ID": "13-talking-",
-    "DESTAQUE": "",
+    "DESTAQUE": 6,
     "TITULO": "Talking Dogs",
     "ANO": 2013,
     "FIM": 2017,
