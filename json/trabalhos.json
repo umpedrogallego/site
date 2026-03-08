@@ -1,7 +1,7 @@
 [
   {
     "ID": "25-pinoquio-",
-    "DESTAQUE": 1,
+    "DESTAQUE": 8,
     "TITULO": "Meu nariz vai crescer agora",
     "ANO": 2025,
     "FIM": "",
@@ -22,7 +22,7 @@
   },
   {
     "ID": "25-torcida-",
-    "DESTAQUE": 2,
+    "DESTAQUE": 10,
     "TITULO": "Torcida",
     "ANO": 2025,
     "FIM": "",
@@ -43,7 +43,7 @@
   },
   {
     "ID": "25-6x1-",
-    "DESTAQUE": 3,
+    "DESTAQUE": 7,
     "TITULO": "6x1",
     "ANO": 2025,
     "FIM": "",
@@ -64,7 +64,7 @@
   },
   {
     "ID": "25-bstv-",
-    "DESTAQUE": 5,
+    "DESTAQUE": 6,
     "TITULO": "BetShopTV.com",
     "ANO": 2025,
     "FIM": "",
@@ -85,7 +85,7 @@
   },
   {
     "ID": "25-tonta-",
-    "DESTAQUE": 6,
+    "DESTAQUE": 1,
     "TITULO": "Tonta",
     "ANO": 2025,
     "FIM": "",
@@ -106,7 +106,7 @@
   },
   {
     "ID": "25-ppv-",
-    "DESTAQUE": 9,
+    "DESTAQUE": 5,
     "TITULO": "porta-porta-voz",
     "ANO": 2025,
     "FIM": "-",
@@ -127,7 +127,7 @@
   },
   {
     "ID": "25-gemeos-",
-    "DESTAQUE": "",
+    "DESTAQUE": 9,
     "TITULO": "Gêmeos",
     "ANO": 2025,
     "FIM": "",
@@ -190,7 +190,7 @@
   },
   {
     "ID": "25-bela-",
-    "DESTAQUE": "Z",
+    "DESTAQUE": "",
     "TITULO": "Bela máquina",
     "ANO": 2025,
     "FIM": "",
@@ -211,7 +211,7 @@
   },
   {
     "ID": "25-auto-",
-    "DESTAQUE": "Z",
+    "DESTAQUE": "",
     "TITULO": "Auto-",
     "ANO": 2025,
     "FIM": "",
@@ -232,7 +232,7 @@
   },
   {
     "ID": "24-acapulco-",
-    "DESTAQUE": 4,
+    "DESTAQUE": 19,
     "TITULO": "Acapulco",
     "ANO": 2024,
     "FIM": "",
@@ -253,7 +253,7 @@
   },
   {
     "ID": "22-miche-",
-    "DESTAQUE": 11,
+    "DESTAQUE": 13,
     "TITULO": "Nada machuca nem cansa",
     "ANO": 2022,
     "FIM": "",
@@ -274,7 +274,7 @@
   },
   {
     "ID": "20-itau-",
-    "DESTAQUE": 10,
+    "DESTAQUE": 11,
     "TITULO": "acordo de Emergência",
     "ANO": 2020,
     "FIM": "",
@@ -295,7 +295,7 @@
   },
   {
     "ID": "18-screensaver-",
-    "DESTAQUE": 8,
+    "DESTAQUE": 2,
     "TITULO": "Screensaver",
     "ANO": 2018,
     "FIM": "-",
@@ -316,7 +316,7 @@
   },
   {
     "ID": "18-qqcoisa-",
-    "DESTAQUE": "",
+    "DESTAQUE": 17,
     "TITULO": "Um infinito de qualquer coisa",
     "ANO": 2018,
     "FIM": "",
@@ -337,7 +337,7 @@
   },
   {
     "ID": "17-edm-",
-    "DESTAQUE": 13,
+    "DESTAQUE": 12,
     "TITULO": "Esqueceram de mim",
     "ANO": 2017,
     "FIM": "",
@@ -358,7 +358,7 @@
   },
   {
     "ID": "17-amargor-",
-    "DESTAQUE": "",
+    "DESTAQUE": 14,
     "TITULO": "Amargor",
     "ANO": 2017,
     "FIM": "",
@@ -379,7 +379,7 @@
   },
   {
     "ID": "16-cortesia-",
-    "DESTAQUE": "",
+    "DESTAQUE": 15,
     "TITULO": "Cortesia",
     "ANO": 2016,
     "FIM": "",
@@ -421,7 +421,7 @@
   },
   {
     "ID": "15-capa-",
-    "DESTAQUE": "",
+    "DESTAQUE": 3,
     "TITULO": "Capa",
     "ANO": 2015,
     "FIM": "",
@@ -547,7 +547,7 @@
   },
   {
     "ID": "14-fdp-",
-    "DESTAQUE": 7,
+    "DESTAQUE": 4,
     "TITULO": "Ficção de personalidade",
     "ANO": 2014,
     "FIM": "",
@@ -757,7 +757,7 @@
   },
   {
     "ID": "13-talking-",
-    "DESTAQUE": 14,
+    "DESTAQUE": "",
     "TITULO": "Talking Dogs",
     "ANO": 2013,
     "FIM": 2017,
@@ -778,7 +778,7 @@
   },
   {
     "ID": "13-confronto-",
-    "DESTAQUE": 12,
+    "DESTAQUE": 16,
     "TITULO": "Confronto final",
     "ANO": 2013,
     "FIM": "",
@@ -799,7 +799,7 @@
   },
   {
     "ID": "13-dm-",
-    "DESTAQUE": "",
+    "DESTAQUE": 18,
     "TITULO": "Domingo maior",
     "ANO": 2013,
     "FIM": "",
