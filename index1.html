@@ -3,237 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro Gallego — MESA DE LUZ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Pedro Gallego - V10.1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #ecece9; --text: #0f0f0f; --border: #000;
+            --bg: #ecece9;
+            --text: #0f0f0f;
+            --border: #000;
             --meta-color: #948a8d;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Martian Mono', monospace; background-color: var(--bg); color: var(--text); 
-            -webkit-font-smoothing: antialiased;
-        }
+
+        * { box-sizing: border-box; }
         
-        /* Slots com Desalinhamento Superior */
-        .slot-1 { grid-column: span 5; margin-top: 0px; }
-        .slot-2 { grid-column: span 4; margin-top: 60px; }
-        .slot-3 { grid-column: span 3; margin-top: 100px; }
-        .slot-4 { grid-column: span 5; margin-top: 30px; }
-        .slot-5 { grid-column: span 7; margin-top: 80px; }
-
-        /* --- HEADER --- */
-        header {
-    padding: 40px; 
-    max-width: 1400px; /* Mesma do grid */
-    width: 100%;      /* Garante que ele ocupe o espaço disponível até o limite */
-    margin: 0 auto;    /* Centraliza o bloco no eixo horizontal */
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-end;
-    background: transparent; 
-    position: sticky; 
-    top: 0; 
-    z-index: 1000;
-            
+        body {
+            font-family: 'Martian Mono', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            font-size: 11px;
+            scroll-behavior: smooth;
         }
-        header h1 { background: white filter: invert(1); font-size: 28px; font-weight: 500; letter-spacing: -1.5px; text-transform: uppercase;}
 
+        #site-wrapper {
+            max-width: 1338px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
 
-        /* --- GRID 12 COLUNAS --- */
+        header {
+            position: sticky;
+            top: 0;
+            background-color: var(--bg);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            margin-bottom: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            text-transform: uppercase;
+        }
+
+        header h1 { font-size: 28px; font-weight: 500; margin: 0; letter-spacing: -1.5px; }
+
+        /* Theme Editor Styles */
+        #theme-editor {
+            display: flex;
+            gap: 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+
+        .color-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 400;
+            text-transform: lowercase;
+        }
+
+        .color-control:hover { text-decoration: underline; }
+
+        .color-control input[type="color"] {
+            width: 0;
+            height: 0;
+            border: none;
+            padding: 0;
+            visibility: hidden;
+        }
+
+        .hex-preview {
+            color: var(--meta-color);
+            font-size: 9px;
+        }
+
         #main-grid {
-            display: grid; grid-template-columns: repeat(12, 1fr);
-            gap: 120px 30px; padding: 100px 40px; max-width: 1400px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 100px 30px;
             align-items: start;
         }
 
-        .item-obra { position: relative; display: flex; flex-direction: column; }
+        .item-obra {
+            grid-column: span 4;
+            cursor: pointer;
+        }
 
-        .img-box { width: 100%; display: flex; align-items: flex-start; }
-        .img-box img, .img-box video { width: 100%; height: auto; display: block; object-fit: contain; }
+        /* Anti-Layout [cite: 139-141] */
+        .item-obra:nth-child(5n+1) { grid-column: span 5; transform: translateY(60px); }
+        .item-obra:nth-child(5n+2) { grid-column: span 3; transform: translateY(-30px); }
+        .item-obra:nth-child(5n+4) { grid-column: span 6; padding-left: 10%; width: 90%; }
+
+        .spacer { grid-column: span 2; height: 1px; pointer-events: none; }
+
+        .img-box {
+            width: 100%;
+            background: transparent;
+            overflow-x: auto; 
+            display: flex;
+            align-items: flex-end; 
+            gap: 8px;
+            scroll-snap-type: x mandatory; 
+            scrollbar-width: none;
+        }
+
+        .img-box::-webkit-scrollbar { display: none; }
+
+        .img-box img, .img-box video {
+            width: 100%;
+            height: 100%; /* Garante preenchimento do aspect-ratio [cite: 146] */
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            display: block;
+            object-fit: contain; 
+            object-position: left bottom; 
+        }
+    
+        .img-box img:hover, .img-box video:hover { cursor:ew-resize;}
 
         .meta { margin-top: 15px; }
         .meta strong { 
-            font-weight: 400; font-size: 18px; color: var(--meta-color); 
-            text-transform: none; display: block;
+            display: block;
+            font-size: 18px; 
+            margin-bottom: 5px; 
+            color: var(--meta-color);
+            font-weight: 400;
         }
 
-        @media (max-width: 768px) {
-            #main-grid { display: flex; flex-direction: column; gap: 80px; padding: 20px; }
-            .item-obra { width: 100% !important; margin-top: 0 !important; }
+                .nav-links { display: flex; gap: 20px; }
+        .nav-links a { text-decoration: none; color: var(--text); font-size: 12px; }
+        .nav-links a.active { font-weight: 800; text-decoration: underline; }
+
+        @media (max-width: 800px) {
+            #main-grid { grid-template-columns: repeat(6, 1fr); gap: 60px 15px; }
+            .item-obra { grid-column: span 6 !important; transform: none !important; padding: 0 !important; }
         }
     </style>
+    
+      <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+    
 </head>
 <body>
 
-<header id="site-header">
-    <a href="index.html" style="text-decoration:none; color:inherit;"><h1 style="margin-left: -2px; ">Pedro Gallego</h1></a>
-    <div style="display:flex; gap:20px; align-items:center;">
-        <nav style="display:flex; gap:32px; text-transform:uppercase; font-size:18px; ">
-            <a href="#" style="font-weight:500; color:inherit; text-decoration:none; filter: opacity(50%);">obras</a>
-            <a href="#" style="color:inherit; text-decoration:none;">cv</a>
-            <a href="#" style="color:inherit; text-decoration:none;">info</a>
-        </nav>
+<div id="site-wrapper">
+    <header>
+        <h1>Pedro Gallego</h1>
+    <div class="nav-links" style="flex: 1; justify-content: flex-end;">
+        <a href="index.html" class="active">obras</a>
+        <a href="cv.html">cv</a>
+        <a href="info.html">info</a>
     </div>
-</header>
-
-<main id="main-grid"></main>
+    </header>
+    
+        <section id="theme-editor">
+        <label class="color-control">
+            --bg <span id="val--bg" class="hex-preview">#ecece9</span>
+            <input type="color" value="#ecece9" oninput="updateTheme('--bg', this.value)">
+        </label>
+        <div class="animate__hinge"> 
+        <label class="color-control"> 
+            --text <span id="val--text" class="hex-preview">#0f0f0f</span>
+            <input type="color" value="#0f0f0f" oninput="updateTheme('--text', this.value)">
+        </label></div>
+        <label class="color-control">
+            --border <span id="val--border" class="hex-preview">#000000</span>
+            <input type="color" value="#000000" oninput="updateTheme('--border', this.value)">
+        </label>
+        <div class="animate__hinge">
+        <label class="color-control">
+            --meta-color <span id="val--meta-color" class="hex-preview">#948a8d</span>
+            <input type="color" value="#948a8d" oninput="updateTheme('--meta-color', this.value)">
+        </label></div>
+    </section> 
+    
+    <main id="main-grid"></main>
+</div>
 
 <script>
-    const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
-    const THUMB_BASE = "https://umpedrogallego.github.io/site/thumb/";
-    const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
+const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
+const IMG_BASE = "https://umpedrogallego.github.io/site/img/";
+const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
 
-    let obras = [];
-    const slotClasses = ['slot-1', 'slot-2', 'slot-3', 'slot-4', 'slot-5'];
+let listaAgrupada = [];
 
-    async function init() {
-        try {
-            const res = await fetch(URL_JSON);
-            const data = await res.json();
-            
-            const grupos = {};
-            data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "").forEach(item => {
-                const chave = (item.SERIE && item.SERIE.trim() !== "") ? item.SERIE : `SINGLE_${item.ID}`;
-                if (!grupos[chave]) grupos[chave] = [];
-                grupos[chave].push(item);
-            });
-
-            obras = Object.values(grupos).map((items, i) => ({
-                id: items[0].ID,
-                titulo: (items[0].SERIE && items[0].SERIE !== "") ? items[0].SERIE : items[0].TITULO,
-                midia: items[0].MIDIA,
-                slotIdx: i % 5,
-                ref: items[0]
-            }));
-
-            const saved = localStorage.getItem('pg_mesa_v14');
-            if (saved) obras = JSON.parse(saved);
-
-            refresh();
-        } catch(e) { console.error("Erro JSON:", e); }
-    }
-
-    function refresh() {
-        renderGrid();
-        renderHUD();
-        renderVersions();
-        localStorage.setItem('pg_mesa_v14', JSON.stringify(obras));
-    }
-
-    function renderGrid() {
-        const grid = document.getElementById('main-grid');
-        grid.innerHTML = obras.map((obra) => {
-            const ref = obra.ref;
-            const ratio = ref.W && ref.H ? `style="aspect-ratio: ${ref.W} / ${ref.H}"` : '';
-            
-            let media = "";
-            if (ref.MIDIA && ref.MIDIA.length > 2) {
-                media = `<video muted loop playsinline autoplay><source src="${MIDIA_BASE}${ref.ID}a.${ref.MIDIA}" type="video/mp4"></video>`;
-            } else {
-                media = `<img src="${THUMB_BASE}${ref.ID}a.avif" loading="lazy" alt="${obra.titulo}">`;
-            }
-
-            return `
-                <article class="item-obra ${slotClasses[obra.slotIdx]}">
-                    <div class="img-box" ${ratio}>${media}</div>
-                    <div class="meta"><strong>${obra.titulo}</strong></div>
-                </article>
-            `;
-        }).join('');
-    }
-
-    function renderHUD() {
-        const list = document.getElementById('manual-list');
-        list.innerHTML = obras.map((obra, i) => `
-            <div class="work-row">
-                <div style="display:flex; align-items:center; gap:10px; flex:1;">
-                    <input type="number" class="input-order" value="${i + 1}" 
-                           onchange="changePos(${i}, this.value - 1)" min="1" max="${obras.length}">
-                    <span style="font-weight:500;">${obra.titulo}</span>
-                </div>
-                <div class="order-controls">
-                    <div style="margin-left:10px; border-left:1px solid #000; padding-left:10px;">
-                        ${[1,2,3,4,5].map(n => `
-                            <button class="btn-ui ${obra.slotIdx === n-1 ? 'active' : ''}" 
-                                    onclick="setSlot(${i}, ${n-1})">${n}</button>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    /* --- LÓGICA DE REORDENAÇÃO POR NÚMERO --- */
-    function changePos(oldIndex, newIndex) {
-        if (newIndex < 0) newIndex = 0;
-        if (newIndex >= obras.length) newIndex = obras.length - 1;
-        
-        const item = obras.splice(oldIndex, 1)[0];
-        obras.splice(newIndex, 0, item);
-        refresh();
-    }
-
-    function setSlot(index, slotIdx) {
-        obras[index].slotIdx = slotIdx;
-        refresh();
-    }
-
-    function autoBalance() {
-        obras.sort(() => Math.random() - 0.5);
-        obras.forEach(o => o.slotIdx = Math.floor(Math.random() * 5));
-        refresh();
-    }
-
-    /* --- HUD BEHAVIOR --- */
-    function toggleHUD() {
-        document.getElementById('hud-wrapper').classList.toggle('open');
-    }
-
-    // Tecla ESC para abrir e fechar
-    window.addEventListener('keydown', (e) => {
-        if (e.key === "Escape") toggleHUD();
-    });
-
-    /* --- VERSÕES --- */
-    function saveVersion() {
-        let v = JSON.parse(localStorage.getItem('pg_v_v14') || "[]");
-        if (v.length >= 4) v.shift();
-        v.push({ name: `V${v.length+1}`, data: JSON.parse(JSON.stringify(obras)) });
-        localStorage.setItem('pg_v_v14', JSON.stringify(v));
-        renderVersions();
-    }
-
-    function renderVersions() {
-        const list = document.getElementById('version-list');
-        const v = JSON.parse(localStorage.getItem('pg_v_v14') || "[]");
-        list.innerHTML = v.map((item, i) => `<button class="btn-ui" onclick="loadVersion(${i})">${item.name}</button>`).join('');
-    }
-
-    function loadVersion(i) {
-        obras = JSON.parse(localStorage.getItem('pg_v_v14'))[i].data;
-        refresh();
-    }
-    
-    function exportToSheets() {
-    // Cabeçalho para facilitar a identificação no Sheets
-    let output = "DESTAQUE\tSLOT\n"; 
-    
-    obras.forEach((obra, index) => {
-        // index + 1 é a nova ordem (DESTAQUE)
-        // slotIdx + 1 é o número do slot (1 a 5)
-        output += `${index + 1}\t${obra.slotIdx + 1}\n`;
-    });
-
-    navigator.clipboard.writeText(output).then(() => {
-        const fb = document.getElementById('export-feedback');
-        fb.style.display = "inline-block";
-        setTimeout(() => fb.style.display = "none", 3000);
-    });
+// Função de atualização em tempo real [cite: 17, 18]
+function updateTheme(variable, value) {
+    document.documentElement.style.setProperty(variable, value);
+    document.getElementById(`val${variable}`).innerText = value.toUpperCase();
 }
 
-    init();
+async function init() {
+    try {
+        const res = await fetch(URL_JSON);
+        const data = await res.json();
+        
+        // Filtra se tem imagem ou se a coluna MIDIA tem uma extensão definida
+        const dataFiltrada = data.filter(item => (item.IMG_COUNT && item.IMG_COUNT > 0) || (item.MIDIA && item.MIDIA.length > 2));
+
+        const grupos = {};
+        dataFiltrada.forEach(item => {
+            const chave = (item.SERIE && item.SERIE.trim() !== "") ? item.SERIE : `AVULSO_${item.ID}`;
+            if (!grupos[chave]) grupos[chave] = [];
+            grupos[chave].push(item);
+        });
+
+        listaAgrupada = Object.values(grupos).map(items => ({
+            items: items,
+            destaque: items[0].DESTAQUE || 20,
+            ano: items[0].ANO
+        }));
+
+        listaAgrupada.sort((a,b) => a.destaque - b.destaque || b.ano - a.ano);
+        render();
+    } catch(e) { console.error("Erro no fetch:", e); }
+}
+
+function render() {
+    const grid = document.getElementById('main-grid');
+    let html = '';
+
+    listaAgrupada.forEach((grupo, i) => {
+        if (i > 0 && i % 4 === 0) html += '<div class="spacer"></div>';
+
+        const ref = grupo.items[0];
+        const ratio = ref.W && ref.H ? `style="aspect-ratio: ${ref.W} / ${ref.H}"` : '';
+        
+        let contentHtml = '';
+        let pool = [];
+
+        grupo.items.forEach(obra => {
+            // Processa VÍDEO pela extensão na coluna MIDIA
+            if (obra.MIDIA && obra.MIDIA.trim() !== "") {
+                const ext = obra.MIDIA.toLowerCase().trim();
+                pool.push({
+                    type: 'video',
+                    obra: obra,
+                    // Monta o nome do arquivo: ID + sufixo 'a' + extensão (ex: 13-talking-a.mp4)
+                    fileUrl: `${MIDIA_BASE}${obra.ID}a.${ext}`
+                });
+            }
+
+            // Processa IMAGENS
+            if (obra.IMG_COUNT && obra.IMG_COUNT > 0) {
+                for (let j = 0; j < obra.IMG_COUNT; j++) {
+                    pool.push({
+                        type: 'image',
+                        obra: obra,
+                        fileUrl: `${IMG_BASE}${obra.ID}${String.fromCharCode(97 + j)}.jpg`,
+                        fallback: `${IMG_BASE}${obra.ID}${String.fromCharCode(97 + j)}.avif`
+                    });
+                }
+            }
+        });
+
+        const loops = pool.length > 1 ? 3 : 1;
+        for (let t = 0; t < loops; t++) {
+            pool.forEach(el => {
+                if (el.type === 'video') {
+                    contentHtml += `
+                        <video autoplay muted loop playsinline disablePictureInPicture
+                               data-titulo="${el.obra.TITULO}">
+                            <source src="${el.fileUrl}" type="video/${el.fileUrl.split('.').pop()}">
+                        </video>
+                    `;
+                } else {
+                    contentHtml += `
+                        <img src="${el.fileUrl}" 
+                             loading="lazy" 
+                             data-titulo="${el.obra.TITULO}" 
+                             onerror="this.src='${el.fallback}';this.onerror=function(){this.remove()}">
+                    `;
+                }
+            });
+        }
+
+        html += `
+            <article class="item-obra">
+                <div class="img-box" ${ratio} onscroll="syncScroll(this)">
+                    ${contentHtml}
+                </div>
+                <div class="meta">
+                    <strong style="font-weight: 600;">${ref.TITULO}</strong>
+                </div>
+            </article>
+        `;
+    });
+    grid.innerHTML = html;
+}
+
+function syncScroll(el) {
+    const scrollLeft = el.scrollLeft;
+    const scrollWidth = el.scrollWidth;
+    const clientWidth = el.clientWidth;
+    const gap = 8;
+    const setWidth = (scrollWidth + gap) / 3;
+
+    if (scrollLeft <= 5) {
+        el.scrollLeft = setWidth + 5;
+    } else if (scrollLeft + clientWidth >= scrollWidth - 5) {
+        el.scrollLeft = setWidth - clientWidth + 5;
+    }
+
+    const contents = Array.from(el.querySelectorAll('img, video'));
+    if (contents.length === 0) return;
+
+    let elAtivo = contents[0];
+    let min = Infinity;
+
+    contents.forEach(item => {
+        const dist = Math.abs(item.offsetLeft - el.scrollLeft);
+        if (dist < min) {
+            min = dist;
+            elAtivo = item;
+        }
+    });
+
+    const novoTitulo = elAtivo.getAttribute('data-titulo');
+    const strong = el.nextElementSibling.querySelector('strong');
+    if (strong && strong.innerText !== novoTitulo) {
+        strong.innerText = novoTitulo;
+    }
+}
+
+init();
 </script>
 </body>
 </html>
