@@ -3,336 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro Gallego - V10.1</title>
-    <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Pedro Gallego - v.13</title>
+    <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #ecece9;
-            --text: #0f0f0f;
-            --border: #000;
+            --bg: #ecece9; --text: #0f0f0f; --border: #000;
             --meta-color: #948a8d;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Martian Mono', monospace; background-color: var(--bg); color: var(--text); 
+            -webkit-font-smoothing: antialiased;
+        }
 
-        * { box-sizing: border-box; }
+        /* --- HUD MESA DE LUZ (RETRÁTIL E COMPACTO) --- */
+        #hud-wrapper {
+            max-height: 0; overflow: hidden;
+            border-bottom: 0px solid var(--border);
+            transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: sticky; top: 0; z-index: 99999;
+        }
+        #hud-wrapper.open { max-height: 90vh; max-width: 640px;}
+
+        #hud-content { padding: 30px 40px; display: flex; flex-direction: column; gap: 15px;}
+        .hud-scroll { 
+            overflow-y: auto; max-height: 45vh; border: 1px solid var(--border); 
+            background: #fff;
+        }
         
-        body {
-            font-family: 'Martian Mono', monospace;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            font-size: 11px;
-            scroll-behavior: smooth;
+        /* Zebra-striping para visualização */
+        .work-row { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 6px 15px; border-bottom: 1px solid #eee; font-size: 13px;
         }
+        .work-row:nth-child(even) { background: rgba(0,0,0,0.03); }
+        
+        .order-controls { display: flex; gap: 6px; align-items: center; }
 
-        #site-wrapper {
-            max-width: 1338px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .btn-ui { 
+            padding: 4px 8px; border: 1px solid var(--border); background: var(--bg); 
+            font-family: inherit; font-size: 18px; cursor: pointer; text-transform: uppercase;
         }
+        .btn-ui:hover, .btn-ui.active { background: var(--text); color: var(--bg); }
 
+.btn-export { background: #000 !important; color: #fff !important; font-weight: 600; margin-left: 10px; }
+#export-feedback { display: inline-block; margin-left: 10px; vertical-align: middle; }
+
+        /* Input Numérico Customizado */
+        .input-order {
+            width: 45px; border: 1px solid var(--border); padding: 6px 3px;
+            font-family: inherit; font-size: 15px; text-align: center;
+        }
+        
+        /* Slots com Desalinhamento Superior */
+        .slot-1 { grid-column: span 5; margin-top: 0px; }
+        .slot-2 { grid-column: span 4; margin-top: 60px; }
+        .slot-3 { grid-column: span 3; margin-top: 100px; }
+        .slot-4 { grid-column: span 5; margin-top: 30px; }
+        .slot-5 { grid-column: span 7; margin-top: 80px; }
+
+        /* --- HEADER --- */
         header {
-            position: sticky;
-            top: 0;
-            background-color: var(--bg);
-            z-index: 1000;
-            border-bottom: 1px solid var(--border);
-            padding: 20px 0;
-            margin-bottom: 80px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            text-transform: uppercase;
+    padding: 40px; 
+    max-width: 1400px; /* Mesma do grid */
+    width: 100%;      /* Garante que ele ocupe o espaço disponível até o limite */
+    margin: 0 auto;    /* Centraliza o bloco no eixo horizontal */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-end;
+    background: transparent; 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000;
+            
         }
+        header h1 { background: white filter: invert(1); font-size: 28px; font-weight: 500; letter-spacing: -1.5px; text-transform: uppercase;}
 
-        header h1 { font-size: 28px; font-weight: 500; margin: 0; letter-spacing: -1.5px; }
 
-        /* Theme Editor Styles */
-        #theme-editor {
-            display: flex;
-            gap: 20px;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 60px;
-            flex-wrap: wrap;
-        }
-
-        .color-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-weight: 400;
-            text-transform: lowercase;
-        }
-
-        .color-control:hover { text-decoration: underline; }
-
-        .color-control input[type="color"] {
-            width: 0;
-            height: 0;
-            border: none;
-            padding: 0;
-            visibility: hidden;
-        }
-
-        .hex-preview {
-            color: var(--meta-color);
-            font-size: 9px;
-        }
-
+        /* --- GRID 12 COLUNAS --- */
         #main-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 100px 30px;
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: 120px 30px; padding: 100px 40px; max-width: 1400px; margin: 0 auto;
             align-items: start;
         }
 
-        .item-obra {
-            grid-column: span 4;
-            cursor: pointer;
-        }
+        .item-obra { position: relative; display: flex; flex-direction: column; }
 
-        /* Anti-Layout [cite: 139-141] */
-        .item-obra:nth-child(5n+1) { grid-column: span 5; transform: translateY(60px); }
-        .item-obra:nth-child(5n+2) { grid-column: span 3; transform: translateY(-30px); }
-        .item-obra:nth-child(5n+4) { grid-column: span 6; padding-left: 10%; width: 90%; }
-
-        .spacer { grid-column: span 2; height: 1px; pointer-events: none; }
-
-        .img-box {
-            width: 100%;
-            background: transparent;
-            overflow-x: auto; 
-            display: flex;
-            align-items: flex-end; 
-            gap: 8px;
-            scroll-snap-type: x mandatory; 
-            scrollbar-width: none;
-        }
-
-        .img-box::-webkit-scrollbar { display: none; }
-
-        .img-box img, .img-box video {
-            width: 100%;
-            height: 100%; /* Garante preenchimento do aspect-ratio [cite: 146] */
-            flex-shrink: 0;
-            scroll-snap-align: start;
-            display: block;
-            object-fit: contain; 
-            object-position: left bottom; 
-        }
-    
-        .img-box img:hover, .img-box video:hover { cursor:ew-resize;}
+        .img-box { width: 100%; display: flex; align-items: flex-start; }
+        .img-box img, .img-box video { width: 100%; height: auto; display: block; object-fit: contain; }
 
         .meta { margin-top: 15px; }
         .meta strong { 
-            display: block;
-            font-size: 18px; 
-            margin-bottom: 5px; 
-            color: var(--meta-color);
-            font-weight: 400;
+            font-weight: 400; font-size: 18px; color: var(--meta-color); 
+            text-transform: none; display: block;
         }
 
-                .nav-links { display: flex; gap: 20px; }
-        .nav-links a { text-decoration: none; color: var(--text); font-size: 12px; }
-        .nav-links a.active { font-weight: 800; text-decoration: underline; }
-
-        @media (max-width: 800px) {
-            #main-grid { grid-template-columns: repeat(6, 1fr); gap: 60px 15px; }
-            .item-obra { grid-column: span 6 !important; transform: none !important; padding: 0 !important; }
+        @media (max-width: 768px) {
+            #main-grid { display: flex; flex-direction: column; gap: 80px; padding: 20px; }
+            .item-obra { width: 100% !important; margin-top: 0 !important; }
         }
     </style>
-    
-      <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-  />
-    
 </head>
 <body>
 
-<div id="site-wrapper">
-    <header>
-        <h1>Pedro Gallego</h1>
-    <div class="nav-links" style="flex: 1; justify-content: flex-end;">
-        <a href="index.html" class="active">obras</a>
-        <a href="cv.html">cv</a>
-        <a href="info.html">info</a>
+<header id="site-header">
+    <a href="index.html" style="text-decoration:none; color:inherit;"><h1 style="margin-left: -2px; ">Pedro Gallego</h1></a>
+    <div style="display:flex; gap:20px; align-items:center;">
+        <nav style="display:flex; gap:32px; text-transform:uppercase; font-size:18px; ">
+            <a href="index.html" style="font-weight:500; color:inherit; text-decoration:none; filter: opacity(50%);">obras</a>
+            <a href="cv.html" style="color:inherit; text-decoration:none;">cv</a>
+            <a href="#" style="color:inherit; text-decoration:none;">info</a>
+        </nav>
     </div>
-    </header>
-    
-        <section id="theme-editor">
-        <label class="color-control">
-            --bg <span id="val--bg" class="hex-preview">#ecece9</span>
-            <input type="color" value="#ecece9" oninput="updateTheme('--bg', this.value)">
-        </label>
-        <div class="animate__hinge"> 
-        <label class="color-control"> 
-            --text <span id="val--text" class="hex-preview">#0f0f0f</span>
-            <input type="color" value="#0f0f0f" oninput="updateTheme('--text', this.value)">
-        </label></div>
-        <label class="color-control">
-            --border <span id="val--border" class="hex-preview">#000000</span>
-            <input type="color" value="#000000" oninput="updateTheme('--border', this.value)">
-        </label>
-        <div class="animate__hinge">
-        <label class="color-control">
-            --meta-color <span id="val--meta-color" class="hex-preview">#948a8d</span>
-            <input type="color" value="#948a8d" oninput="updateTheme('--meta-color', this.value)">
-        </label></div>
-    </section> 
-    
-    <main id="main-grid"></main>
-</div>
+</header>
+
+<main id="main-grid"></main>
 
 <script>
-const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
-const IMG_BASE = "https://umpedrogallego.github.io/site/img/";
-const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
+    const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
+    const THUMB_BASE = "https://umpedrogallego.github.io/site/thumb/";
+    const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
 
-let listaAgrupada = [];
+    const slotClasses = ['slot-1', 'slot-2', 'slot-3', 'slot-4', 'slot-5'];
 
-// Função de atualização em tempo real [cite: 17, 18]
-function updateTheme(variable, value) {
-    document.documentElement.style.setProperty(variable, value);
-    document.getElementById(`val${variable}`).innerText = value.toUpperCase();
-}
+    async function init() {
+        try {
+            const res = await fetch(URL_JSON);
+            const data = await res.json();
+            
+            // 1. Filtro: Mantém apenas o que deve ser incluído e não é 'N'
+            const dataFiltrada = data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "");
 
-async function init() {
-    try {
-        const res = await fetch(URL_JSON);
-        const data = await res.json();
-        
-        // Filtra se tem imagem ou se a coluna MIDIA tem uma extensão definida
-        const dataFiltrada = data.filter(item => (item.IMG_COUNT && item.IMG_COUNT > 0) || (item.MIDIA && item.MIDIA.length > 2));
-
-        const grupos = {};
-        dataFiltrada.forEach(item => {
-            const chave = (item.SERIE && item.SERIE.trim() !== "") ? item.SERIE : `AVULSO_${item.ID}`;
-            if (!grupos[chave]) grupos[chave] = [];
-            grupos[chave].push(item);
-        });
-
-        listaAgrupada = Object.values(grupos).map(items => ({
-            items: items,
-            destaque: items[0].DESTAQUE || 20,
-            ano: items[0].ANO
-        }));
-
-        listaAgrupada.sort((a,b) => a.destaque - b.destaque || b.ano - a.ano);
-        render();
-    } catch(e) { console.error("Erro no fetch:", e); }
-}
-
-function render() {
-    const grid = document.getElementById('main-grid');
-    let html = '';
-
-    listaAgrupada.forEach((grupo, i) => {
-        if (i > 0 && i % 4 === 0) html += '<div class="spacer"></div>';
-
-        const ref = grupo.items[0];
-        const ratio = ref.W && ref.H ? `style="aspect-ratio: ${ref.W} / ${ref.H}"` : '';
-        
-        let contentHtml = '';
-        let pool = [];
-
-        grupo.items.forEach(obra => {
-            // Processa VÍDEO pela extensão na coluna MIDIA
-            if (obra.MIDIA && obra.MIDIA.trim() !== "") {
-                const ext = obra.MIDIA.toLowerCase().trim();
-                pool.push({
-                    type: 'video',
-                    obra: obra,
-                    // Monta o nome do arquivo: ID + sufixo 'a' + extensão (ex: 13-talking-a.mp4)
-                    fileUrl: `${MIDIA_BASE}${obra.ID}a.${ext}`
-                });
-            }
-
-            // Processa IMAGENS
-            if (obra.IMG_COUNT && obra.IMG_COUNT > 0) {
-                for (let j = 0; j < obra.IMG_COUNT; j++) {
-                    pool.push({
-                        type: 'image',
-                        obra: obra,
-                        fileUrl: `${IMG_BASE}${obra.ID}${String.fromCharCode(97 + j)}.jpg`,
-                        fallback: `${IMG_BASE}${obra.ID}${String.fromCharCode(97 + j)}.avif`
-                    });
-                }
-            }
-        });
-
-        const loops = pool.length > 1 ? 3 : 1;
-        for (let t = 0; t < loops; t++) {
-            pool.forEach(el => {
-                if (el.type === 'video') {
-                    contentHtml += `
-                        <video autoplay muted loop playsinline disablePictureInPicture
-                               data-titulo="${el.obra.TITULO}">
-                            <source src="${el.fileUrl}" type="video/${el.fileUrl.split('.').pop()}">
-                        </video>
-                    `;
-                } else {
-                    contentHtml += `
-                        <img src="${el.fileUrl}" 
-                             loading="lazy" 
-                             data-titulo="${el.obra.TITULO}" 
-                             onerror="this.src='${el.fallback}';this.onerror=function(){this.remove()}">
-                    `;
-                }
+            // 2. Agrupamento por Série: Exibe apenas uma imagem por série (relação consolidada)
+            const grupos = {};
+            dataFiltrada.forEach(item => {
+                const chave = (item.SERIE && item.SERIE.trim() !== "") ? item.SERIE : `SINGLE_${item.ID}`;
+                if (!grupos[chave]) grupos[chave] = [];
+                grupos[chave].push(item);
             });
+
+            // 3. Mapeamento para o Grid: Lê DESTAQUE e SLOT diretamente do JSON
+            const obras = Object.values(grupos).map(items => {
+                const ref = items[0];
+                return {
+                    titulo: (ref.SERIE && ref.SERIE !== "") ? ref.SERIE : ref.TITULO,
+                    destaque: parseInt(ref.DESTAQUE),
+                    // Converte o SLOT da planilha (1-5) para o índice do array (0-4)
+                    slotIdx: ref.SLOT ? (parseInt(ref.SLOT) - 1) : 0,
+                    ref: ref
+                };
+            });
+
+            // 4. Ordenação: Segue o índice numérico da coluna DESTAQUE
+            obras.sort((a, b) => a.destaque - b.destaque);
+
+            renderGrid(obras);
+        } catch(e) {
+            console.error("Falha ao carregar obras:", e);
         }
+    } 
 
-        html += `
-            <article class="item-obra">
-                <div class="img-box" ${ratio} onscroll="syncScroll(this)">
-                    ${contentHtml}
-                </div>
-                <div class="meta">
-                    <strong style="font-weight: 600;">${ref.TITULO}</strong>
-                </div>
-            </article>
-        `;
-    });
-    grid.innerHTML = html;
-}
+    function renderGrid(obras) {
+        const grid = document.getElementById('main-grid');
+        
+        grid.innerHTML = obras.map((obra) => {
+            const ref = obra.ref;
+            const slotClass = slotClasses[obra.slotIdx];
+            
+            // Mantém a proporção exata definida no JSON
+            const ratio = (ref.W && ref.H) ? `style="aspect-ratio: ${ref.W} / ${ref.H}"` : '';
+            
+            // Lógica de Mídia: Vídeo priorizado, Fallback para Thumb AVIF
+            let mediaHtml = "";
+            if (ref.MIDIA && ref.MIDIA.length > 2) {
+                mediaHtml = `<video muted loop playsinline autoplay><source src="${MIDIA_BASE}${ref.ID}a.${ref.MIDIA}" type="video/mp4"></video>`;
+            } else {
+                mediaHtml = `<img src="${THUMB_BASE}${ref.ID}a.avif" loading="lazy" alt="${obra.titulo}">`;
+            }
 
-function syncScroll(el) {
-    const scrollLeft = el.scrollLeft;
-    const scrollWidth = el.scrollWidth;
-    const clientWidth = el.clientWidth;
-    const gap = 8;
-    const setWidth = (scrollWidth + gap) / 3;
-
-    if (scrollLeft <= 5) {
-        el.scrollLeft = setWidth + 5;
-    } else if (scrollLeft + clientWidth >= scrollWidth - 5) {
-        el.scrollLeft = setWidth - clientWidth + 5;
+            return `
+                <article class="item-obra ${slotClass}">
+                    <div class="img-box" ${ratio}>
+                        ${mediaHtml}
+                    </div>
+                    <div class="meta">
+                        <strong>${obra.titulo}</strong>
+                    </div>
+                </article>
+            `;
+        }).join('');
     }
 
-    const contents = Array.from(el.querySelectorAll('img, video'));
-    if (contents.length === 0) return;
-
-    let elAtivo = contents[0];
-    let min = Infinity;
-
-    contents.forEach(item => {
-        const dist = Math.abs(item.offsetLeft - el.scrollLeft);
-        if (dist < min) {
-            min = dist;
-            elAtivo = item;
-        }
-    });
-
-    const novoTitulo = elAtivo.getAttribute('data-titulo');
-    const strong = el.nextElementSibling.querySelector('strong');
-    if (strong && strong.innerText !== novoTitulo) {
-        strong.innerText = novoTitulo;
-    }
-}
-
-init();
+    init();
 </script>
 </body>
 </html>
