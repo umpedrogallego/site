@@ -15,53 +15,7 @@
             font-family: 'Martian Mono', monospace; background-color: var(--bg); color: var(--text); 
             -webkit-font-smoothing: antialiased;
         }
-
-        /* --- HUD MESA DE LUZ (RETRÁTIL E COMPACTO) --- */
-        #hud-wrapper {
-            max-height: 0; overflow: hidden;
-            border-bottom: 0px solid var(--border);
-            transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            position: sticky; top: 0; z-index: 99999;
-        }
-        #hud-wrapper.open { max-height: 90vh; max-width: 640px;}
-
-        #hud-content { padding: 30px 40px; display: flex; flex-direction: column; gap: 15px;}
-        .hud-scroll { 
-            overflow-y: auto; max-height: 45vh; border: 1px solid var(--border); 
-            background: #fff;
-        }
         
-        /* Zebra-striping para visualização */
-        .work-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 6px 15px; border-bottom: 1px solid #eee; font-size: 13px;
-        }
-        .work-row:nth-child(even) { background: rgba(0,0,0,0.03); }
-        
-        .order-controls { display: flex; gap: 6px; align-items: center; }
-
-        .btn-ui { 
-            padding: 4px 8px; border: 1px solid var(--border); background: var(--bg); 
-            font-family: inherit; font-size: 18px; cursor: pointer; text-transform: uppercase;
-        }
-        .btn-ui:hover, .btn-ui.active { background: var(--text); color: var(--bg); }
-
-.btn-export { background: #000 !important; color: #fff !important; font-weight: 600; margin-left: 10px; }
-#export-feedback { display: inline-block; margin-left: 10px; vertical-align: middle; }
-
-        /* Input Numérico Customizado */
-        .input-order {
-            width: 45px; border: 1px solid var(--border); padding: 6px 3px;
-            font-family: inherit; font-size: 15px; text-align: center;
-        }
-        
-        /* Slots com Desalinhamento Superior */
-        .slot-1 { grid-column: span 5; margin-top: 0px; }
-        .slot-2 { grid-column: span 4; margin-top: 60px; }
-        .slot-3 { grid-column: span 3; margin-top: 100px; }
-        .slot-4 { grid-column: span 5; margin-top: 30px; }
-        .slot-5 { grid-column: span 7; margin-top: 80px; }
-
         /* --- HEADER --- */
         header {
     padding: 40px; 
@@ -94,13 +48,23 @@
 
         .meta { margin-top: 15px; }
         .meta strong { 
-            font-weight: 400; font-size: 18px; color: var(--meta-color); 
-            text-transform: none; display: block;
+            font-weight: 400; font-size: clamp(12px, 1.3vw, 16px); letter-spacing: -1px; color: var(--meta-color); 
+            text-transform: none; display: block; margin-left: 12px;
         }
+
+
+        /* Slots com Desalinhamento Superior */
+        .slot-1 { grid-column: span 5; margin-top: 0px; }
+        .slot-2 { grid-column: span 4; margin-top: 60px; }
+        .slot-3 { grid-column: span 3; margin-top: 100px; }
+        .slot-4 { grid-column: span 5; margin-top: 30px; }
+        .slot-5 { grid-column: span 7; margin-top: 80px; }
+
 
         @media (max-width: 768px) {
             #main-grid { display: flex; flex-direction: column; gap: 80px; padding: 20px; }
             .item-obra { width: 100% !important; margin-top: 0 !important; }
+            .meta strong {letter-spacing: 0.1px;}
         }
     </style>
 </head>
