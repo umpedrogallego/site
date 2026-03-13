@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedro Gallego — MESA DE LUZ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ecece9; --text: #0f0f0f; --border: #000;
+            --meta-color: #948a8d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Martian Mono', monospace; background-color: var(--bg); color: var(--text); 
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Slots com Desalinhamento Superior */
+        .slot-1 { grid-column: span 5; margin-top: 0px; }
+        .slot-2 { grid-column: span 4; margin-top: 60px; }
+        .slot-3 { grid-column: span 3; margin-top: 100px; }
+        .slot-4 { grid-column: span 5; margin-top: 30px; }
+        .slot-5 { grid-column: span 7; margin-top: 80px; }
+
+        /* --- HEADER --- */
+        header {
+    padding: 40px; 
+    max-width: 1400px; /* Mesma do grid */
+    width: 100%;      /* Garante que ele ocupe o espaço disponível até o limite */
+    margin: 0 auto;    /* Centraliza o bloco no eixo horizontal */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-end;
+    background: transparent; 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000;
+            
+        }
+        header h1 { background: white filter: invert(1); font-size: 28px; font-weight: 500; letter-spacing: -1.5px; text-transform: uppercase;}
+
+
+        /* --- GRID 12 COLUNAS --- */
+        #main-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: 120px 30px; padding: 100px 40px; max-width: 1400px; margin: 0 auto;
+            align-items: start;
+        }
+
+        .item-obra { position: relative; display: flex; flex-direction: column; }
+
+        .img-box { width: 100%; display: flex; align-items: flex-start; }
+        .img-box img, .img-box video { width: 100%; height: auto; display: block; object-fit: contain; }
+
+        .meta { margin-top: 15px; }
+        .meta strong { 
+            font-weight: 400; font-size: 18px; color: var(--meta-color); 
+            text-transform: none; display: block;
+        }
+
+        @media (max-width: 768px) {
+            #main-grid { display: flex; flex-direction: column; gap: 80px; padding: 20px; }
+            .item-obra { width: 100% !important; margin-top: 0 !important; }
+        }
+    </style>
+</head>
+<body>
+
+<header id="site-header">
+    <a href="index.html" style="text-decoration:none; color:inherit;"><h1 style="margin-left: -2px; ">Pedro Gallego</h1></a>
+    <div style="display:flex; gap:20px; align-items:center;">
+        <nav style="display:flex; gap:32px; text-transform:uppercase; font-size:18px; ">
+            <a href="#" style="font-weight:500; color:inherit; text-decoration:none; filter: opacity(50%);">obras</a>
+            <a href="#" style="color:inherit; text-decoration:none;">cv</a>
+            <a href="#" style="color:inherit; text-decoration:none;">info</a>
+        </nav>
+    </div>
+</header>
+
+<main id="main-grid"></main>
+
+<script>
+    const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
+    const THUMB_BASE = "https://umpedrogallego.github.io/site/thumb/";
+    const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
+
+    let obras = [];
+    const slotClasses = ['slot-1', 'slot-2', 'slot-3', 'slot-4', 'slot-5'];
+
+    async function init() {
+        try {
+            const res = await fetch(URL_JSON);
+            const data = await res.json();
+            
+            const grupos = {};
+            data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "").forEach(item => {
+                const chave = (item.SERIE && item.SERIE.trim() !== "") ? item.SERIE : `SINGLE_${item.ID}`;
+                if (!grupos[chave]) grupos[chave] = [];
+                grupos[chave].push(item);
+            });
+
+            obras = Object.values(grupos).map((items, i) => ({
+                id: items[0].ID,
+                titulo: (items[0].SERIE && items[0].SERIE !== "") ? items[0].SERIE : items[0].TITULO,
+                midia: items[0].MIDIA,
+                slotIdx: i % 5,
+                ref: items[0]
+            }));
+
+            const saved = localStorage.getItem('pg_mesa_v14');
+            if (saved) obras = JSON.parse(saved);
+
+            refresh();
+        } catch(e) { console.error("Erro JSON:", e); }
+    }
+
+    function refresh() {
+        renderGrid();
+        renderHUD();
+        renderVersions();
+        localStorage.setItem('pg_mesa_v14', JSON.stringify(obras));
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('main-grid');
+        grid.innerHTML = obras.map((obra) => {
+            const ref = obra.ref;
+            const ratio = ref.W && ref.H ? `style="aspect-ratio: ${ref.W} / ${ref.H}"` : '';
+            
+            let media = "";
+            if (ref.MIDIA && ref.MIDIA.length > 2) {
+                media = `<video muted loop playsinline autoplay><source src="${MIDIA_BASE}${ref.ID}a.${ref.MIDIA}" type="video/mp4"></video>`;
+            } else {
+                media = `<img src="${THUMB_BASE}${ref.ID}a.avif" loading="lazy" alt="${obra.titulo}">`;
+            }
+
+            return `
+                <article class="item-obra ${slotClasses[obra.slotIdx]}">
+                    <div class="img-box" ${ratio}>${media}</div>
+                    <div class="meta"><strong>${obra.titulo}</strong></div>
+                </article>
+            `;
+        }).join('');
+    }
+
+    function renderHUD() {
+        const list = document.getElementById('manual-list');
+        list.innerHTML = obras.map((obra, i) => `
+            <div class="work-row">
+                <div style="display:flex; align-items:center; gap:10px; flex:1;">
+                    <input type="number" class="input-order" value="${i + 1}" 
+                           onchange="changePos(${i}, this.value - 1)" min="1" max="${obras.length}">
+                    <span style="font-weight:500;">${obra.titulo}</span>
+                </div>
+                <div class="order-controls">
+                    <div style="margin-left:10px; border-left:1px solid #000; padding-left:10px;">
+                        ${[1,2,3,4,5].map(n => `
+                            <button class="btn-ui ${obra.slotIdx === n-1 ? 'active' : ''}" 
+                                    onclick="setSlot(${i}, ${n-1})">${n}</button>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    /* --- LÓGICA DE REORDENAÇÃO POR NÚMERO --- */
+    function changePos(oldIndex, newIndex) {
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex >= obras.length) newIndex = obras.length - 1;
+        
+        const item = obras.splice(oldIndex, 1)[0];
+        obras.splice(newIndex, 0, item);
+        refresh();
+    }
+
+    function setSlot(index, slotIdx) {
+        obras[index].slotIdx = slotIdx;
+        refresh();
+    }
+
+    function autoBalance() {
+        obras.sort(() => Math.random() - 0.5);
+        obras.forEach(o => o.slotIdx = Math.floor(Math.random() * 5));
+        refresh();
+    }
+
+    /* --- HUD BEHAVIOR --- */
+    function toggleHUD() {
+        document.getElementById('hud-wrapper').classList.toggle('open');
+    }
+
+    // Tecla ESC para abrir e fechar
+    window.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") toggleHUD();
+    });
+
+    /* --- VERSÕES --- */
+    function saveVersion() {
+        let v = JSON.parse(localStorage.getItem('pg_v_v14') || "[]");
+        if (v.length >= 4) v.shift();
+        v.push({ name: `V${v.length+1}`, data: JSON.parse(JSON.stringify(obras)) });
+        localStorage.setItem('pg_v_v14', JSON.stringify(v));
+        renderVersions();
+    }
+
+    function renderVersions() {
+        const list = document.getElementById('version-list');
+        const v = JSON.parse(localStorage.getItem('pg_v_v14') || "[]");
+        list.innerHTML = v.map((item, i) => `<button class="btn-ui" onclick="loadVersion(${i})">${item.name}</button>`).join('');
+    }
+
+    function loadVersion(i) {
+        obras = JSON.parse(localStorage.getItem('pg_v_v14'))[i].data;
+        refresh();
+    }
+    
+    function exportToSheets() {
+    // Cabeçalho para facilitar a identificação no Sheets
+    let output = "DESTAQUE\tSLOT\n"; 
+    
+    obras.forEach((obra, index) => {
+        // index + 1 é a nova ordem (DESTAQUE)
+        // slotIdx + 1 é o número do slot (1 a 5)
+        output += `${index + 1}\t${obra.slotIdx + 1}\n`;
+    });
+
+    navigator.clipboard.writeText(output).then(() => {
+        const fb = document.getElementById('export-feedback');
+        fb.style.display = "inline-block";
+        setTimeout(() => fb.style.display = "none", 3000);
+    });
+}
+
+    init();
+</script>
+</body>
+</html>
