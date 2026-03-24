@@ -10,13 +10,13 @@
     <style>
         :root {
             --bg: #ecece9; --text: #0f0f0f; --border: #000;
-            --meta-color: #948a8d; --meta2: #BFFFFF; --font-site: 'Supreme', sans-serif;
+            --meta-color: #948a8d; --meta2: #e5e2e3; --font-site: 'Supreme', sans-serif;
         }
         
         /* Cor de seleção para o site todo */
 ::selection {
-    background-color: #BFFFFF; 
-    color: #008080;
+    background-color: var(--meta-color); 
+    color: var(--meta2);
 }
 /* Para navegadores Mozilla Firefox */
 ::-moz-selection {
@@ -42,7 +42,7 @@
             background: transparent; position: sticky; top: 0; z-index: 1000;
         }
         header a { text-decoration: none; color: inherit; }
-        header h1 { background-color: var(--bg); font-size: 28px; font-weight: 400; letter-spacing: 0px; text-transform: uppercase; }
+        header h1 { font-size: 28px; font-weight: 400; letter-spacing: 0px; text-transform: uppercase; }
         header nav { display: flex; gap: 20px; font-size: 16px; letter-spacing: 0px; font-weight: 400; text-transform: uppercase; }
         header nav a.active { font-weight: 600; }
 
@@ -66,11 +66,11 @@
         .img-box img, .img-box video { width: 100%; height: auto; display: block; object-fit: contain; }
 
         .meta { margin-top: 15px; }
-        .meta strong { font-weight: 400; font-size: 18px; color: var(--meta-color); display: block; letter-spacing:0.4px; }
+        .meta strong { font-weight: 400; font-size: 16px; color: var(--meta-color); display: block; letter-spacing:0.2px; }
 
         /* --- GALERIA V14 (90VW BREAKOUT) --- */
         .galeria-container {
-            grid-column: 1 / -1; width: 90vw; margin-left: calc(50% - 45vw);
+            grid-column: 1 / -1; width: 100vw; margin-left: calc(50% - 36vw);
             padding: 100px 0; display: none; flex-direction: column; gap: 40px;
             animation: fadeIn 0.4s ease-out;
         }
@@ -83,7 +83,7 @@
         /* Scrollbar Estilizada */
         .galeria-media-wrapper::-webkit-scrollbar { height: 3px; }
         .galeria-media-wrapper::-webkit-scrollbar-track { background: transparent; }
-        .galeria-media-wrapper::-webkit-scrollbar-thumb { background: #000; }
+        .galeria-media-wrapper::-webkit-scrollbar-thumb { background: var(--meta-color); }
 
         .galeria-media-wrapper img, .galeria-media-wrapper video { 
             height: 50vh; width: auto; display: block; flex-shrink: 0; 
@@ -99,13 +99,13 @@
 
         /* Ficha Técnica */
         .ficha-tecnica-wrap { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .ficha-tecnica { max-width: 900px; line-height: 1.6;  }
+        .ficha-tecnica { max-width: 80%; line-height: 1.6;  }
         .ficha-tecnica b { font-weight: 700; }
         .ficha-tecnica .primary { font-size: 20px; margin-top: 16px; }
         .ficha-tecnica .secondary { font-size: 16px; letter-spacing: 1.2}
         .ficha-tecnica .extra { font-size: 16px; color: var(--meta-color); letter-spacing: 1.2}
         
-        .sobre-box { margin-top: 20px; font-size: 16px; max-width: 750px; letter-spacing: 1.2; line-height:1.4; }
+        .sobre-box { margin-top: 20px; font-size: 16px; max-width: 750px; letter-spacing: 1.2; line-height:1.4; text-align: left;}
 .btn-leia { 
     display: block; 
     margin-left: auto;
@@ -115,7 +115,7 @@
     padding: 4px 12px; border: 1px solid var(--text);
 }
 
-.btn-leia:hover{ background:var(--meta2); }
+.btn-leia:hover{ background:var(--meta-color); color: var(--meta2); }
 
         @media (max-width: 768px) {
             #main-grid { display: flex; flex-direction: column; padding: 20px; }
@@ -287,6 +287,23 @@
         const preview = hasMore ? sobre.substring(0, brIdx) : sobre;
         const full = hasMore ? sobre.substring(brIdx) : "";
 
+// Função interna para evitar viúvas
+const evitarViuva = (texto) => {
+    if (!texto) return "";
+    const palavras = texto.trim().split(" ");
+    if (palavras.length < 4) return texto; // Não mexe em frases muito curtas
+    
+    const ultima = palavras.pop();
+    const penultima = palavras.pop();
+    
+    // Une a penúltima e a última com um espaço não-quebrável (&nbsp;)
+    return palavras.join(" ") + " " + penultima + "\u00A0" + ultima;
+};
+
+// Aplique a função nas variáveis de texto
+const previewTratado = evitarViuva(preview);
+const fullTratado = evitarViuva(full);
+
 return `
             <div class="ficha-tecnica-wrap">
                 ${menuHtml}
@@ -295,13 +312,13 @@ return `
                     <div class="primary"><b>${ref.TITULO}</b>, ${exibicaoAno}${serieLabel}</div>
                     <div class="secondary">${ref.TECNICA}. ${ref.DIMENSAO}${edicao}</div>
                     ${parceria} ${creditos}
-                    <div class="sobre-box">
-                        <span id="txt-preview">${preview}</span>
-                        <span id="more-text" style="display:none;">${full}</span>
-                        ${hasMore ? `<button class="btn-leia" onclick="expandAbout(this)">🞤</button>` : ''}
-                    </div>
-                </div>
-            </div>
+                <div class="sobre-box" style="border-top: 1px solid var(--meta-color); margin-top: 16px; margin-bottom: -8px;"></div>
+                <div class="sobre-box">
+            <span id="txt-preview">${previewTratado}</span>
+            <span id="more-text" style="display:none;">${fullTratado}</span>
+            ${hasMore ? `<button class="btn-leia" onclick="expandAbout(this)">🞤</button>` : ''}
+        </div>
+    </div>
         `;
     }
 
@@ -326,6 +343,7 @@ function expandAbout(btn) {
     } else {
         moreText.style.display = 'none';
         btn.innerText = '🞤';
+        btn.style.fontSize = '16px';
     }
 }
 
