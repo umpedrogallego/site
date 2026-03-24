@@ -3,46 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro Gallego - v.13</title>
+    <title>Pedro Gallego</title>
 
-<link href="https://api.fontshare.com/v2/css?f[]=supreme@100,101,200,201,300,301,400,401,500,501,700,701,800,801&display=swap" rel="stylesheet">
-
+    <link href="https://api.fontshare.com/v2/css?f[]=supreme@100,101,200,201,300,301,400,401,500,501,700,701,800,801&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --bg: #ecece9; --text: #0f0f0f; --border: #000;
-            --meta-color: #948a8d; --font-site: 'Supreme', sans-serif;
+            --meta-color: #948a8d; --meta2: #BFFFFF; --font-site: 'Supreme', sans-serif;
         }
+        
+        /* Cor de seleção para o site todo */
+::selection {
+    background-color: #BFFFFF; 
+    color: #008080;
+}
+/* Para navegadores Mozilla Firefox */
+::-moz-selection {
+    background-color: #BFFFFF; 
+    color: #008080;
+}
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body { 
             font-family: var(--font-site); background-color: var(--bg); color: var(--text); 
             -webkit-font-smoothing: antialiased;
+            font-size: clamp(16px, 0.9vw + 13.1px, 24px);
+            letter-spacing: clamp(-0.8px, -0.06vw - 0.12px, -0.2px);
+            overflow-x: hidden;
         }
-        
-        .font-selector-wrap {
-    position: fixed; bottom: 20px; right: 20px; z-index: 99999;
-}
-.font-selector-wrap select {
-    font-family: inherit; font-size: 10px; padding: 5px; border: 1px solid #000; background: #fff; cursor: pointer;
-}
-        
-        /* --- HEADER --- */
-        header {
-    padding: 40px; 
-    max-width: 1400px; /* Mesma do grid */
-    width: 100%;      /* Garante que ele ocupe o espaço disponível até o limite */
-    margin: 0 auto;    /* Centraliza o bloco no eixo horizontal */
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-end;
-    background: transparent; 
-    position: sticky; 
-    top: 0; 
-    z-index: 1000;
-            
-        }
-        header h1 { background: white filter: invert(1); font-size: 38px; font-weight: 550; letter-spacing: -1px; text-transform: uppercase;}
 
+        /* --- HEADER (ESTILO V13) --- */
+        header {
+            padding: 8px 40px 0px 38px; 
+            max-width: 1400px; width: 100%; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: baseline;
+            background: transparent; position: sticky; top: 0; z-index: 1000;
+        }
+        header a { text-decoration: none; color: inherit; }
+        header h1 { background-color: var(--bg); font-size: 28px; font-weight: 400; letter-spacing: 0px; text-transform: uppercase; }
+        header nav { display: flex; gap: 20px; font-size: 16px; letter-spacing: 0px; font-weight: 400; text-transform: uppercase; }
+        header nav a.active { font-weight: 600; }
 
         /* --- GRID 12 COLUNAS --- */
         #main-grid {
@@ -51,50 +53,87 @@
             align-items: start;
         }
 
-        .item-obra { position: relative; display: flex; flex-direction: column; }
-
-        .img-box { width: 100%; display: flex; align-items: flex-start; }
-        .img-box img, .img-box video { width: 100%; height: auto; display: block; object-fit: contain; }
-
-        .meta { margin-top: 15px; }
-        .meta strong { 
-            font-weight: 500; font-size: clamp(13px, 0.9vw + 10.1px, 24px); letter-spacing: clamp(-0.8px, -0.06vw - 0.12px, -0.2px); color: var(--meta-color); 
-            text-transform: none; display: block; margin-left: 12px;
-        }
-
-
-        /* Slots com Desalinhamento Superior */
-        .slot-1 { grid-column: span 5; margin-top: -15px; }
+        .item-obra { position: relative; display: flex; flex-direction: column; cursor: pointer; }
+        
+        /* Slots - Anti-Layout */
+        .slot-1 { grid-column: span 5; margin-top: 0px; }
         .slot-2 { grid-column: span 4; margin-top: 60px; }
         .slot-3 { grid-column: span 3; margin-top: 100px; }
         .slot-4 { grid-column: span 5; margin-top: 30px; }
         .slot-5 { grid-column: span 7; margin-top: 80px; }
 
+        .img-box { width: 100%; display: flex; align-items: flex-start; }
+        .img-box img, .img-box video { width: 100%; height: auto; display: block; object-fit: contain; }
+
+        .meta { margin-top: 15px; }
+        .meta strong { font-weight: 400; font-size: 18px; color: var(--meta-color); display: block; letter-spacing:0.4px; }
+
+        /* --- GALERIA V14 (90VW BREAKOUT) --- */
+        .galeria-container {
+            grid-column: 1 / -1; width: 90vw; margin-left: calc(50% - 45vw);
+            padding: 100px 0; display: none; flex-direction: column; gap: 40px;
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .galeria-media-wrapper {
+            display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px;
+            scroll-behavior: smooth;
+        }
+        /* Scrollbar Estilizada */
+        .galeria-media-wrapper::-webkit-scrollbar { height: 3px; }
+        .galeria-media-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .galeria-media-wrapper::-webkit-scrollbar-thumb { background: #000; }
+
+        .galeria-media-wrapper img, .galeria-media-wrapper video { 
+            height: 50vh; width: auto; display: block; flex-shrink: 0; 
+        }
+
+        /* Mini-Menu de Série */
+        .serie-nav { display: flex; gap: 10px; font-size: 12px; margin-bottom: 10px; }
+        .serie-nav button { 
+            background: none; border: none; font-family: inherit; cursor: pointer; 
+            padding: 0; color: var(--text); opacity: 0.4; transition: 0.2s;
+        }
+        .serie-nav button:hover, .serie-nav button.active { opacity: 1; font-weight: 800; }
+
+        /* Ficha Técnica */
+        .ficha-tecnica-wrap { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+        .ficha-tecnica { max-width: 900px; line-height: 1.6;  }
+        .ficha-tecnica b { font-weight: 700; }
+        .ficha-tecnica .primary { font-size: 20px; margin-top: 16px; }
+        .ficha-tecnica .secondary { font-size: 16px; letter-spacing: 1.2}
+        .ficha-tecnica .extra { font-size: 16px; color: var(--meta-color); letter-spacing: 1.2}
+        
+        .sobre-box { margin-top: 20px; font-size: 16px; max-width: 750px; letter-spacing: 1.2; line-height:1.4; }
+.btn-leia { 
+    display: block; 
+    margin-left: auto;
+    background: none; border: none; font-family: inherit; font-size: 16px; 
+    font-weight: 600; cursor: pointer;
+    text-decoration: none; margin-top: 10px; white-space: pre-line;
+    padding: 4px 12px; border: 1px solid var(--text);
+}
+
+.btn-leia:hover{ background:var(--meta2); }
 
         @media (max-width: 768px) {
-            #main-grid { flex-direction: column; gap: 8px; padding: 6px; }
-            .item-obra { width: 100% !important; margin-bottom: 38px;}
-            .meta strong { font-size: 0; }
-        .slot-1 { grid-column: span 4; margin-top: -10px; }
-        .slot-2 { grid-column: span 4; margin-top: 10px; }
-        .slot-3 { grid-column: span 4; margin-top: 15px; }
-        .slot-4 { grid-column: span 4; margin-top: 20px; }
-        .slot-5 { grid-column: span 8; margin-top: 0px; }
+            #main-grid { display: flex; flex-direction: column; padding: 20px; }
+            .item-obra { width: 100% !important; margin-top: 0 !important; }
+            .galeria-container { width: 100%; margin-left: 0; }
+            .ficha-tecnica-wrap { padding: 0 20px; }
         }
     </style>
 </head>
-<body>
+<body onclick="closeAllGalleries(event)">
 
 <header id="site-header">
-    <a href="index.html" style="text-decoration:none; color:inherit;"><h1 style="margin-left: -2px; ">Pedro Gallego</h1></a>
-    <div style="display:flex; gap:20px; align-items:center;">
-        
-        <nav style="display:flex; gap:32px; text-transform:uppercase; font-size:18px; ">
-            <a href="index.html" style="font-weight:500; color:inherit; text-decoration:none; filter: opacity(50%);">obras</a>
-            <a href="cv.html" style="color:inherit; text-decoration:none;">cv</a>
-            <a href="#" style="color:inherit; text-decoration:none;">info</a>
-        </nav>
-    </div>
+    <a href="index.html"><h1>Pedro Gallego</h1></a>
+    <nav>
+        <a href="index.html" class="active">obras</a>
+        <a href="cv.html">cv</a>
+        <a href="info.html">info</a>
+    </nav>
 </header>
 
 <main id="main-grid"></main>
@@ -104,77 +143,208 @@
     const THUMB_BASE = "https://umpedrogallego.github.io/site/thumb/";
     const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
 
+    const slotSpans = [5, 4, 3, 5, 7];
     const slotClasses = ['slot-1', 'slot-2', 'slot-3', 'slot-4', 'slot-5'];
+
+    let fullData = []; // Tudo o que está no JSON filtrado
+    let gridWorks = []; // Apenas a primeira obra de cada série para o grid
+    let currentOpenID = null;
 
     async function init() {
         try {
             const res = await fetch(URL_JSON);
             const data = await res.json();
             
-            // 1. Filtro: Mantém apenas o que deve ser incluído e não é 'N'
-            const dataFiltrada = data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "");
+            // 1. Filtro e Ordenação
+            fullData = data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "");
+            fullData.sort((a, b) => parseInt(a.DESTAQUE) - parseInt(b.DESTAQUE));
 
-            // 2. Agrupamento por Série: Exibe apenas uma imagem por série (relação consolidada)
-            const grupos = {};
-            dataFiltrada.forEach(item => {
-                const chave = (item.SERIE && item.SERIE.trim() !== "") ? item.SERIE : `SINGLE_${item.ID}`;
-                if (!grupos[chave]) grupos[chave] = [];
-                grupos[chave].push(item);
+            // 2. Agrupamento por Série (Apenas um card por série no grid)
+            const seenSeries = new Set();
+            gridWorks = fullData.filter(obra => {
+                if (obra.SERIE && obra.SERIE.trim() !== "") {
+                    if (seenSeries.has(obra.SERIE)) return false;
+                    seenSeries.add(obra.SERIE);
+                    return true;
+                }
+                return true;
             });
 
-            // 3. Mapeamento para o Grid: Lê DESTAQUE e SLOT diretamente do JSON
-            const obras = Object.values(grupos).map(items => {
-                const ref = items[0];
-                return {
-                    titulo: (ref.SERIE && ref.SERIE !== "") ? ref.SERIE : ref.TITULO,
-                    destaque: parseInt(ref.DESTAQUE),
-                    // Converte o SLOT da planilha (1-5) para o índice do array (0-4)
-                    slotIdx: ref.SLOT ? (parseInt(ref.SLOT) - 1) : 0,
-                    ref: ref
-                };
-            });
+            renderGrid();
+        } catch(e) { console.error("Erro no carregamento:", e); }
+    }
 
-            // 4. Ordenação: Segue o índice numérico da coluna DESTAQUE
-            obras.sort((a, b) => a.destaque - b.destaque);
-
-            renderGrid(obras);
-        } catch(e) {
-            console.error("Falha ao carregar obras:", e);
-        }
-    } 
-
-    function renderGrid(obras) {
+    function renderGrid() {
         const grid = document.getElementById('main-grid');
-        
-        grid.innerHTML = obras.map((obra) => {
-            const ref = obra.ref;
-            const slotClass = slotClasses[obra.slotIdx];
+        grid.innerHTML = gridWorks.map((obra, i) => {
+            const slotIdx = obra.SLOT ? (parseInt(obra.SLOT) - 1) : (i % 5);
+            const ratio = (obra.W && obra.H) ? `style="aspect-ratio: ${obra.W} / ${obra.H}"` : '';
             
-            // Mantém a proporção exata definida no JSON
-            const ratio = (ref.W && ref.H) ? `style="aspect-ratio: ${ref.W} / ${ref.H}"` : '';
-            
-            // Lógica de Mídia: Vídeo priorizado, Fallback para Thumb AVIF
-            let mediaHtml = "";
-            if (ref.MIDIA && ref.MIDIA.length > 2) {
-                mediaHtml = `<video muted loop playsinline autoplay><source src="${MIDIA_BASE}${ref.ID}a.${ref.MIDIA}" type="video/mp4"></video>`;
-            } else {
-                mediaHtml = `<img src="${THUMB_BASE}${ref.ID}a.avif" loading="lazy" alt="${obra.titulo}">`;
-            }
+            let media = (obra.MIDIA && obra.MIDIA.length > 2) ? 
+                `<video muted loop playsinline autoplay><source src="${MIDIA_BASE}${obra.ID}a.${obra.MIDIA}" type="video/mp4"></video>` :
+                `<img src="${THUMB_BASE}${obra.ID}a.avif" loading="lazy">`;
 
             return `
-                <article class="item-obra ${slotClass}">
-                    <div class="img-box" ${ratio}>
-                        ${mediaHtml}
-                    </div>
-                    <div class="meta">
-                        <strong>${obra.titulo}</strong>
-                    </div>
+                <article class="item-obra ${slotClasses[slotIdx]}" id="anchor-${obra.ID}" onclick="handleWorkClick('${obra.ID}', event)">
+                    <div class="img-box" ${ratio}>${media}</div>
+                    <div class="meta"><strong>${obra.SERIE || obra.TITULO}</strong></div>
                 </article>
             `;
         }).join('');
     }
 
+    function handleWorkClick(id, e) {
+        e.stopPropagation();
+        if (currentOpenID === id) { closeGallery(); return; }
+        if (currentOpenID) closeGallery();
+        openGallery(id);
+    }
+
+    function openGallery(id) {
+        currentOpenID = id;
+        const mainObra = gridWorks.find(o => o.ID === id);
+        
+        // Identificar todas as obras da série (ou apenas ela mesma)
+        const serieObras = mainObra.SERIE ? fullData.filter(o => o.SERIE === mainObra.SERIE) : [mainObra];
+
+        // Lógica de Soma de Spans para Inserção
+        let currentSum = 0;
+        let anchorID = id;
+        const targetIdx = gridWorks.findIndex(o => o.ID === id);
+
+        for (let i = 0; i < gridWorks.length; i++) {
+            const span = slotSpans[gridWorks[i].SLOT ? parseInt(gridWorks[i].SLOT)-1 : i%5];
+            currentSum += span;
+            if (i >= targetIdx && currentSum % 12 === 0) {
+                anchorID = gridWorks[i].ID;
+                break;
+            }
+            if (i === gridWorks.length - 1) anchorID = gridWorks[i].ID;
+        }
+
+        const anchorEl = document.getElementById(`anchor-${anchorID}`);
+        const galContainer = document.createElement('div');
+        galContainer.className = 'galeria-container';
+        galContainer.id = 'active-gallery';
+        galContainer.style.display = 'flex';
+        
+        galContainer.innerHTML = buildGalleryHTML(serieObras);
+        anchorEl.after(galContainer);
+
+        // Scroll into view (topo da galeria na base do header)
+        const headerH = document.getElementById('site-header').offsetHeight;
+        const galTop = galContainer.getBoundingClientRect().top + window.pageYOffset + 80;
+        window.scrollTo({ top: galTop - headerH, behavior: 'smooth' });
+    }
+
+    function buildGalleryHTML(obras) {
+        let mediaHtml = "";
+        let menuHtml = obras.length > 1 ? `<div class="serie-nav">` : "";
+        
+        obras.forEach((o, idx) => {
+            const obraID_DOM = `media-${o.ID}`;
+            if (obras.length > 1) {
+                menuHtml += `<button onclick="scrollToMedia('${obraID_DOM}', this)">[${String(idx+1).padStart(2,'0')}]</button>`;
+            }
+
+            // Primeira mídia (Vídeo ou Thumb A)
+            if (o.MIDIA && o.MIDIA.length > 2) {
+                mediaHtml += `<video id="${obraID_DOM}" muted loop playsinline autoplay><source src="${MIDIA_BASE}${o.ID}a.${o.MIDIA}" type="video/mp4"></video>`;
+            } else {
+                mediaHtml += `<img id="${obraID_DOM}" src="${THUMB_BASE}${o.ID}a.avif">`;
+            }
+
+            // Fotos Extras (b, c, d...)
+            const count = parseInt(o.IMG_COUNT) || 1;
+            const letters = ['b', 'c', 'd', 'e', 'f', 'g'];
+            for (let j = 0; j < count - 1; j++) {
+                mediaHtml += `<img src="${THUMB_BASE}${o.ID}${letters[j]}.avif">`;
+            }
+        });
+        if (obras.length > 1) menuHtml += `</div>`;
+
+// Ficha Técnica (Usa a primeira obra como referência de série ou a obra única)
+        const ref = obras[0];
+        
+        // Tratamento da data com hífen isolado (USANDO 'ref' e NÃO 'o')
+        let exibicaoAno = ref.ANO || "";
+        if (ref.FIM === "-") {
+            exibicaoAno += "–"; 
+        } else if (ref.FIM) {
+            exibicaoAno += `–${ref.FIM}`;
+        }
+
+        // Correção das variáveis (garantindo que não quebrem o JS se estiverem vazias)
+        const serieLabel = (ref.SERIE && ref.SERIE.trim() !== "") ? `, série ${ref.SERIE}` : '';
+        const edicao = (ref.EDICAO && ref.EDICAO.trim() !== "") ? `, ${ref.EDICAO}` : '';
+        const parceria = (ref.PARCERIA && ref.PARCERIA.trim() !== "") ? `<div class="extra">Em parceria com ${ref.PARCERIA}</div>` : '';
+        const creditos = (ref.CREDITOS && ref.CREDITOS.trim() !== "") ? `<div class="extra">Foto: ${ref.CREDITOS}</div>` : '';
+
+// Lógica do Texto SOBRE - Corte exclusivo pelo primeiro <br>
+        const sobre = ref.SOBRE || "";
+        const brIdx = sobre.indexOf('<br>');
+        const hasMore = brIdx !== -1;
+        const preview = hasMore ? sobre.substring(0, brIdx) : sobre;
+        const full = hasMore ? sobre.substring(brIdx) : "";
+
+return `
+            <div class="ficha-tecnica-wrap">
+                ${menuHtml}
+                <div class="galeria-media-wrapper" id="gal-scroll">${mediaHtml}</div>
+                <div class="ficha-tecnica">
+                    <div class="primary"><b>${ref.TITULO}</b>, ${exibicaoAno}${serieLabel}</div>
+                    <div class="secondary">${ref.TECNICA}. ${ref.DIMENSAO}${edicao}</div>
+                    ${parceria} ${creditos}
+                    <div class="sobre-box">
+                        <span id="txt-preview">${preview}</span>
+                        <span id="more-text" style="display:none;">${full}</span>
+                        ${hasMore ? `<button class="btn-leia" onclick="expandAbout(this)">🞤</button>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function scrollToMedia(id, btn) {
+        event.stopPropagation();
+        const el = document.getElementById(id);
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        
+        const btns = btn.parentNode.querySelectorAll('button');
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+function expandAbout(btn) {
+    event.stopPropagation();
+    const moreText = document.getElementById('more-text');
+    
+    if (moreText.style.display === 'none' || moreText.style.display === '') {
+        moreText.style.display = 'inline';
+        btn.innerText = '⛌';
+        btn.style.fontSize = '12px';
+    } else {
+        moreText.style.display = 'none';
+        btn.innerText = '🞤';
+    }
+}
+
+    function closeGallery() {
+        const gal = document.getElementById('active-gallery');
+        if (gal) gal.remove();
+        currentOpenID = null;
+    }
+
+    function closeAllGalleries(e) {
+        if (currentOpenID && !e.target.closest('.galeria-container') && !e.target.closest('.item-obra')) {
+            closeGallery();
+        }
+    }
+
+    window.addEventListener('keydown', (e) => { if (e.key === "Escape") closeGallery(); });
+
     init();
 </script>
+
 </body>
 </html>
