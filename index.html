@@ -72,14 +72,22 @@
         .galeria-container {
             grid-column: 1 / -1; width: 100vw; margin-left: calc(50% - 36vw);
             padding: 100px 0; display: none; flex-direction: column; gap: 40px;
-            animation: fadeIn 0.4s ease-out;
+            animation: fadeIn 0.4s ease-out; 
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .galeria-media-wrapper {
             display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px;
             scroll-behavior: smooth;
+            padding-right: 40px;
         }
+        
+        .galeria-media-wrapper::after {
+    content: "";
+    flex: 0 0 24vw; 
+    height: 1px;
+}
+        
         /* Scrollbar Estilizada */
         .galeria-media-wrapper::-webkit-scrollbar { height: 3px; }
         .galeria-media-wrapper::-webkit-scrollbar-track { background: transparent; }
@@ -99,23 +107,50 @@
 
         /* Ficha Técnica */
         .ficha-tecnica-wrap { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .ficha-tecnica { max-width: 80%; line-height: 1.6;  }
+        .ficha-tecnica { max-width: 80%; line-height: 1.6; position: relative; }
         .ficha-tecnica b { font-weight: 700; }
         .ficha-tecnica .primary { font-size: 20px; margin-top: 16px; }
         .ficha-tecnica .secondary { font-size: 16px; letter-spacing: 1.2}
         .ficha-tecnica .extra { font-size: 16px; color: var(--meta-color); letter-spacing: 1.2}
-        
-        .sobre-box { margin-top: 20px; font-size: 16px; max-width: 750px; letter-spacing: 1.2; line-height:1.4; text-align: left;}
-.btn-leia { 
-    display: block; 
-    margin-left: auto;
-    background: none; border: none; font-family: inherit; font-size: 16px; 
-    font-weight: 600; cursor: pointer;
-    text-decoration: none; margin-top: 10px; white-space: pre-line;
-    padding: 4px 12px; border: 1px solid var(--text);
+ 
+.sobre-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Alinha o botão ao topo da primeira linha de texto */
+    gap: 30px; /* Espaço fixo entre texto e botão */
+    margin-top: 20px;
+    max-width: 750px; /* Largura total da ficha técnica */
 }
 
-.btn-leia:hover{ background:var(--meta-color); color: var(--meta2); }
+.sobre-box { 
+    flex: 1; /* Ocupa todo o espaço disponível à esquerda */
+    max-width: 750px; /* Mantém sua largura máxima de leitura */
+    font-size: 16px; 
+    letter-spacing: 1.2; 
+    line-height: 1.4; 
+    text-align: left;
+    white-space: pre-line;
+    margin-top: -20px; /* Margem agora controlada pelo container pai */
+    padding-top: 0;
+    border-top: none;
+    white-space: pre-line;
+}
+
+.btn-leia { 
+    flex-shrink: 0; /* Posicionamento fixo em relação à ficha-tecnica */
+    right: 0; /* Alinha à extrema direita da ficha-tecnica */
+    bottom: 0; /* Alinha à base da área da ficha técnica */
+    display: block; 
+    margin-left: auto;
+    background: white; color: var(--meta-color); border: none;
+    font-family: inherit; font-size: 20px; 
+    font-weight: 700; cursor: pointer;
+    text-decoration: none; margin-top: 16px; white-space: pre-line;
+    padding: 4px 12px;
+    margin: 0;
+}
+
+.btn-leia:hover{ background:var(--meta-color); color: white; }
 
         @media (max-width: 768px) {
             #main-grid { display: flex; flex-direction: column; padding: 20px; }
@@ -285,7 +320,7 @@
         const brIdx = sobre.indexOf('<br>');
         const hasMore = brIdx !== -1;
         const preview = hasMore ? sobre.substring(0, brIdx) : sobre;
-        const full = hasMore ? sobre.substring(brIdx) : "";
+        const full = hasMore ? sobre.substring(brIdx).replace(/^(<br\s*\/?>)+/i, '') : "";
 
 // Função interna para evitar viúvas
 const evitarViuva = (texto) => {
@@ -305,21 +340,24 @@ const previewTratado = evitarViuva(preview);
 const fullTratado = evitarViuva(full);
 
 return `
-            <div class="ficha-tecnica-wrap">
-                ${menuHtml}
-                <div class="galeria-media-wrapper" id="gal-scroll">${mediaHtml}</div>
-                <div class="ficha-tecnica">
-                    <div class="primary"><b>${ref.TITULO}</b>, ${exibicaoAno}${serieLabel}</div>
-                    <div class="secondary">${ref.TECNICA}. ${ref.DIMENSAO}${edicao}</div>
-                    ${parceria} ${creditos}
-                <div class="sobre-box" style="border-top: 1px solid var(--meta-color); margin-top: 16px; margin-bottom: -8px;"></div>
+    <div class="ficha-tecnica-wrap">
+        ${menuHtml}
+        <div class="galeria-media-wrapper" id="gal-scroll">${mediaHtml}</div>
+        <div class="ficha-tecnica">
+            <div class="primary"><b>${ref.TITULO}</b>, ${exibicaoAno}${serieLabel}</div>
+            <div class="secondary">${ref.TECNICA}, ${ref.DIMENSAO}${edicao}</div>
+            ${parceria} ${creditos}
+            
+            <div class="sobre-container">
                 <div class="sobre-box">
-            <span id="txt-preview">${previewTratado}</span>
-            <span id="more-text" style="display:none;">${fullTratado}</span>
-            ${hasMore ? `<button class="btn-leia" onclick="expandAbout(this)">🞤</button>` : ''}
+                    <span id="txt-preview">${previewTratado}</span>
+                    <span id="more-text" style="display:none;"><br>${fullTratado}</span>
+                </div>
+                ${hasMore ? `<button class="btn-leia" onclick="expandAbout(this)">+</button>` : ''}
+            </div>
         </div>
     </div>
-        `;
+`;
     }
 
     function scrollToMedia(id, btn) {
@@ -338,12 +376,10 @@ function expandAbout(btn) {
     
     if (moreText.style.display === 'none' || moreText.style.display === '') {
         moreText.style.display = 'inline';
-        btn.innerText = '⛌';
-        btn.style.fontSize = '12px';
+        btn.innerText = '-';
     } else {
         moreText.style.display = 'none';
-        btn.innerText = '🞤';
-        btn.style.fontSize = '16px';
+        btn.innerText = '+';
     }
 }
 
