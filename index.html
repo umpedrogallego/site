@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://umpedrogallego.github.io/site/player.js"></script>
     <title>Pedro Gallego</title>
 
     <link href="https://api.fontshare.com/v2/css?f[]=supreme@100,101,200,201,300,301,400,401,500,501,700,701,800,801&display=swap" rel="stylesheet">
@@ -20,7 +22,7 @@
         }
         
         ::selection { background-color: var(--meta-color); color: var(--meta2); }
-        ::-moz-selection { background-color: #BFFFFF; color: #008080; }
+        ::-moz-selection { background-color: var(--meta-color); color: var(--meta2); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -97,13 +99,22 @@
     height: 1px;
 }
 
-.galeria-media-wrapper img, .galeria-media-wrapper video { 
-    height: 70vh; 
+/* Força imagens, vídeos e o player a manterem seu tamanho original sem empilhar */
+.galeria-media-wrapper img, 
+.galeria-media-wrapper video, 
+devart-player { 
+    height: 60vh; 
     width: auto; 
-    flex-shrink: 0; 
+    display: block; 
+    flex-shrink: 0; /* IMPEDE O EMPILHAMENTO */
 }
 
-
+devart-player {
+    height: 60vh;    /* Mesma altura das imagens */
+    width: auto;     /* Largura baseada no conteúdo */
+    display: block;
+    flex-shrink: 0;  /* Impede que o flexbox esmague o vídeo */
+}
          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
    
         .galeria-media-wrapper::-webkit-scrollbar { display: none; }
@@ -168,6 +179,7 @@
     const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json";
     const THUMB_BASE = "https://umpedrogallego.github.io/site/thumb/";
     const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
+    const PLAYER_BASE = "https://umpedrogallego.github.io/site/player/";
 
     const slotSpans = [5, 4, 3, 5, 7];
     const slotClasses = ['slot-1', 'slot-2', 'slot-3', 'slot-4', 'slot-5'];
@@ -255,77 +267,95 @@
         window.scrollTo({ top: galTop - headerH, behavior: 'smooth' });
     }
 
-    function buildGalleryHTML(obras) {
-        let mediaHtml = "";
-        let menuHtml = obras.length > 1 ? `<div class="serie-nav">` : "";
-        
-        obras.forEach((o, idx) => {
-            const obraID_DOM = `media-${o.ID}`;
-            if (obras.length > 1) {
-                menuHtml += `<button onclick="scrollToMedia('${obraID_DOM}', this)">[${String(idx+1).padStart(2,'0')}]</button>`;
-            }
-            if (o.MIDIA && o.MIDIA.length > 2) {
-                mediaHtml += `<video id="${obraID_DOM}" muted loop playsinline autoplay><source src="${MIDIA_BASE}${o.ID}a.${o.MIDIA}" type="video/mp4"></video>`;
-            } else {
-                mediaHtml += `<img id="${obraID_DOM}" src="${THUMB_BASE}${o.ID}a.avif">`;
-            }
-            const count = parseInt(o.IMG_COUNT) || 1;
-            const letters = ['b', 'c', 'd', 'e', 'f', 'g'];
-            for (let j = 0; j < count - 1; j++) {
-                mediaHtml += `<img src="${THUMB_BASE}${o.ID}${letters[j]}.avif">`;
-            }
-        });
-        if (obras.length > 1) menuHtml += `</div>`;
+function buildGalleryHTML(obras) {
+    let mediaHtml = "";
+    const ref = obras[0]; 
+    const hasPlayer = ref.PLAYER && ref.PLAYER.trim() !== "";
 
-        const ref = obras[0];
-        let exibicaoAno = ref.ANO || "";
-        if (ref.FIM === "-") { exibicaoAno += "–"; } 
-        else if (ref.FIM) { exibicaoAno += `–${ref.FIM}`; }
-
-        const serieLabel = (ref.SERIE && ref.SERIE.trim() !== "") ? `, série ${ref.SERIE}` : '';
-        const edicao = (ref.EDICAO && ref.EDICAO.trim() !== "") ? `, ${ref.EDICAO}` : '';
-        const parceria = (ref.PARCERIA && ref.PARCERIA.trim() !== "") ? `<div class="extra">Em parceria com ${ref.PARCERIA}</div>` : '';
-        const creditos = (ref.CREDITOS && ref.CREDITOS.trim() !== "") ? `<div class="extra">Foto: ${ref.CREDITOS}</div>` : '';
-        
-        const sobre = ref.SOBRE || "";
-        const brIdx = sobre.indexOf('<br>');
-        const hasMore = brIdx !== -1;
-        const preview = hasMore ? sobre.substring(0, brIdx) : sobre;
-        const full = hasMore ? sobre.substring(brIdx).replace(/^(<br\s*\/?>)+/i, '') : "";
-
-        const evitarViuva = (texto) => {
-            if (!texto) return "";
-            const palavras = texto.trim().split(" ");
-            if (palavras.length < 4) return texto;
-            const ultima = palavras.pop();
-            const penultima = palavras.pop();
-            return palavras.join(" ") + " " + penultima + "\u00A0" + ultima;
-        };
-
-        const previewTratado = evitarViuva(preview);
-        const fullTratado = evitarViuva(full);
-
-        return `
-            <div class="galeria-media-wrapper" id="gal-scroll">${mediaHtml}</div>
-            <div class="ficha-tecnica-wrap">
-                ${menuHtml}
-                <div class="ficha-tecnica">
-                    <div class="primary"><b>${ref.TITULO}</b>, ${exibicaoAno}${serieLabel}</div>
-                    <div class="secondary">${ref.TECNICA}, ${ref.DIMENSAO}${edicao}</div>
-                    ${parceria} ${creditos}
-                    <div class="sobre-container">
-                        <div class="sobre-box">
-                            <span id="txt-preview">${previewTratado}</span>
-                            <span id="more-text" style="display:none;"><br>${fullTratado}</span>
-                        </div>
-                        ${hasMore ? `<button class="btn-leia" onclick="expandAbout(this)">[ ... ]</button>` : ''}
-                    </div>
-                </div>
-            </div>
-        `;
+    // 1. Inserção do PLAYER (Prioridade Máxima)
+    if (hasPlayer) {
+        mediaHtml += `<devart-player src="${PLAYER_BASE}${ref.ID}play.mp4" poster="${PLAYER_BASE}${ref.ID}pc.avif" style="margin-right: 20px;"></devart-player>`;
     }
 
-    function scrollToMedia(id, btn) {
+    // 2. Processamento das Mídias
+    obras.forEach((o) => {
+        const obraID_DOM = `media-${o.ID}`;
+        const count = parseInt(o.IMG_COUNT) || 1;
+        let workMediaList = []; // Lista temporária para permitir a inversão
+
+        const isMidiaVideo = (o.MIDIA && o.MIDIA.length > 2);
+
+        // REGRA DE VÍDEO ÚNICO: Se tem PLAYER, ignoramos o vídeo da MIDIA na galeria
+        if (hasPlayer && isMidiaVideo) {
+            // Não adiciona nada para o arquivo 'a' (que seria o vídeo MIDIA)
+        } else if (isMidiaVideo) {
+            // Se NÃO tem PLAYER, o vídeo MIDIA aparece normalmente
+            workMediaList.push(`<video id="${obraID_DOM}" muted loop playsinline autoplay><source src="${MIDIA_BASE}${o.ID}a.${o.MIDIA}" type="video/mp4"></video>`);
+        } else {
+            // Caso padrão: Imagem 'a'
+            workMediaList.push(`<img id="${obraID_DOM}" src="${THUMB_BASE}${o.ID}a.avif">`);
+        }
+
+        // Adiciona mídias extras (b, c, d...)
+        const letters = ['b', 'c', 'd', 'e', 'f', 'g'];
+        for (let j = 0; j < count - 1; j++) {
+            workMediaList.push(`<img src="${THUMB_BASE}${o.ID}${letters[j]}.avif">`);
+        }
+
+        // REGRA DE INVERSÃO: Se a galeria tem PLAYER, inverte a ordem (c, b, a)
+        if (hasPlayer) {
+            workMediaList.reverse();
+        }
+
+        // Junta as mídias da obra atual na string principal
+        mediaHtml += workMediaList.join("");
+    });
+
+    const sobre = ref.SOBRE || "";
+    const brIdx = sobre.indexOf('<br>');
+    const hasMore = brIdx !== -1;
+    const preview = hasMore ? sobre.substring(0, brIdx) : sobre;
+    const full = hasMore ? sobre.substring(brIdx).replace(/^(<br\s*\/?>)+/i, '') : "";
+
+    const evitarViuva = (texto) => {
+        if (!texto) return "";
+        const palavras = texto.trim().split(" ");
+        if (palavras.length < 4) return texto;
+        const ultima = palavras.pop();
+        const penultima = palavras.pop();
+        return palavras.join(" ") + " " + penultima + "\u00A0" + ultima;
+    };
+
+    let menuHtml = obras.length > 1 ? `<div class="serie-nav">` : "";
+    if (obras.length > 1) {
+        obras.forEach((o, idx) => {
+            menuHtml += `<button onclick="scrollToMedia('media-${o.ID}', this)">[${String(idx+1).padStart(2,'0')}]</button>`;
+        });
+        menuHtml += `</div>`;
+    }
+
+    return `
+        <div class="galeria-media-wrapper" id="gal-scroll">
+            ${mediaHtml}
+        </div>
+        <div class="ficha-tecnica-wrap">
+            ${menuHtml}
+            <div class="ficha-tecnica">
+                <div class="primary"><b>${ref.TITULO}</b>, ${ref.ANO}</div>
+                <div class="secondary">${ref.TECNICA}, ${ref.DIMENSAO}</div>
+                <div class="sobre-container">
+                    <div class="sobre-box">
+                        <span id="txt-preview">${evitarViuva(preview)}</span>
+                        <span id="more-text" style="display:none;"><br>${evitarViuva(full)}</span>
+                    </div>
+                    ${hasMore ? `<button class="btn-leia" onclick="expandAbout(this)">[ … ]</button>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function scrollToMedia(id, btn) {
         event.stopPropagation();
         const el = document.getElementById(id);
         el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
@@ -347,11 +377,14 @@
     }
 
     function closeGallery() {
-        const gal = document.getElementById('active-gallery');
-        if (gal) gal.remove();
-        currentOpenID = null;
+    const gal = document.getElementById('active-gallery');
+    if (gal) {
+        // Limpar o conteúdo antes de remover garante que o player de vídeo pare o som imediatamente
+        gal.innerHTML = ""; 
+        gal.remove();
     }
-
+    currentOpenID = null;
+}
     function closeAllGalleries(e) {
         if (currentOpenID && !e.target.closest('.galeria-container') && !e.target.closest('.item-obra')) {
             closeGallery();
