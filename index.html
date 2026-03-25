@@ -70,18 +70,21 @@
     grid-column: 1 / -1;
     width: 100vw;
     margin-left: calc(-50vw + 50%); /* Força o breakout do grid */
-    padding: 160px 0;
+    padding: 40px 0;
     display: none;
     flex-direction: column;
     gap: 40px;
     background: var(--bg);
+    margin-top: -112px;
+    margin-bottom: -60px;
 }
 
 .galeria-media-wrapper {
     display: flex;
     gap: 20px;
     overflow-x: auto;
-    padding-bottom: 15px;
+    margin-bottom: -40px;
+    margin-top: 8px;
     scroll-behavior: smooth;
     /* Alinha o início da primeira imagem com a ficha técnica */
     padding-left: var(--gal-padding);
@@ -95,7 +98,7 @@
 }
 
 .galeria-media-wrapper img, .galeria-media-wrapper video { 
-    height: 50vh; 
+    height: 70vh; 
     width: auto; 
     flex-shrink: 0; 
 }
@@ -114,8 +117,8 @@
 
         .ficha-tecnica-wrap { width: 100%; max-width: 840px; margin: 0 auto; padding: 0; }
         .ficha-tecnica { width: 100%; line-height: 1.6; position: relative; background: var(--bg);}
-        .ficha-tecnica b { font-weight: 700; }
-        .ficha-tecnica .primary { font-size: 20px; margin-top: 16px; }
+        .ficha-tecnica b { font-weight: 500; }
+        .ficha-tecnica .primary { font-size: 20px; margin-top: 16px; letter-spacing: 1.2;}
         .ficha-tecnica .secondary { font-size: 16px; letter-spacing: 1.2; }
         .ficha-tecnica .extra { font-size: 16px; letter-spacing: 1.2; }
  
