@@ -9,20 +9,18 @@
 
     <style>
         :root {
-            --bg: #ecece9; --text: #0f0f0f; --border: #000;
-            --meta-color: #948a8d; --meta2: #e5e2e3; --font-site: 'Supreme', sans-serif;
+            --bg: #ecece9;
+            --text: #0f0f0f;
+            --border: #000;
+            --meta-color: #948a8d;
+            --meta2: #e5e2e3;
+            --font-site: 'Supreme', sans-serif;
+            /* Cálculo do alinhamento: margem do conteúdo centralizado + padding lateral */
+            --gal-padding: max(40px, calc((100vw - 1000px) / 2) + 80px);
         }
         
-        /* Cor de seleção para o site todo */
-::selection {
-    background-color: var(--meta-color); 
-    color: var(--meta2);
-}
-/* Para navegadores Mozilla Firefox */
-::-moz-selection {
-    background-color: #BFFFFF; 
-    color: #008080;
-}
+        ::selection { background-color: var(--meta-color); color: var(--meta2); }
+        ::-moz-selection { background-color: #BFFFFF; color: #008080; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -34,19 +32,19 @@
             overflow-x: hidden;
         }
 
-        /* --- HEADER (ESTILO V13) --- */
         header {
-            padding: 8px 40px 0px 38px; 
-            max-width: 1400px; width: 100%; margin: 0 auto;
+            padding: 8px 40px 0px 38px; max-width: 1400px; width: 100%; margin: 0 auto;
             display: flex; justify-content: space-between; align-items: baseline;
-            background: transparent; position: sticky; top: 0; z-index: 1000;
+            background: transparent; position: sticky; top: 0; z-index: 1;
         }
         header a { text-decoration: none; color: inherit; }
-        header h1 { font-size: 28px; font-weight: 400; letter-spacing: 0px; text-transform: uppercase; }
-        header nav { display: flex; gap: 20px; font-size: 16px; letter-spacing: 0px; font-weight: 400; text-transform: uppercase; }
+        header h1 { font-size: 28px; font-weight: 400; letter-spacing: 0px; text-transform: uppercase; margin-left: 1px;
+        transition: color 0.05s linear;
+        will-change: color; }
+        header nav { display: flex; gap: 20px; font-size: 16px; letter-spacing: 0px; font-weight: 400; text-transform: uppercase;  }
+        header nav a { background: var(--bg); padding: 2px 4px;}
         header nav a.active { font-weight: 600; }
 
-        /* --- GRID 12 COLUNAS --- */
         #main-grid {
             display: grid; grid-template-columns: repeat(12, 1fr);
             gap: 120px 30px; padding: 100px 40px; max-width: 1400px; margin: 0 auto;
@@ -55,49 +53,60 @@
 
         .item-obra { position: relative; display: flex; flex-direction: column; cursor: pointer; }
         
-        /* Slots - Anti-Layout */
         .slot-1 { grid-column: span 5; margin-top: 0px; }
         .slot-2 { grid-column: span 4; margin-top: 60px; }
         .slot-3 { grid-column: span 3; margin-top: 100px; }
         .slot-4 { grid-column: span 5; margin-top: 30px; }
         .slot-5 { grid-column: span 7; margin-top: 80px; }
 
-        .img-box { width: 100%; display: flex; align-items: flex-start; }
+        .img-box { width: 100%; display: flex; align-items: flex-start;}
         .img-box img, .img-box video { width: 100%; height: auto; display: block; object-fit: contain; }
 
-        .meta { margin-top: 15px; }
-        .meta strong { font-weight: 400; font-size: 16px; color: var(--meta-color); display: block; letter-spacing:0.2px; }
+        .meta { padding: 4px 4px 24px 16px; background: var(--bg); z-index: 2000; }
+        .meta strong { font-weight: 400; font-size: 16px; color: var(--meta-color); display: block; letter-spacing:0.12px; }
 
-        /* --- GALERIA V14 (90VW BREAKOUT) --- */
-        .galeria-container {
-            grid-column: 1 / -1; width: 100vw; margin-left: calc(50% - 36vw);
-            padding: 100px 0; display: none; flex-direction: column; gap: 40px;
-            animation: fadeIn 0.4s ease-out; 
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* --- GALERIA V15 (FULL-BLEED) --- */
+.galeria-container {
+    grid-column: 1 / -1;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%); /* Força o breakout do grid */
+    padding: 160px 0;
+    display: none;
+    flex-direction: column;
+    gap: 40px;
+    background: var(--bg);
+}
 
-        .galeria-media-wrapper {
-            display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px;
-            scroll-behavior: smooth;
-            padding-right: 40px;
-        }
-        
-        .galeria-media-wrapper::after {
+.galeria-media-wrapper {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    scroll-behavior: smooth;
+    /* Alinha o início da primeira imagem com a ficha técnica */
+    padding-left: var(--gal-padding);
+}
+
+        /* Spacer invisível permite que a última imagem respire na borda direita */
+.galeria-media-wrapper::after {
     content: "";
-    flex: 0 0 24vw; 
+    flex: 0 0 var(--gal-padding);
     height: 1px;
 }
-        
-        /* Scrollbar Estilizada */
+
+.galeria-media-wrapper img, .galeria-media-wrapper video { 
+    height: 50vh; 
+    width: auto; 
+    flex-shrink: 0; 
+}
+
+
+         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+   
         .galeria-media-wrapper::-webkit-scrollbar { height: 3px; }
         .galeria-media-wrapper::-webkit-scrollbar-track { background: transparent; }
         .galeria-media-wrapper::-webkit-scrollbar-thumb { background: var(--meta-color); }
 
-        .galeria-media-wrapper img, .galeria-media-wrapper video { 
-            height: 50vh; width: auto; display: block; flex-shrink: 0; 
-        }
-
-        /* Mini-Menu de Série */
         .serie-nav { display: flex; gap: 10px; font-size: 12px; margin-bottom: 10px; }
         .serie-nav button { 
             background: none; border: none; font-family: inherit; cursor: pointer; 
@@ -105,58 +114,39 @@
         }
         .serie-nav button:hover, .serie-nav button.active { opacity: 1; font-weight: 800; }
 
-        /* Ficha Técnica */
-        .ficha-tecnica-wrap { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .ficha-tecnica { max-width: 80%; line-height: 1.6; position: relative; }
+        .ficha-tecnica-wrap { width: 100%; max-width: 840px; margin: 0 auto; padding: 0; }
+        .ficha-tecnica { width: 100%; line-height: 1.6; position: relative; background: var(--bg);}
         .ficha-tecnica b { font-weight: 700; }
         .ficha-tecnica .primary { font-size: 20px; margin-top: 16px; }
-        .ficha-tecnica .secondary { font-size: 16px; letter-spacing: 1.2}
-        .ficha-tecnica .extra { font-size: 16px; color: var(--meta-color); letter-spacing: 1.2}
+        .ficha-tecnica .secondary { font-size: 16px; letter-spacing: 1.2; }
+        .ficha-tecnica .extra { font-size: 16px; letter-spacing: 1.2; }
  
-.sobre-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* Alinha o botão ao topo da primeira linha de texto */
-    gap: 30px; /* Espaço fixo entre texto e botão */
-    margin-top: 20px;
-    max-width: 750px; /* Largura total da ficha técnica */
-}
+        .sobre-container {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 30px; margin-left: -1px; margin-top: 20px; margin-bottom:20px; max-width: 840px;
+        }
 
-.sobre-box { 
-    flex: 1; /* Ocupa todo o espaço disponível à esquerda */
-    max-width: 750px; /* Mantém sua largura máxima de leitura */
-    font-size: 16px; 
-    letter-spacing: 1.2; 
-    line-height: 1.4; 
-    text-align: left;
-    white-space: pre-line;
-    margin-top: -20px; /* Margem agora controlada pelo container pai */
-    padding-top: 0;
-    border-top: none;
-    white-space: pre-line;
-}
+        .sobre-box { 
+            flex: 1; max-width: 840px; font-size: 16px; letter-spacing: 1.2; line-height: 1.4; 
+            text-align: left; white-space: pre-line; margin-top: -20px; padding-top: 0; border-top: none;
+        }
 
-.btn-leia { 
-    flex-shrink: 0; /* Posicionamento fixo em relação à ficha-tecnica */
-    right: 0; /* Alinha à extrema direita da ficha-tecnica */
-    bottom: 0; /* Alinha à base da área da ficha técnica */
-    display: block; 
-    margin-left: auto;
-    background: white; color: var(--meta-color); border: none;
-    font-family: inherit; font-size: 20px; 
-    font-weight: 700; cursor: pointer;
-    text-decoration: none; margin-top: 16px; white-space: pre-line;
-    padding: 4px 12px;
-    margin: 0;
-}
+        .btn-leia { 
+            flex-shrink: 0; display: block; margin-left: auto;
+            background: none; color: var(--meta-color); border: none;
+            font-family: inherit; font-size: 20px; font-weight: 400; cursor: pointer;
+            text-decoration: none; padding: 4px 12px; margin: 8px;
+        }
 
-.btn-leia:hover{ background:var(--meta-color); color: white; }
+        .btn-leia:hover { color: var(--text); }
 
         @media (max-width: 768px) {
             #main-grid { display: flex; flex-direction: column; padding: 20px; }
             .item-obra { width: 100% !important; margin-top: 0 !important; }
             .galeria-container { width: 100%; margin-left: 0; }
-            .ficha-tecnica-wrap { padding: 0 20px; }
+            .ficha-tecnica-wrap { padding: 0 40px; }
+            .galeria-media-wrapper { padding-left: 20px; }
+            .galeria-media-wrapper::after { flex: 0 0 20px; }
         }
     </style>
 </head>
@@ -181,8 +171,8 @@
     const slotSpans = [5, 4, 3, 5, 7];
     const slotClasses = ['slot-1', 'slot-2', 'slot-3', 'slot-4', 'slot-5'];
 
-    let fullData = []; // Tudo o que está no JSON filtrado
-    let gridWorks = []; // Apenas a primeira obra de cada série para o grid
+    let fullData = [];
+    let gridWorks = [];
     let currentOpenID = null;
 
     async function init() {
@@ -190,11 +180,9 @@
             const res = await fetch(URL_JSON);
             const data = await res.json();
             
-            // 1. Filtro e Ordenação
             fullData = data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "");
             fullData.sort((a, b) => parseInt(a.DESTAQUE) - parseInt(b.DESTAQUE));
 
-            // 2. Agrupamento por Série (Apenas um card por série no grid)
             const seenSeries = new Set();
             gridWorks = fullData.filter(obra => {
                 if (obra.SERIE && obra.SERIE.trim() !== "") {
@@ -204,7 +192,6 @@
                 }
                 return true;
             });
-
             renderGrid();
         } catch(e) { console.error("Erro no carregamento:", e); }
     }
@@ -238,15 +225,11 @@
     function openGallery(id) {
         currentOpenID = id;
         const mainObra = gridWorks.find(o => o.ID === id);
-        
-        // Identificar todas as obras da série (ou apenas ela mesma)
         const serieObras = mainObra.SERIE ? fullData.filter(o => o.SERIE === mainObra.SERIE) : [mainObra];
 
-        // Lógica de Soma de Spans para Inserção
         let currentSum = 0;
         let anchorID = id;
         const targetIdx = gridWorks.findIndex(o => o.ID === id);
-
         for (let i = 0; i < gridWorks.length; i++) {
             const span = slotSpans[gridWorks[i].SLOT ? parseInt(gridWorks[i].SLOT)-1 : i%5];
             currentSum += span;
@@ -266,9 +249,8 @@
         galContainer.innerHTML = buildGalleryHTML(serieObras);
         anchorEl.after(galContainer);
 
-        // Scroll into view (topo da galeria na base do header)
         const headerH = document.getElementById('site-header').offsetHeight;
-        const galTop = galContainer.getBoundingClientRect().top + window.pageYOffset + 80;
+        const galTop = galContainer.getBoundingClientRect().top + window.pageYOffset + 40;
         window.scrollTo({ top: galTop - headerH, behavior: 'smooth' });
     }
 
@@ -281,15 +263,11 @@
             if (obras.length > 1) {
                 menuHtml += `<button onclick="scrollToMedia('${obraID_DOM}', this)">[${String(idx+1).padStart(2,'0')}]</button>`;
             }
-
-            // Primeira mídia (Vídeo ou Thumb A)
             if (o.MIDIA && o.MIDIA.length > 2) {
                 mediaHtml += `<video id="${obraID_DOM}" muted loop playsinline autoplay><source src="${MIDIA_BASE}${o.ID}a.${o.MIDIA}" type="video/mp4"></video>`;
             } else {
                 mediaHtml += `<img id="${obraID_DOM}" src="${THUMB_BASE}${o.ID}a.avif">`;
             }
-
-            // Fotos Extras (b, c, d...)
             const count = parseInt(o.IMG_COUNT) || 1;
             const letters = ['b', 'c', 'd', 'e', 'f', 'g'];
             for (let j = 0; j < count - 1; j++) {
@@ -298,90 +276,74 @@
         });
         if (obras.length > 1) menuHtml += `</div>`;
 
-// Ficha Técnica (Usa a primeira obra como referência de série ou a obra única)
         const ref = obras[0];
-        
-        // Tratamento da data com hífen isolado (USANDO 'ref' e NÃO 'o')
         let exibicaoAno = ref.ANO || "";
-        if (ref.FIM === "-") {
-            exibicaoAno += "–"; 
-        } else if (ref.FIM) {
-            exibicaoAno += `–${ref.FIM}`;
-        }
+        if (ref.FIM === "-") { exibicaoAno += "–"; } 
+        else if (ref.FIM) { exibicaoAno += `–${ref.FIM}`; }
 
-        // Correção das variáveis (garantindo que não quebrem o JS se estiverem vazias)
         const serieLabel = (ref.SERIE && ref.SERIE.trim() !== "") ? `, série ${ref.SERIE}` : '';
         const edicao = (ref.EDICAO && ref.EDICAO.trim() !== "") ? `, ${ref.EDICAO}` : '';
         const parceria = (ref.PARCERIA && ref.PARCERIA.trim() !== "") ? `<div class="extra">Em parceria com ${ref.PARCERIA}</div>` : '';
         const creditos = (ref.CREDITOS && ref.CREDITOS.trim() !== "") ? `<div class="extra">Foto: ${ref.CREDITOS}</div>` : '';
-
-// Lógica do Texto SOBRE - Corte exclusivo pelo primeiro <br>
+        
         const sobre = ref.SOBRE || "";
         const brIdx = sobre.indexOf('<br>');
         const hasMore = brIdx !== -1;
         const preview = hasMore ? sobre.substring(0, brIdx) : sobre;
         const full = hasMore ? sobre.substring(brIdx).replace(/^(<br\s*\/?>)+/i, '') : "";
 
-// Função interna para evitar viúvas
-const evitarViuva = (texto) => {
-    if (!texto) return "";
-    const palavras = texto.trim().split(" ");
-    if (palavras.length < 4) return texto; // Não mexe em frases muito curtas
-    
-    const ultima = palavras.pop();
-    const penultima = palavras.pop();
-    
-    // Une a penúltima e a última com um espaço não-quebrável (&nbsp;)
-    return palavras.join(" ") + " " + penultima + "\u00A0" + ultima;
-};
+        const evitarViuva = (texto) => {
+            if (!texto) return "";
+            const palavras = texto.trim().split(" ");
+            if (palavras.length < 4) return texto;
+            const ultima = palavras.pop();
+            const penultima = palavras.pop();
+            return palavras.join(" ") + " " + penultima + "\u00A0" + ultima;
+        };
 
-// Aplique a função nas variáveis de texto
-const previewTratado = evitarViuva(preview);
-const fullTratado = evitarViuva(full);
+        const previewTratado = evitarViuva(preview);
+        const fullTratado = evitarViuva(full);
 
-return `
-    <div class="ficha-tecnica-wrap">
-        ${menuHtml}
-        <div class="galeria-media-wrapper" id="gal-scroll">${mediaHtml}</div>
-        <div class="ficha-tecnica">
-            <div class="primary"><b>${ref.TITULO}</b>, ${exibicaoAno}${serieLabel}</div>
-            <div class="secondary">${ref.TECNICA}, ${ref.DIMENSAO}${edicao}</div>
-            ${parceria} ${creditos}
-            
-            <div class="sobre-container">
-                <div class="sobre-box">
-                    <span id="txt-preview">${previewTratado}</span>
-                    <span id="more-text" style="display:none;"><br>${fullTratado}</span>
+        return `
+            <div class="galeria-media-wrapper" id="gal-scroll">${mediaHtml}</div>
+            <div class="ficha-tecnica-wrap">
+                ${menuHtml}
+                <div class="ficha-tecnica">
+                    <div class="primary"><b>${ref.TITULO}</b>, ${exibicaoAno}${serieLabel}</div>
+                    <div class="secondary">${ref.TECNICA}, ${ref.DIMENSAO}${edicao}</div>
+                    ${parceria} ${creditos}
+                    <div class="sobre-container">
+                        <div class="sobre-box">
+                            <span id="txt-preview">${previewTratado}</span>
+                            <span id="more-text" style="display:none;"><br>${fullTratado}</span>
+                        </div>
+                        ${hasMore ? `<button class="btn-leia" onclick="expandAbout(this)">[ ... ]</button>` : ''}
+                    </div>
                 </div>
-                ${hasMore ? `<button class="btn-leia" onclick="expandAbout(this)">+</button>` : ''}
             </div>
-        </div>
-    </div>
-`;
+        `;
     }
 
     function scrollToMedia(id, btn) {
         event.stopPropagation();
         const el = document.getElementById(id);
         el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-        
         const btns = btn.parentNode.querySelectorAll('button');
         btns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     }
 
-function expandAbout(btn) {
-    event.stopPropagation();
-    const moreText = document.getElementById('more-text');
-    
-    if (moreText.style.display === 'none' || moreText.style.display === '') {
-        moreText.style.display = 'inline';
-        btn.innerText = '-';
-    } else {
-        moreText.style.display = 'none';
-        btn.innerText = '+';
+    function expandAbout(btn) {
+        event.stopPropagation();
+        const moreText = document.getElementById('more-text');
+        if (moreText.style.display === 'none' || moreText.style.display === '') {
+            moreText.style.display = 'inline';
+            btn.innerText = '[ x ]';
+        } else {
+            moreText.style.display = 'none';
+            btn.innerText = '[ … ]';
+        }
     }
-}
 
     function closeGallery() {
         const gal = document.getElementById('active-gallery');
@@ -396,7 +358,21 @@ function expandAbout(btn) {
     }
 
     window.addEventListener('keydown', (e) => { if (e.key === "Escape") closeGallery(); });
-
+    
+    // Lógica para mudar a cor do H1 no scroll
+window.addEventListener('scroll', () => {
+    const h1 = document.querySelector('header h1');
+    const scroll = window.scrollY;
+    const vh = window.innerHeight;
+    
+    // Calcula a proporção de 0 a 1 nos primeiros 100vh
+    const ratio = Math.min(scroll / (vh * 1.6), 1);
+    
+    // Converte para porcentagem e aplica o mix de cores
+    // var(--text) começa com 100%, var(--meta-color) vai ganhando espaço
+    h1.style.color = `color-mix(in srgb, var(--text), var(--meta-color) ${ratio * 100}%)`;
+});
+    
     init();
 </script>
 
