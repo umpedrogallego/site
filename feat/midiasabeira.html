@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mídias à beira</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #261520;
+            --card-bg: #4a3b45;
+            --accent: #80ffd2;
+            --text-opacity: 0.83;
+            --font-main: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--accent);
+            padding: 100px 20px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90vw;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+
+        /* --- Cabeçalhos e Índice --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid rgba(128, 255, 210, 0.2);
+            margin-top: 40px;
+            padding-bottom: 10px;
+        }
+
+        h2 { font-size: 1.88rem; font-weight: 800; margin: 0; opacity: var(--text-opacity); text-transform: uppercase; }
+
+        .sort-controls {
+            cursor: pointer;
+            font-size: 1.88rem;
+            user-select: none;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .sort-controls:hover { opacity: 1; }
+
+        .index-nav {
+            margin: -38px 0 8px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.75rem;
+        }
+
+        .index-nav a {
+            color: var(--accent);
+            text-decoration: none;
+            opacity: 0.5;
+            padding: 4px 10px;
+            border: 1px solid rgba(128, 255, 210, 0.3);
+            border-radius: 2px;
+            transition: 0.2s;
+        }
+        .index-nav a:hover { opacity: 1; background: rgba(128, 255, 210, 0.1); }
+
+        /* --- Itens (Cards) --- */
+        article {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 4px;
+            scroll-margin-top: 60px;
+        }
+
+        h3 { margin: 0 0 20px 0; font-size: 1.2rem; font-weight: 300; opacity: var(--text-opacity); }
+        h4 { margin: 15px 0 5px 0; font-size: 0.85rem; font-weight: 400; opacity: 0.6; }
+        
+        .caption { 
+            margin-top: 20px; 
+            font-size: 0.9rem; 
+            font-weight: 300; 
+            opacity: 0.7; 
+            font-style: italic;
+        }
+
+        iframe { width: 100%; border: none; display: block; border-radius: 2px; background: rgba(0,0,0,0.2); }
+        .audio-player { height: 90px; margin-bottom: 10px; }
+        .video-player { aspect-ratio: 16 / 9; }
+
+        /* --- Imagens (Tripas) --- */
+        .thumb-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px dashed var(--bg-color);
+        }
+
+        .thumb {
+            width: 100%;
+            height: auto;
+            cursor: zoom-in;
+            border-radius: 2px;
+            transition: opacity 0.3s;
+        }
+        .thumb:hover { opacity: 0.8; }
+
+        /* --- Lightbox Horizontal com Navegação --- */
+        #lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background-color: rgba(15, 8, 13, 0.96);
+            cursor: zoom-out;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 40px;
+            align-items: center;
+        }
+        
+        /* Esconde scrollbar */
+        #lightbox::-webkit-scrollbar { display: none; }
+        #lightbox { -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
+
+        .lightbox-content {
+            display: inline-flex;
+            height: 100%;
+            align-items: center;
+            gap: 100px;
+            padding: 0 5vw;
+        }
+
+        #lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            object-fit: contain;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            cursor: default;
+            border: 1px solid rgba(128, 255, 210, 0.1);
+        }
+
+        .items-grid { display: flex; flex-direction: column; gap: 40px; }
+
+    </style>
+</head>
+<body>
+
+<main class="container">
+    
+    <header class="section-header">
+        <div class="sort-controls" onclick="reverseOrder('poemas-list')" title="Inverter Ordem">⇅</div>
+        <h2>POEMAS</h2>
+    </header>
+    
+    <nav class="index-nav" id="index-poemas"></nav>
+
+    <div id="poemas-list" class="items-grid">
+        
+        <article id="p01">
+            <h3>poema 01 (do sapo ao corpo)</h3>
+            <iframe class="audio-player" src="https://drive.google.com/file/d/1owQZGOnP2WkJnG-iJrgBGlDfN_jee2nP/preview"></iframe>
+            <p class="caption">Aqui escrevendo alguma OBS de exemplo, com texto longo e prolixo como sempre. Lanla Glambla.</p>
+            <div class="thumb-container">
+                <img src="https://drive.google.com/thumbnail?id=1Jdghdq6x9V3yY_iRt4gshttIuLdfJ1Dx&sz=h1400" class="thumb" onclick="openLightbox(this)">
+                <img src="https://drive.google.com/thumbnail?id=1Pmv4yZZYv28NWKXIPofZCwHIUaj5Hmpw&sz=h1400" class="thumb" onclick="openLightbox(this)">
+            </div>
+        </article>
+
+        <article id="p02">
+            <h3>poema 02 (da erva ao nome)</h3>
+            <iframe class="audio-player" src="https://drive.google.com/file/d/13jNIeWMtALK74SuKLIr13Bye10yPLQRI/preview"></iframe>
+            <div class="thumb-container">
+                <img src="https://drive.google.com/thumbnail?id=1kYllzp2EofylPnfkM5bkg7oJDBI7LFYz&sz=h1400" class="thumb" onclick="openLightbox(this)">
+                <img src="https://drive.google.com/thumbnail?id=1qacYtSllmG_5jwena_8BViztS2H3r2y2&sz=h1400" class="thumb" onclick="openLightbox(this)">
+            </div>
+        </article>
+
+        <article id="p03">
+            <h3>poema 03 (da morte à chuva)</h3>
+            <iframe class="audio-player" src="https://drive.google.com/file/d/1npYvO_LhrA7v2p2MhtTX57y29qHdy7NZ/preview"></iframe>
+            <div class="thumb-container">
+                <img src="https://drive.google.com/thumbnail?id=1hcQFE3Z2RqX8DT5Pd6W18StgIsAp5XVi&sz=h1400" class="thumb" onclick="openLightbox(this)">
+                <img src="https://drive.google.com/thumbnail?id=1ZLKAiSjCc-NLTGUpnROF_ggQJXh39kZK&sz=h1400" class="thumb" onclick="openLightbox(this)">
+            </div>
+        </article>
+
+        <article id="p04">
+            <h3>poema 04 (do nome ao chão)</h3>
+            <iframe class="audio-player" src="https://drive.google.com/file/d/1sWkNh0-TSiLyb5Mdj1HU7P67EOa3n1ey/preview"></iframe>
+            <div class="thumb-container">
+                <img src="https://drive.google.com/thumbnail?id=1sWkNh0-TSiLyb5Mdj1HU7P67EOa3n1ey&sz=h1400" class="thumb" onclick="openLightbox(this)">
+            </div>
+        </article>
+
+        <article id="p05">
+            <h3>poema 05 (do dentro ao espaço)</h3>
+            <iframe class="audio-player" src="https://drive.google.com/file/d/1Dh-OvjMeqjsGha9muR89-K4abTADD8cG/preview"></iframe>
+            <div class="thumb-container">
+                <img src="https://drive.google.com/thumbnail?id=1Dh-OvjMeqjsGha9muR89-K4abTADD8cG&sz=h1400" class="thumb" onclick="openLightbox(this)">
+            </div>
+        </article>
+
+        <article id="p06">
+            <h3>poema 06 (da onda ao tempo)</h3>
+            <div class="thumb-container">
+                <img src="https://drive.google.com/thumbnail?id=1sWkNh0-TSiLyb5Mdj1HU7P67EOa3n1ey&sz=h1400" class="thumb" onclick="openLightbox(this)">
+            </div>
+        </article>
+
+    </div>
+
+    <header class="section-header">
+        <div class="sort-controls" onclick="reverseOrder('estudos-list')" title="Inverter Ordem">⇅</div>
+        <h2>ESTUDOS</h2>
+    </header>
+
+    <nav class="index-nav" id="index-estudos"></nav>
+
+    <div id="estudos-list" class="items-grid">
+        
+        <article id="e_intro">
+            <h3>estudo INTRO 2</h3>
+            <iframe class="video-player" src="https://drive.google.com/file/d/1v03aOIOJp0-R3DHC6XbeUUzaBfZxIz6x/preview" allowfullscreen></iframe>
+        </article>
+
+        <article id="e04">
+            <h3>estudo 04 (poemas 01, 06 e 05)</h3>
+            <iframe class="video-player" src="https://drive.google.com/file/d/1gE2crVJ60Cf7BY4uhGOImsPMH6OSAxON/preview" allowfullscreen></iframe>
+        </article>
+
+        <article id="e03">
+            <h3>estudo 03 (poema 01)</h3>
+            <iframe class="audio-player" src="https://drive.google.com/file/d/17-zG5Cm7FqBlSYNrgkJqy2KXLJZCehea/preview"></iframe>
+        </article>
+
+        <article id="e02">
+            <h3>estudo 02</h3>
+            <h4>(com "o tempo")</h4>
+            <iframe class="audio-player" src="https://drive.google.com/file/d/1cHf2p_qmiI8au4HsdPgInOdjy9hb3xDK/preview"></iframe>
+            <h4>(sem "o tempo")</h4>
+            <iframe class="audio-player" src="https://drive.google.com/file/d/1hcQ2n8JK3lggnYzJ2HX9BhGxJB8HRNQP/preview"></iframe>
+        </article>
+
+    </div>
+
+</main>
+
+<div id="lightbox" onclick="closeLightbox(event)">
+    <div class="lightbox-content" id="lightbox-slider">
+        </div>
+</div>
+
+<script>
+    const lightbox = document.getElementById('lightbox');
+    const slider = document.getElementById('lightbox-slider');
+
+    // Abre o lightbox carregando todas as imagens do mesmo card
+    function openLightbox(clickedImg) {
+        const parentContainer = clickedImg.closest('.thumb-container');
+        const allImgs = parentContainer.querySelectorAll('.thumb');
+        
+        slider.innerHTML = ''; // Limpa anterior
+        
+        allImgs.forEach(img => {
+            const newImg = document.createElement('img');
+            newImg.src = img.src;
+            newImg.onclick = (e) => e.stopPropagation(); // Evita fechar ao clicar na imagem
+            slider.appendChild(newImg);
+            
+            // Se for a imagem clicada, foca nela
+            if(img === clickedImg) {
+                setTimeout(() => newImg.scrollIntoView({behavior: 'instant', inline: 'center'}), 10);
+            }
+        });
+
+        lightbox.style.display = 'flex';
+    }
+
+    function closeLightbox(e) {
+        if(e.target.id === 'lightbox') lightbox.style.display = 'none';
+    }
+
+    // Navegação via Teclado
+    document.addEventListener('keydown', (e) => {
+        if (lightbox.style.display === 'flex') {
+            if (e.key === "Escape") lightbox.style.display = 'none';
+            if (e.key === "ArrowRight") lightbox.scrollBy({ left: window.innerWidth * 0.8, behavior: 'smooth' });
+            if (e.key === "ArrowLeft") lightbox.scrollBy({ left: -window.innerWidth * 0.8, behavior: 'smooth' });
+        }
+    });
+
+    // Inverter Ordem 
+    function reverseOrder(containerId) {
+        const container = document.getElementById(containerId);
+        const items = Array.from(container.children);
+        container.append(...items.reverse());
+    }
+
+    // Gerar Índice Automaticamente
+    function generateIndex(listId, navId) {
+        const items = document.getElementById(listId).children;
+        const nav = document.getElementById(navId);
+        nav.innerHTML = '';
+        Array.from(items).forEach(item => {
+            const title = item.querySelector('h3').innerText;
+            const link = document.createElement('a');
+            link.href = `#${item.id}`;
+            link.innerText = title;
+            nav.appendChild(link);
+        });
+    }
+
+    generateIndex('poemas-list', 'index-poemas');
+    generateIndex('estudos-list', 'index-estudos');
+</script>
+
+</body>
+</html>
