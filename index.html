@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -37,14 +38,24 @@
         header {
             padding: 8px 40px 0px 38px; max-width: 1400px; width: 100%; margin: 0 auto;
             display: flex; justify-content: space-between; align-items: baseline;
-            background: transparent; position: sticky; top: 0; z-index: 1;
+            background: transparent; position: sticky; top: 0; z-index: 1; mix-blend-mode: difference;
         }
         header a { text-decoration: none; color: inherit; }
-        header h1 { font-size: 28px; font-weight: 400; letter-spacing: 0px; text-transform: uppercase; margin-left: 1px;
-        transition: color 0.05s linear;
-        will-change: color; }
-        header nav { display: flex; gap: 20px; font-size: 16px; letter-spacing: 0px; font-weight: 400; text-transform: uppercase;  }
-        header nav a { background: var(--bg); padding: 2px 4px;}
+        header h1 { 
+    font-size: 28px; 
+    font-weight: 400; 
+    letter-spacing: 0px; 
+    text-transform: uppercase;
+    margin-left: 1px;
+    /* Configuração do efeito de inversão */
+    color: #ddd; 
+
+    /* Removemos as transições de cor antigas */
+    transition: none; 
+    will-change: auto;
+    }
+        header nav { display: flex; gap: 20px; font-size: 16px; letter-spacing: 0px; font-weight: 400; text-transform: uppercase; color: #bebab0; }
+        header nav a { padding: 2px 4px;}
         header nav a.active { font-weight: 600; }
 
         #main-grid {
@@ -64,8 +75,8 @@
         .img-box { width: 100%; display: flex; align-items: flex-start;}
         .img-box img, .img-box video { width: 100%; height: auto; display: block; object-fit: contain; }
 
-        .meta { padding: 4px 4px 24px 16px; background: var(--bg); z-index: 2000; }
-        .meta strong { font-weight: 400; font-size: 16px; color: var(--meta-color); display: block; letter-spacing:0.12px; }
+        .meta { padding: 4px 4px 24px 16px; background: var(--bg); z-index: 2000; opacity: 0.94; }
+        .meta strong { font-weight: 400; font-size: 16px; color: var(--text); display: block; letter-spacing:0.12px; }
 
         /* --- GALERIA V15 (FULL-BLEED) --- */
 .galeria-container {
@@ -393,19 +404,6 @@ function scrollToMedia(id, btn) {
 
     window.addEventListener('keydown', (e) => { if (e.key === "Escape") closeGallery(); });
     
-    // Lógica para mudar a cor do H1 no scroll
-window.addEventListener('scroll', () => {
-    const h1 = document.querySelector('header h1');
-    const scroll = window.scrollY;
-    const vh = window.innerHeight;
-    
-    // Calcula a proporção de 0 a 1 nos primeiros 100vh
-    const ratio = Math.min(scroll / (vh * 2.4), 1);
-    
-    // Converte para porcentagem e aplica o mix de cores
-    // var(--text) começa com 100%, var(--meta-color) vai ganhando espaço
-    h1.style.color = `color-mix(in srgb, var(--text), var(--meta-color) ${ratio * 100}%)`;
-});
     
     init();
 </script>
