@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -38,6 +37,7 @@
             display: flex;
             flex-direction: column;
             gap: 60px;
+            transition: max-width 0.3s ease;
         }
 
         /* --- Cabeçalhos e Índice --- */
@@ -81,6 +81,12 @@
         .index-nav a:hover { opacity: 1; background: rgba(128, 255, 210, 0.1); }
 
         /* --- Itens (Cards) --- */
+        .items-grid { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 40px; 
+        }
+
         article {
             background: var(--card-bg);
             padding: 30px;
@@ -123,7 +129,7 @@
         }
         .thumb:hover { opacity: 0.8; }
 
-        /* --- Lightbox Horizontal com Navegação --- */
+        /* --- Lightbox --- */
         #lightbox {
             display: none;
             position: fixed;
@@ -138,7 +144,6 @@
             align-items: center;
         }
         
-        /* Esconde scrollbar */
         #lightbox::-webkit-scrollbar { display: none; }
         #lightbox { -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
 
@@ -159,12 +164,23 @@
             border: 1px solid rgba(128, 255, 210, 0.1);
         }
 
-        .items-grid { display: flex; flex-direction: column; gap: 40px; }
+        /* --- MODIFICAÇÃO DESKTOP: 2 COLUNAS --- */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1100px; /* Alargado para acomodar 2 colunas */
+            }
+            .items-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+                align-items: start; /* Impede que os cards estiquem para igualar a altura */
+            }
+        }
 
     </style>
 </head>
 <body>
-<span style="margin-bottom: 18px; text-align: center;"><h5>à beira&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h5></span>
+<span style="display: block; margin-bottom: 18px; text-align: center;"><h5>à beira&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h5></span>
 <main class="container">
     
     <header class="section-header">
@@ -213,7 +229,6 @@
             <div class="thumb-container">
                 <img src="https://drive.google.com/thumbnail?id=1PA6JVJE1b26jXNBzQmYaCagn2rCfVU55&sz=h1400" class="thumb" onclick="openLightbox(this)">
                 <img src="https://drive.google.com/thumbnail?id=1sWkNh0-TSiLyb5Mdj1HU7P67EOa3n1ey&sz=h1400" class="thumb" onclick="openLightbox(this)">
-            
             </div>
         </article>
 
@@ -273,28 +288,25 @@
 </main>
 
 <div id="lightbox" onclick="closeLightbox(event)">
-    <div class="lightbox-content" id="lightbox-slider">
-        </div>
+    <div class="lightbox-content" id="lightbox-slider"></div>
 </div>
 
 <script>
     const lightbox = document.getElementById('lightbox');
     const slider = document.getElementById('lightbox-slider');
 
-    // Abre o lightbox carregando todas as imagens do mesmo card
     function openLightbox(clickedImg) {
         const parentContainer = clickedImg.closest('.thumb-container');
         const allImgs = parentContainer.querySelectorAll('.thumb');
         
-        slider.innerHTML = ''; // Limpa anterior
+        slider.innerHTML = '';
         
         allImgs.forEach(img => {
             const newImg = document.createElement('img');
             newImg.src = img.src;
-            newImg.onclick = (e) => e.stopPropagation(); // Evita fechar ao clicar na imagem
+            newImg.onclick = (e) => e.stopPropagation();
             slider.appendChild(newImg);
             
-            // Se for a imagem clicada, foca nela
             if(img === clickedImg) {
                 setTimeout(() => newImg.scrollIntoView({behavior: 'instant', inline: 'center'}), 10);
             }
@@ -303,14 +315,12 @@
         lightbox.style.display = 'flex';
     }
 
-function closeLightbox(e) {
-    // Se o elemento clicado NÃO for uma tag <img>, fecha o lightbox
-    if (e.target.tagName !== 'IMG') {
-        lightbox.style.display = 'none';
+    function closeLightbox(e) {
+        if (e.target.tagName !== 'IMG') {
+            lightbox.style.display = 'none';
+        }
     }
-}
 
-    // Navegação via Teclado
     document.addEventListener('keydown', (e) => {
         if (lightbox.style.display === 'flex') {
             if (e.key === "Escape") lightbox.style.display = 'none';
@@ -319,14 +329,12 @@ function closeLightbox(e) {
         }
     });
 
-    // Inverter Ordem 
     function reverseOrder(containerId) {
         const container = document.getElementById(containerId);
         const items = Array.from(container.children);
         container.append(...items.reverse());
     }
 
-    // Gerar Índice Automaticamente
     function generateIndex(listId, navId) {
         const items = document.getElementById(listId).children;
         const nav = document.getElementById(navId);
