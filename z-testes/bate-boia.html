@@ -10,46 +10,46 @@
         }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg); touch-action: none; }
         
-        /* UI Ultra-Minimalista corrigida */
         #ui-layer {
             position: fixed; top: 0; left: 0; width: 100%; height: 60px;
-            display: flex; justify-content: center; align-items: flex-start; z-index: 9999;
+            display: flex; justify-content: center; align-items: flex-start; z-index: 9999; opacity: .88;
         }
         #ui-container {
-            margin-top: 15px; width: 12px; height: 12px;
-            background: rgba(255,255,255,0.1); border-radius: 50%;
+            margin-top: 20px; width: 18px; height: 18px;
+            background: rgba(255,255,255,1); border-radius: 50%;
             display: flex; flex-direction: column; align-items: center;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden; cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden; cursor: pointer; 
         }
         #ui-container:hover {
-            width: 40vw; height: auto; padding: 20px;
-            background: rgba(10, 10, 10, 0.95); border: 0.5px solid #444; border-radius: 4px;
+            width: 18vw; height: auto; padding: 20px;
+            background: rgba(10, 10, 10, 0.98); border: 0.5px solid #333; border-radius: 4px;
         }
-        #ui-dot { width: 4px; height: 4px; background: #fff; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
-        #ui-content { opacity: 0; pointer-events: none; width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        #ui-dot { width: 18px; height: 18px; background: #fff; border-radius: 50%; margin-top: 2px; flex-shrink: 0; }
+        #ui-content { opacity: 0; pointer-events: none; width: 100%; display: flex; flex-direction: column; gap: 20px; margin-top: 15px; }
         #ui-container:hover #ui-content { opacity: 1; pointer-events: auto; }
 
-        .slider-wrap { display: flex; flex-direction: column; gap: 6px; width: 100%; }
-        .label { font-family: var(--font-site); font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .slider-wrap { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+        .label { font-family: var(--font-site); font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
         input[type="range"] { -webkit-appearance: none; width: 100%; height: 1px; background: #333; outline: none; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; background: #fff; border-radius: 50%; cursor: pointer; }
 
         .btn-group { display: flex; gap: 10px; }
         button { 
-            flex: 1; background: none; color: #ccc; border: 0.5px solid #333; 
-            font-family: var(--font-site); font-size: 13px; cursor: pointer; padding: 6px; text-transform: uppercase;
+            flex: 1; background: none; color: #888; border: 0.5px solid #333; 
+            font-family: var(--font-site); font-size: 9px; cursor: pointer; padding: 6px; text-transform: uppercase; transition: 0.3s;
         }
         button:hover { border-color: #fff; color: #fff; }
 
         #screensaver { position: relative; width: 100vw; height: 100vh; z-index: 1; }
         .word { 
             position: absolute; white-space: nowrap; font-family: var(--font-site);
-            font-size: 1.66rem; color: var(--text); user-select: none; will-change: transform;
+            font-size: 1.38rem; color: var(--text); user-select: none; will-change: transform;
             padding: 5px; display: inline-block; line-height: 1; cursor: grab;
         }
-        .word.statue { opacity: 0.73; cursor: pointer; }
+        .word.statue { opacity: 0.5; cursor: pointer; }
         .word.grabbing { color: #f3ff54; z-index: 100; cursor: grabbing; }
+        .word.linked { color: #ffffff; } /* Visual para palavras imantadas */
     </style> 
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -60,16 +60,12 @@
         <div id="ui-dot"></div>
         <div id="ui-content">
             <div class="slider-wrap">
-                <div class="label">Scale Mov</div>
-                <input type="range" id="sl-move" min="1" max="8" step="0.1" value="1">
-            </div>
-            <div class="slider-wrap">
-                <div class="label">Scale Est</div>
-                <input type="range" id="sl-statue" min="1" max="8" step="0.1" value="1">
+                <div class="label">Velocidade</div>
+                <input type="range" id="sl-speed" min="0.03" max="8" step="0.1" value="1">
             </div>
             <div class="btn-group">
-                <button id="btn-freeze">Estátua!</button>
-                <button id="btn-unfreeze">Libera Geral!</button>
+                <button id="btn-freeze">CONGELA</button>
+                <button id="btn-unfreeze">SOLTA</button>
             </div>
         </div>
     </div>
@@ -80,35 +76,49 @@
 <script>
 (() => {
     const container = document.getElementById('screensaver');
-    const vocabulary = ["o", "nome", "o", "vento", "a", "rosa", "a", "rosa", "o", "suspiro", "o", "sonho", "o", "sonho", "o", "sonho", "a", "rosa", "o", "beijo", "o", "beijo", "o", "beijo", "o", "beijo", "o", "beijo", "o", "beijo", "o", "beijo", "o", "beijo", "o", "tudo", "o", "corpo", "o", "corpo", "o", "chão", "o", "chão" ];
+    const vocabulary = ["o", "nome", "o", "vento", "a", "rosa", "a", "rosa", "o", "sonho", "o", "sonho", "o", "sonho", "a", "rosa", "o", "beijo", "o", "beijo", "o", "beijo", "o", "beijo", "a"];
     const weights = [100, 200, 300, 400, 500, 600, 700, 800];
+    const pairs = {
+        "a": ["rosa"],
+        "o": ["nome", "vento", "sonho", "beijo"]
+    };
+    
     let activeWords = [];
     let currentDrag = null;
     let dragPositions = [];
-    let scaleM = 1, scaleE = 1;
+    let globalSpeed = 1;
 
     function createWord(txt) {
         const el = document.createElement('div');
         el.className = 'word';
         el.innerText = txt;
         container.appendChild(el);
+        
         const wObj = {
-            el, x: Math.random() * (window.innerWidth - 150) + 50,
-            y: Math.random() * (window.innerHeight - 100) + 50,
-            vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3,
-            w: 0, h: 0, isStatue: false, isDragging: false, wgtIdx: 3
+            el, txt: txt,
+            x: 50 + Math.random() * (window.innerWidth - 200),
+            y: 50 + Math.random() * (window.innerHeight - 200),
+            vx: (Math.random() - 0.5) * .38, 
+            vy: (Math.random() - 0.5) * .38,
+            w: 0, h: 0, isStatue: false, isDragging: false, wgtIdx: 3,
+            isArticle: ["o", "a"].includes(txt),
+            master: null, // Se for um artigo preso, aponta para o substantivo
+            slave: null,  // Se for um substantivo, aponta para o artigo preso
+            offsetX: 0, offsetY: 0
         };
         el.style.fontWeight = weights[wObj.wgtIdx];
-        el.addEventListener('pointerdown', (e) => {
-            if (e.button !== 0) return;
-            currentDrag = wObj;
-            wObj.isDragging = true;
-            wObj.startT = Date.now();
-            wObj.el.classList.add('grabbing');
-            wObj.el.setPointerCapture(e.pointerId);
-            dragPositions = [{x: e.clientX, y: e.clientY, t: Date.now()}];
-        });
+        el.addEventListener('pointerdown', (e) => onPointerDown(e, wObj));
         return wObj;
+    }
+
+    function onPointerDown(e, wObj) {
+        if (e.button !== 0) return;
+        currentDrag = wObj.master || wObj; // Se pegar o artigo preso, arrasta o mestre
+        currentDrag.isDragging = true;
+        currentDrag.startT = Date.now();
+        currentDrag.el.classList.add('grabbing');
+        currentDrag.el.setPointerCapture(e.pointerId);
+        dragPositions = [{x: e.clientX, y: e.clientY, t: Date.now()}];
     }
 
     window.addEventListener('pointermove', (e) => {
@@ -127,15 +137,21 @@
         o.isDragging = false; o.el.classList.remove('grabbing');
         if (Date.now() - o.startT < 200) {
             o.isStatue = !o.isStatue;
-            o.isStatue ? o.el.classList.add('statue') : o.el.classList.remove('statue');
-            o.vx = o.isStatue ? 0 : (Math.random()-0.5)*3;
-            o.vy = o.isStatue ? 0 : (Math.random()-0.5)*3;
+            const toggle = (obj) => {
+                obj.isStatue = o.isStatue;
+                obj.isStatue ? obj.el.classList.add('statue') : obj.el.classList.remove('statue');
+                obj.vx = obj.isStatue ? 0 : (Math.random()-0.5)*4;
+                obj.vy = obj.isStatue ? 0 : (Math.random()-0.5)*4;
+            };
+            toggle(o);
+            if(o.slave) toggle(o.slave);
         } else if (dragPositions.length > 1) {
             const last = dragPositions[dragPositions.length-1], first = dragPositions[0];
             const dt = (last.t - first.t) || 1;
-            o.vx = (last.x - first.x) / dt * 12;
-            o.vy = (last.y - first.y) / dt * 12;
+            o.vx = ((last.x - first.x) / dt * 10);
+            o.vy = ((last.y - first.y) / dt * 10);
             o.isStatue = false; o.el.classList.remove('statue');
+            if(o.slave) { o.slave.isStatue = false; o.slave.el.classList.remove('statue'); }
         }
         currentDrag = null;
     });
@@ -145,8 +161,7 @@
         p.el.style.fontWeight = weights[p.wgtIdx];
     }
 
-    document.getElementById('sl-move').oninput = (e) => scaleM = parseFloat(e.target.value);
-    document.getElementById('sl-statue').oninput = (e) => scaleE = parseFloat(e.target.value);
+    document.getElementById('sl-speed').oninput = (e) => globalSpeed = parseFloat(e.target.value);
     document.getElementById('btn-freeze').onclick = () => activeWords.forEach(w => {
         w.isStatue = true; w.vx = w.vy = 0; w.el.classList.add('statue');
     });
@@ -159,39 +174,70 @@
 
     function update() {
         const cW = window.innerWidth, cH = window.innerHeight;
-        const minV = 0.35;
+        const minV = 0.25;
 
         activeWords.forEach((p, i) => {
-            const currentScale = p.isStatue ? scaleE : scaleM;
-            p.el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) scale(${currentScale})`;
-            
+            // Se for escravo, apenas segue o mestre
+            if (p.master) {
+                p.x = p.master.x + p.offsetX;
+                p.y = p.master.y + p.offsetY;
+                p.isStatue = p.master.isStatue;
+                p.el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
+                return;
+            }
+
             const rect = p.el.getBoundingClientRect();
             p.w = rect.width; p.h = rect.height;
 
             if (!p.isStatue && !p.isDragging) {
+                p.x += p.vx * globalSpeed; 
+                p.y += p.vy * globalSpeed;
+                p.vx *= 0.9993; // 30% menos atrito que 0.999
+                p.vy *= 0.9993;
+                
                 if (Math.abs(p.vx) < minV) p.vx = p.vx < 0 ? -minV : minV;
                 if (Math.abs(p.vy) < minV) p.vy = p.vy < 0 ? -minV : minV;
-                p.x += p.vx; p.y += p.vy;
-                p.vx *= 0.999; p.vy *= 0.999;
             }
 
-            if (p.x <= 0) { p.vx = Math.abs(p.vx); p.x = 0; onCollide(p); }
-            else if (p.x + p.w >= cW) { p.vx = -Math.abs(p.vx); p.x = cW - p.w; onCollide(p); }
-            if (p.y <= 0) { p.vy = Math.abs(p.vy); p.y = 0; onCollide(p); }
-            else if (p.y + p.h >= cH) { p.vy = -Math.abs(p.vy); p.y = cH - p.h; onCollide(p); }
+            // Bordas
+            if (p.x < 0) { p.vx = Math.abs(p.vx); p.x = 2; onCollide(p); if(p.slave) onCollide(p.slave);}
+            else if (p.x + p.w > cW) { p.vx = -Math.abs(p.vx); p.x = cW - p.w - 2; onCollide(p); if(p.slave) onCollide(p.slave);}
+            if (p.y < 0) { p.vy = Math.abs(p.vy); p.y = 2; onCollide(p); if(p.slave) onCollide(p.slave);}
+            else if (p.y + p.h > cH) { p.vy = -Math.abs(p.vy); p.y = cH - p.h - 2; onCollide(p); if(p.slave) onCollide(p.slave);}
 
             for (let j = i + 1; j < activeWords.length; j++) {
                 const o = activeWords[j];
-                if (p.isDragging || o.isDragging) continue;
+                if (p.isDragging || o.isDragging || p.master || o.master) continue;
 
                 if (p.x < o.x + o.w && p.x + p.w > o.x && p.y < o.y + o.h && p.y + p.h > o.y) {
+                    
+                    // Lógica Magnética (Ímãs)
+                    const mCheck = (art, word) => art.isArticle && !word.isArticle && !word.slave && pairs[art.txt].includes(word.txt);
+                    if (mCheck(p, o) || mCheck(o, p)) {
+                        const art = p.isArticle ? p : o;
+                        const word = p.isArticle ? o : p;
+                        
+                        art.master = word;
+                        word.slave = art;
+                        art.offsetX = art.x - word.x;
+                        art.offsetY = art.y - word.y;
+                        art.el.classList.add('linked');
+                        word.el.classList.add('linked');
+                        return;
+                    }
+
+                    // Colisão Física Contagiosa 
                     if (p.isStatue !== o.isStatue) {
                         const m = p.isStatue ? o : p; const s = p.isStatue ? p : o;
-                        s.isStatue = false; s.vx = m.vx; s.vy = m.vy; s.el.classList.remove('statue');
-                        m.isStatue = true; m.vx = m.vy = 0; m.el.classList.add('statue');
-                    } else if (!p.isStatue) {
+                        s.isStatue = false; s.vx = m.vx; s.vy = m.vy; 
+                        s.el.classList.remove('statue'); if(s.slave) s.slave.el.classList.remove('statue');
+                        m.isStatue = true; m.vx = m.vy = 0; 
+                        m.el.classList.add('statue'); if(m.slave) m.slave.el.classList.add('statue');
+                    } else if (!p.isStatue) { 
                         [p.vx, o.vx] = [o.vx, p.vx]; [p.vy, o.vy] = [o.vy, p.vy];
                     }
+
+                    // Separação Rígida
                     const ox = (p.w + o.w)/2 - Math.abs((p.x + p.w/2) - (o.x + o.w/2));
                     const oy = (p.h + o.h)/2 - Math.abs((p.y + p.h/2) - (o.y + o.h/2));
                     if (ox < oy) {
@@ -200,8 +246,10 @@
                         const dir = p.y < o.y ? -1 : 1; p.y += dir * oy/2; o.y -= dir * oy/2;
                     }
                     onCollide(p); onCollide(o);
+                    if(p.slave) onCollide(p.slave); if(o.slave) onCollide(o.slave);
                 }
             }
+            p.el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
         });
         requestAnimationFrame(update);
     }
