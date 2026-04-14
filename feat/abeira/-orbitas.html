@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>orbitas</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@900&family=JetBrains+Mono:wght@100,200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Helvetica:wght@100;300;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="https://umpedrogallego.github.io/site/feat/SashiMIDI_logo.ico">
     
     <style>
@@ -12,7 +13,7 @@
             --bg: #0f0f0f;
             --ui-text: #bebab0;
             --accent: #f3ff54;
-            --font-bg: 'Barlow Condensed', sans-serif;
+            --font-bg: 'Helvetica', sans-serif;
             --font-ui: 'JetBrains Mono', monospace;
         }
 
@@ -39,7 +40,7 @@
             margin-top: 30px; padding: 15px 40px; background: transparent; 
             color: var(--ui-text); border: 1px solid var(--ui-text); 
             cursor: pointer; font-family: var(--font-ui); font-size: 18px;
-            font-weight: 800;
+            font-weight: 200;
          
         }
         #start-btn:hover { background: var(--ui-text); color: var(--bg); }
@@ -51,7 +52,7 @@
 <body>
 
 <div id="selector-screen">
-    <h1 style="letter-spacing: 2px; font-size: 18px; margin-bottom: 20px;">seleção de palavras:</h1>
+    <h1 style="letter-spacing: 2px; font-size: 18px; margin-bottom: 20px; font-weight: 200;">seleção de palavras</h1>
     <div class="selector-grid" id="grid"></div>
     <button id="start-btn">INÍCIO</button>
 </div>
@@ -94,7 +95,7 @@ const CONFIG = {
     startSpacing: 200,     // Espaçamento inicial entre letras (px)
     bgOpacity: 0.94,       // Opacidade máxima do fundo
     sphereRadius: 55,      // Raio das esferas flutuantes
-    fontBg: "900 12em 'helvetica'", // Fonte Barlow para o fundo
+    fontBg: "900 12em 'Helvetica'", // Fonte Barlow para o fundo
     fontUI: "bold 24px 'JetBrains Mono'"   // Fonte para esferas
 };
 
