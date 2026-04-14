@@ -100,15 +100,43 @@ const CONFIG = {
 };
 
 // Gerar grid
+// --- Gerar Seleção (Substitua ou adicione este bloco) ---
 const grid = document.getElementById('grid');
+
+// Cria o botão "TODAS"
+const allBtn = document.createElement('div');
+allBtn.className = 'word-card';
+allBtn.style.color = 'var(--accent)'; // Cor de destaque para diferenciar
+allBtn.style.fontWeight = '700';
+allBtn.innerText = 'todas';
+
+allBtn.onclick = () => {
+    const cards = document.querySelectorAll('.word-card');
+    const allKeys = Object.keys(wordMap);
+    
+    // Se nem todas estão selecionadas, seleciona tudo. Se já estão, limpa tudo.
+    if (selectedFiles.length < allKeys.length) {
+        selectedFiles = [...allKeys];
+        cards.forEach(card => card.classList.add('selected'));
+    } else {
+        selectedFiles = [];
+        cards.forEach(card => card.classList.remove('selected'));
+    }
+};
+grid.appendChild(allBtn); // Adiciona o botão "todas" primeiro
+
+// Mantém o loop original das palavras logo abaixo
 Object.keys(wordMap).forEach(file => {
     const div = document.createElement('div');
     div.className = 'word-card';
     div.innerText = wordMap[file];
     div.onclick = () => {
         div.classList.toggle('selected');
-        if(selectedFiles.includes(file)) selectedFiles = selectedFiles.filter(f => f !== file);
-        else selectedFiles.push(file);
+        if(selectedFiles.includes(file)) {
+            selectedFiles = selectedFiles.filter(f => f !== file);
+        } else {
+            selectedFiles.push(file);
+        }
     };
     grid.appendChild(div);
 });
