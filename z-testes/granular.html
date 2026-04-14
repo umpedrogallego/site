@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>LexVox - Granular Lab V2</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        :root { --bg: #0f0f0f; --white: #ffffff; --grey: #bebab0; --neon: #f3ff54; }
+        body { background: var(--bg); color: var(--white); font-family: 'JetBrains Mono', monospace; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        
+        #lab { border: 1px solid var(--grey); padding: 30px; width: 600px; display: flex; flex-direction: column; gap: 20px; }
+        .header { border-bottom: 1px solid var(--grey); padding-bottom: 10px; font-size: 11px; color: var(--neon); letter-spacing: 2px; display: flex; justify-content: space-between; }
+        
+        /* Visualização */
+        #wave-container { position: relative; width: 100%; height: 120px; background: #1a1a1a; border: 1px solid #333; cursor: crosshair; }
+        canvas { width: 100%; height: 100%; }
+        #playhead { position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: var(--neon); pointer-events: none; display: none; }
+
+        .main-controls { display: flex; gap: 10px; }
+        button { flex: 1; background: transparent; border: 1px solid var(--white); color: var(--white); padding: 12px; cursor: pointer; font-family: inherit; text-transform: uppercase; font-size: 10px; transition: 0.2s; }
+        button.active { background: var(--neon); color: var(--bg); border-color: var(--neon); }
+
+        .grid-sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .slider-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 9px; color: var(--grey); text-transform: uppercase; }
+        input[type=range] { appearance: none; width: 100%; background: #333; height: 2px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 10px; height: 10px; background: var(--neon); border-radius: 50%; cursor: pointer; }
+
+        .status { font-size: 9px; color: var(--grey); text-align: right; }
+    </style>
+</head>
+<body>
+
+<div id="lab">
+    <div class="header">
+        <span>LEXVOX // GRANULAR_LAB_V2</span>
+        <span id="pos-display">POS: 0.00s</span>
+    </div>
+
+    <div id="wave-container">
+        <canvas id="canvas"></canvas>
+        <div id="playhead"></div>
+    </div>
+    
+    <div class="main-controls">
+        <button id="recBtn">Record Mic</button>
+        <button id="playBtn">Play Granular</button>
+    </div>
+
+    <div class="grid-sliders">
+        <div class="slider-group">
+            <label>Pitch Shift (Cents)</label>
+            <input type="range" id="detune" min="-1200" max="1200" step="10" value="0">
+        </div>
+        <div class="slider-group">
+            <label>Time Stretch (Rate)</label>
+            <input type="range" id="playbackRate" min="0.1" max="2" step="0.01" value="1">
+        </div>
+        <div class="slider-group">
+            <label>Grain Size</label>
+            <input type="range" id="grainSize" min="0.01" max="0.5" step="0.01" value="0.1">
+        </div>
+        <div class="slider-group">
+            <label>Overlap</label>
+            <input type="range" id="overlap" min="0.01" max="1" step="0.01" value="0.1">
+        </div>
+        <div class="slider-group">
+            <label>Spray (Position Random)</label>
+            <input type="range" id="spray" min="0" max="2" step="0.01" value="0">
+        </div>
+        <div class="slider-group">
+            <label>Drift (Pitch Jitter)</label>
+            <input type="range" id="drift" min="0" max="1000" step="1" value="0">
+        </div>
+    </div>
+
+    <div class="status" id="status">SISTEMA PRONTO</div>
+</div>
+
+<script>
+    let mic, recorder, player, visualizer;
+    let isRecording = false;
+    let startTime = 0;
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const playhead = document.getElementById('playhead');
+    const waveContainer = document.getElementById('wave-container');
+
+    async function init() {
+        await Tone.start();
+        mic = new Tone.UserMedia();
+        recorder = new Tone.Recorder();
+        player = new Tone.GrainPlayer().toDestination();
+        player.loop = true;
+        
+        mic.connect(recorder);
+        await mic.open();
+        requestAnimationFrame(updatePlayhead);
+    }
+
+    // Gravação e Waveform
+    document.getElementById('recBtn').onclick = async () => {
+        if (!mic) await init();
+        if (!isRecording) {
+            recorder.start();
+            isRecording = true;
+            document.getElementById('recBtn').classList.add('active');
+            status.innerText = "GRAVANDO...";
+        } else {
+            const blob = await recorder.stop();
+            const url = URL.createObjectURL(blob);
+            const buffer = await new Tone.ToneAudioBuffer().load(url);
+            player.buffer = buffer;
+            isRecording = false;
+            document.getElementById('recBtn').classList.remove('active');
+            drawWaveform(buffer);
+            status.innerText = "BUFFER CARREGADO";
+            playhead.style.display = 'block';
+        }
+    };
+
+    function drawWaveform(buffer) {
+        const data = buffer.getChannelData(0);
+        const step = Math.ceil(data.length / canvas.width);
+        const amp = canvas.height / 2;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.strokeStyle = '#bebab0';
+        for(let i=0; i < canvas.width; i++) {
+            const min = Math.min(...data.slice(i*step, (i+1)*step));
+            const max = Math.max(...data.slice(i*step, (i+1)*step));
+            ctx.lineTo(i, amp + min * amp);
+            ctx.lineTo(i, amp + max * amp);
+        }
+        ctx.stroke();
+    }
+
+    // Scrubbing (Clique para mudar posição)
+    waveContainer.onclick = (e) => {
+        if (!player.buffer.loaded) return;
+        const rect = waveContainer.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percent = x / rect.width;
+        const seekTime = percent * player.buffer.duration;
+        
+        // No GrainPlayer, o scrub reinicia o grão naquela posição
+        player.stop();
+        player.start(undefined, seekTime);
+        document.getElementById('playBtn').classList.add('active');
+    };
+
+    function updatePlayhead() {
+        if (player && player.state === "started") {
+            const progress = (Tone.now() - startTime) % player.buffer.duration;
+            const x = (progress / player.buffer.duration) * 100;
+            playhead.style.left = `${x}%`;
+            document.getElementById('pos-display').innerText = `POS: ${progress.toFixed(2)}s`;
+        }
+        requestAnimationFrame(updatePlayhead);
+    }
+
+    document.getElementById('playBtn').onclick = () => {
+        if (player.state === "started") {
+            player.stop();
+            document.getElementById('playBtn').classList.remove('active');
+        } else {
+            startTime = Tone.now();
+            player.start();
+            document.getElementById('playBtn').classList.add('active');
+        }
+    };
+
+    // Sliders
+    document.getElementById('detune').oninput = (e) => player.detune = e.target.value;
+    document.getElementById('playbackRate').oninput = (e) => player.playbackRate = e.target.value;
+    document.getElementById('grainSize').oninput = (e) => player.grainSize = e.target.value;
+    document.getElementById('overlap').oninput = (e) => player.overlap = e.target.value;
+    // Mapeamento dos Novos
+    document.getElementById('spray').oninput = (e) => player.scatter = e.target.value;
+    document.getElementById('drift').oninput = (e) => {
+        // Simulando drift via LFO ou apenas jitter de detune interno
+        player.detune += (Math.random() - 0.5) * e.target.value;
+    };
+</script>
+</body>
+</html>
