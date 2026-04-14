@@ -92,10 +92,10 @@ let activeBackgrounds = [];
  */
 const CONFIG = {
     bgDuration: 8000,      // Duração da palavra ao fundo (ms)
-    startSpacing: 200,     // Espaçamento inicial entre letras (px)
+    startSpacing: 80,     // Espaçamento inicial entre letras (px)
     bgOpacity: 0.94,       // Opacidade máxima do fundo
     sphereRadius: 55,      // Raio das esferas flutuantes
-    fontBg: "900 12em 'Helvetica'", // Fonte Barlow para o fundo
+    fontBg: "900 8em 'Helvetica'", // Fonte Barlow para o fundo
     fontUI: "bold 24px 'JetBrains Mono'"   // Fonte para esferas
 };
 
@@ -127,7 +127,7 @@ async function initAudio() {
     await Promise.all(promises);
 }
 
-function playTrigger(name, x) {
+function playTrigger(name, x, y) {
     if (!sounds[name]) return;
     const source = audioCtx.createBufferSource();
     source.buffer = sounds[name];
@@ -139,7 +139,9 @@ function playTrigger(name, x) {
 
     activeBackgrounds.push({ 
         text: name.toLowerCase(), 
-        startTime: Date.now() 
+        startTime: Date.now(),
+        x: x,
+        y: y
     });
 }
 
@@ -186,10 +188,12 @@ function startPhysics() {
     });
     Composite.add(engine.world, wordBodies);
 
-    Events.on(engine, 'collisionStart', (event) => {
+Events.on(engine, 'collisionStart', (event) => {
         event.pairs.forEach(pair => {
             const receiver = (pair.bodyA.speed < pair.bodyB.speed) ? pair.bodyA : pair.bodyB;
-            if(sounds[receiver.label]) playTrigger(receiver.label, receiver.position.x);
+            // Identifica o ponto exato da colisão para o fundo
+            const impact = pair.collision.supports[0] || receiver.position;
+            if(sounds[receiver.label]) playTrigger(receiver.label, impact.x, impact.y);
         });
     });
 
@@ -198,8 +202,7 @@ function startPhysics() {
         const now = Date.now();
 
         // 1. ANIMAÇÃO COLAPSIVA (BARLOW)
-        activeBackgrounds = activeBackgrounds.filter(bg => now - bg.startTime < CONFIG.bgDuration);
-        activeBackgrounds.forEach(bg => {
+activeBackgrounds.forEach(bg => {
             const elapsed = now - bg.startTime;
             const progress = elapsed / CONFIG.bgDuration;
             
@@ -213,10 +216,27 @@ function startPhysics() {
 
             const chars = bg.text.split('');
             const totalWidth = (chars.length - 1) * currentSpacing;
-            let startX = (window.innerWidth / 2) - (totalWidth / 2);
+            
+            // --- INÍCIO DA LÓGICA DE CONTENÇÃO ---
+            // Extrai o tamanho da fonte (ex: 8.4) e converte para pixels aproximados (base 16px)
+            const fontSizeEm = parseFloat(CONFIG.fontBg.split(' ')[1]);
+            const fontSizePx = fontSizeEm * 16; 
+
+            const halfWidth = totalWidth / 2;
+            const halfHeight = fontSizePx / 2;
+
+            // Ajusta o X para que a metade da largura da palavra nunca ultrapasse as bordas
+            let safeX = Math.max(halfWidth, Math.min(window.innerWidth - halfWidth, bg.x));
+            
+            // Ajusta o Y para que a metade da altura da fonte nunca ultrapasse o topo ou o fundo
+            let safeY = Math.max(halfHeight, Math.min(window.innerHeight - halfHeight, bg.y));
+
+            let startX = safeX - halfWidth;
+            // --- FIM DA LÓGICA DE CONTENÇÃO ---
 
             chars.forEach((char, i) => {
-                ctx.fillText(char, startX + (i * currentSpacing), window.innerHeight / 2);
+                // Desenha usando safeX e safeY ajustados
+                ctx.fillText(char, startX + (i * currentSpacing), safeY);
             });
             ctx.restore();
         });
