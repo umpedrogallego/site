@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>à beira / vídeo-poemas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Helvetica:wght@900&family=JetBrains+Mono:wght@100;400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="https://umpedrogallego.github.io/site/feat/abeira/colisoes.ico">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --ui-text: #bebab0;
+            --font-ui: 'JetBrains Mono', monospace;
+        }
+        body { margin: 0; overflow: hidden; background: var(--bg); font-family: var(--font-ui); color: var(--ui-text); }
+        canvas { display: block; }
+        
+        #ui-layer {
+            position: fixed; bottom: 38px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 20px; z-index: 100;
+        }
+        .poem-tab {
+            font-size: 10px; text-transform: lowercase; letter-spacing: 2px;
+            padding: 8px 15px; border: 0px solid rgba(190, 186, 176, 0.2);
+            cursor: pointer; transition: 0.3s; color: rgba(190, 186, 176, 0.4);
+        }
+        .poem-tab:hover { border-color: var(--ui-text); color: var(--ui-text); }
+        .poem-tab.active { border-color: var(--ui-text); color: var(--ui-text); background: rgba(190, 186, 176, 0); }
+
+        #status { position: fixed; bottom: 15px; left: 38px; font-size: 10px; opacity: 0.4; letter-spacing: 1px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div id="ui-layer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+
+<script>
+/**
+ * 1. LISTA DE POEMAS (Expansível)
+ */
+const POEMS = [
+    { id: "poema 01", words: ['o sonho', 'o sonho', 'o sonho', 'a rosa'] },
+    { id: "poema 02", words: ["o sapo", "a terra", "o pai", "o pai", "o pai", "a hera", "a morte", "a lua"] },
+    { id: "poema 03", words: ["o beijo", "o beijo", "o beijo", "o beijo", "o beijo", "o beijo"] },
+    { id: "poema 04", words: ["o nome", "o vento", "a rosa", "a rosa", "o suspiro"] },
+    { id: "poema 05", words: ["o tudo", "o corpo", "o corpo", "o chão", "o chão"] },
+    { id: "poema 06", words: ["o dentro", "a faca", "o sentido", "o sentido", "a rosa"] },
+    { id: "poema 07", words: ["o nada", "o nada", "o nada"] },
+    { id: "poema 08", words: ["a pétala", "a força", "o pé", "o pão", "a Eva", "a carne", "o medo", "a forma"] }
+];
+/**
+ * 2. CONFIGURAÇÃO TÉCNICA CONSOLIDADA
+ */
+const CONFIG = {
+    bgDuration: 6000,
+    startSpacing: 130,
+    bgOpacity: 0.7,
+    sphereRadius: 50, 
+    safeMargin: 38,
+    fontBg: "900 12em 'Helvetica'",
+    fontUI: "400 33px 'JetBrains Mono'",
+    colors: { bg: '#0f0f0f', ui: '#bebab0' },
+    states: { REST: 0, HUNT: 1, COOLDOWN: 2, FADING_OUT: 3, SILENCE: 4, FADING_IN: 5 },
+    restDuration: 3000,
+    huntForce: 0.005,
+    driftStrength: 0.0024,
+    frictionAir: 0.0024
+};
+
+let currentPoemIndex = 0;
+let currentState = CONFIG.states.REST;
+let hunterIndex = 0;
+let activeBackgrounds = [];
+let lastStateChange = Date.now();
+let wordBodies = [];
+let walls = [];
+
+const { Engine, Render, Runner, Bodies, Composite, Body, Events, Vector } = Matter;
+const engine = Engine.create();
+engine.gravity.y = 0;
+
+const render = Render.create({
+    element: document.body,
+    engine: engine,
+    options: { width: window.innerWidth, height: window.innerHeight, wireframes: false, background: CONFIG.colors.bg }
+});
+
+function buildUI() {
+    const layer = document.getElementById('ui-layer');
+    layer.innerHTML = '';
+    POEMS.forEach((poem, index) => {
+        const tab = document.createElement('div');
+        tab.className = `poem-tab ${index === currentPoemIndex ? 'active' : ''}`;
+        tab.innerText = poem.id;
+        tab.onclick = () => changePoem(index);
+        layer.appendChild(tab);
+    });
+}
+
+function createWalls() {
+    if (walls.length > 0) Composite.remove(engine.world, walls);
+    const wallOpts = { isStatic: true, restitution: 1.0, friction: 0, label: 'wall', render: { visible: false } };
+    const t = 100;
+    const m = CONFIG.safeMargin;
+    walls = [
+        Bodies.rectangle(window.innerWidth/2, m - t/2, window.innerWidth, t, wallOpts),
+        Bodies.rectangle(window.innerWidth/2, window.innerHeight - m + t/2, window.innerWidth, t, wallOpts),
+        Bodies.rectangle(m - t/2, window.innerHeight/2, t, window.innerHeight, wallOpts),
+        Bodies.rectangle(window.innerWidth - m + t/2, window.innerHeight/2, t, window.innerHeight, wallOpts)
+    ];
+    Composite.add(engine.world, walls);
+}
+
+function spawnPoem(index, isFirst = false) {
+    const poemWords = POEMS[index].words;
+    const newBodies = poemWords.map((txt) => {
+        const x = CONFIG.safeMargin + Math.random() * (window.innerWidth - CONFIG.safeMargin*2);
+        const y = CONFIG.safeMargin + Math.random() * (window.innerHeight - CONFIG.safeMargin*2);
+
+        const b = Bodies.circle(x, y, CONFIG.sphereRadius, { 
+            restitution: 0.6, frictionAir: CONFIG.frictionAir, label: txt, render: { fillStyle: 'transparent' } 
+        });
+        
+        b.opacity = 0;
+        b.fadeDelay = isFirst ? 0 : Math.random() * 600;
+        b.fadeSpeed = 0.01 + Math.random() * 0.01;
+        
+        Body.setVelocity(b, { x: (Math.random()-0.5)*4, y: (Math.random()-0.5)*4 });
+        return b;
+    });
+    
+    wordBodies = newBodies;
+    Composite.add(engine.world, wordBodies);
+    hunterIndex = 0;
+    currentState = isFirst ? CONFIG.states.REST : CONFIG.states.FADING_IN;
+    if(isFirst) wordBodies.forEach(b => b.opacity = 1);
+    lastStateChange = Date.now();
+}
+
+/**
+ * TRANSIÇÃO COM FADE SINCRONIZADO
+ */
+function changePoem(newIndex) {
+    if (newIndex === currentPoemIndex || currentState >= CONFIG.states.FADING_OUT) return;
+    
+    currentState = CONFIG.states.FADING_OUT;
+
+    // Fade Out para fundos ativos (Helvetica)
+    activeBackgrounds.forEach(bg => {
+        bg.isTransitioning = true;
+        bg.fadeOpacity = 1;
+        bg.fadeStep = 0.02 + Math.random() * 0.02;
+    });
+
+    currentPoemIndex = newIndex;
+    buildUI();
+
+    wordBodies.forEach(b => {
+        b.fadeDelay = Math.random() * 400;
+        b.fadeSpeed = 0.015 + Math.random() * 0.015;
+    });
+}
+
+/**
+ * ENGINE LOOP
+ */
+Events.on(engine, 'beforeUpdate', () => {
+    const now = Date.now();
+
+    // LÓGICA DE FADE OUT (Onde o "piscar" foi corrigido)
+    if (currentState === CONFIG.states.FADING_OUT) {
+        let stillVisible = false;
+
+        wordBodies.forEach(b => {
+            if (b.fadeDelay > 0) {
+                b.fadeDelay -= 16;
+                stillVisible = true;
+            } else if (b.opacity > 0) {
+                b.opacity -= b.fadeSpeed;
+                if (b.opacity < 0) b.opacity = 0;
+                stillVisible = true;
+            }
+        });
+
+        activeBackgrounds.forEach(bg => {
+            if (bg.isTransitioning && bg.fadeOpacity > 0) {
+                bg.fadeOpacity -= bg.fadeStep;
+                if (bg.fadeOpacity < 0) bg.fadeOpacity = 0;
+                stillVisible = true;
+            }
+        });
+
+        if (!stillVisible) {
+            Composite.remove(engine.world, wordBodies);
+            wordBodies = [];
+            activeBackgrounds = [];
+            currentState = CONFIG.states.SILENCE;
+            lastStateChange = now;
+        }
+    }
+
+    if (currentState === CONFIG.states.SILENCE) {
+        if (now - lastStateChange > 500) { // Intervalo de 0.5s
+            spawnPoem(currentPoemIndex);
+        }
+    }
+
+    if (currentState === CONFIG.states.FADING_IN) {
+        let allVisible = true;
+        wordBodies.forEach(b => {
+            if (b.fadeDelay > 0) {
+                b.fadeDelay -= 16;
+                allVisible = false;
+            } else if (b.opacity < 1) {
+                b.opacity += b.fadeSpeed;
+                if (b.opacity > 1) b.opacity = 1;
+                allVisible = false;
+            }
+        });
+        if (allVisible) { currentState = CONFIG.states.REST; lastStateChange = now; }
+    }
+
+    // DINÂMICA DE MOVIMENTO
+    if (currentState !== CONFIG.states.SILENCE) {
+        const hunter = wordBodies[hunterIndex];
+        wordBodies.forEach((b, i) => {
+            Body.applyForce(b, b.position, {
+                x: (Math.random() - 0.5) * CONFIG.driftStrength,
+                y: (Math.random() - 0.5) * CONFIG.driftStrength
+            });
+            wordBodies.forEach((other, j) => {
+                if (i === j) return;
+                const dist = Vector.magnitude(Vector.sub(b.position, other.position));
+                if (dist < CONFIG.sphereRadius * 2.5) {
+                    const force = Vector.mult(Vector.normalise(Vector.sub(b.position, other.position)), 0.0012);
+                    Body.applyForce(b, b.position, force);
+                }
+            });
+        });
+
+        if (currentState === CONFIG.states.REST) {
+            if (now - lastStateChange > CONFIG.restDuration) {
+                currentState = CONFIG.states.HUNT;
+                lastStateChange = now;
+            }
+        } 
+        else if (currentState === CONFIG.states.HUNT && hunter) {
+            if (Vector.magnitude(hunter.velocity) > 0.1) {
+                const accelDir = Vector.normalise(hunter.velocity);
+                Body.applyForce(hunter, hunter.position, Vector.mult(accelDir, CONFIG.huntForce));
+            }
+        }
+    }
+});
+
+Events.on(engine, 'collisionStart', (event) => {
+    if (currentState !== CONFIG.states.HUNT) return;
+    event.pairs.forEach(pair => {
+        const labels = [pair.bodyA.label, pair.bodyB.label];
+        const isHunterInvolved = (pair.bodyA === wordBodies[hunterIndex] || pair.bodyB === wordBodies[hunterIndex]);
+        const isWallInvolved = labels.includes('wall');
+
+        if (isHunterInvolved && !isWallInvolved) {
+            const collisionPoint = pair.collision.supports[0] || pair.bodyA.position;
+            activeBackgrounds.push({ 
+                text: wordBodies[hunterIndex].label, 
+                startTime: Date.now(), x: collisionPoint.x, y: collisionPoint.y,
+                fadeOpacity: 1, isTransitioning: false
+            });
+            currentState = CONFIG.states.COOLDOWN;
+            lastStateChange = Date.now();
+            hunterIndex = (hunterIndex + 1) % wordBodies.length;
+            setTimeout(() => { 
+                if(currentState < CONFIG.states.FADING_OUT) currentState = CONFIG.states.REST; 
+                lastStateChange = Date.now(); 
+            }, 3000);
+        }
+    });
+});
+
+/**
+ * RENDER
+ */
+Events.on(render, 'afterRender', () => {
+    const ctx = render.context;
+    const now = Date.now();
+    const m = CONFIG.safeMargin;
+
+    activeBackgrounds = activeBackgrounds.filter(bg => now - bg.startTime < CONFIG.bgDuration);
+    activeBackgrounds.forEach(bg => {
+        const elapsed = now - bg.startTime;
+        const progress = elapsed / CONFIG.bgDuration;
+        const fadeMultiplier = bg.isTransitioning ? bg.fadeOpacity : 1; //
+        
+        ctx.save();
+        const clampY = Math.max(m + 300, Math.min(window.innerHeight - m - 300, bg.y));
+        const clampX = Math.max(m + 500, Math.min(window.innerWidth - m - 500, bg.x));
+        const currentSpacing = CONFIG.startSpacing * (1 - progress);
+        ctx.font = CONFIG.fontBg; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        
+        // Multiplicador de opacidade aplicado aqui
+        ctx.fillStyle = `rgba(186, 186, 176, ${CONFIG.bgOpacity * (1 - progress) * fadeMultiplier})`;
+        
+        const chars = bg.text.split('');
+        const totalWidth = (chars.length - 1) * currentSpacing;
+        let startX = clampX - (totalWidth / 2);
+        chars.forEach((char, i) => { ctx.fillText(char, startX + (i * currentSpacing), clampY); });
+        ctx.restore();
+    });
+
+    wordBodies.forEach((b) => {
+        const { x, y } = b.position;
+        ctx.save(); ctx.translate(x, y); ctx.font = CONFIG.fontUI; 
+        ctx.fillStyle = `rgba(190, 186, 176, ${b.opacity})`;
+        ctx.textAlign = "center"; ctx.fillText(b.label.toLowerCase(), 0, 10); ctx.restore();
+    });
+});
+
+// Init
+createWalls();
+buildUI();
+spawnPoem(0, true);
+
+window.addEventListener('resize', () => {
+    render.canvas.width = window.innerWidth; render.canvas.height = window.innerHeight; createWalls();
+});
+
+Render.run(render);
+Runner.run(Runner.create(), engine);
+</script>
+</body>
+</html>
