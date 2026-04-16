@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Imagem</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #2b2424; /* Cor de fundo baseada no seu estilo */
+            overflow-x: hidden; /* Evita scroll horizontal indesejado */
+        }
+
+        .container {
+            width: 94vw;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .full-image {
+            max-width: 100%;
+            height: auto; /* Mantém a proporção da imagem */
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="https://drive.google.com/thumbnail?id=1ha7tlFpVFVklq6qtO2ZiMIUzC3BjGoLc&sz=w1600" class="full-image">
+    </div>
+
+</body>
+</html>
