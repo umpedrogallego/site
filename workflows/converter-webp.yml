@@ -4,7 +4,8 @@ on:
     branches:
       - main
     paths:
-      - 'img/**' # Só dispara se houver mudanças na pasta img
+      - 'img/**'
+  workflow_dispatch: # ISTO ADICIONA UM BOTÃO PARA TESTAR MANUALMENTE
 
 jobs:
   convert_images:
