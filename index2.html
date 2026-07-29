@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedro Gallego - Trabalhos</title>
+
+    <!-- Fonte original mantida -->
+    <link href="https://api.fontshare.com/v2/css?f[]=supreme@100,101,200,201,300,301,400,401,500,501,700,701,800,801&display=swap" rel="stylesheet"> <!--[cite: 1] -->
+
+    <style>
+        :root {
+            /* Cores de acordo com o briefing */
+            --bg: #91837a; 
+            --text: #182420;
+            --active: #615d56;
+            --font-site: 'Supreme', sans-serif; /*[cite: 1] */
+            
+            /* Proporções da Tela (Larguras) */
+            --w-left: 25vw;
+            --w-center: 63vw; /* 100 - 25 - 8 - 2(gap_esq) - 2(gap_dir) = 63 */
+            --w-right: 8vw;
+            --gap-horizontal: 2vw;
+
+            /* Proporções da Tela (Alturas/Margens) */
+            --h-top-mask: 4vh;
+            --h-top-center: 8vh;
+            --h-bottom-mask: 4vh;
+            --h-bottom-center: 16vh;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: var(--font-site); /*[cite: 1] */
+            background-color: var(--bg); 
+            color: var(--text); 
+            -webkit-font-smoothing: antialiased;
+            /* A altura do body será manipulada via JS para criar a área de scroll */
+            overflow-x: hidden;
+        }
+
+        a { color: inherit; text-decoration: none; transition: color 0.2s; }
+        a:hover, .clicado { color: var(--active); }
+
+        /* Máscaras Horizontais Opacas */
+        .mask-top, .mask-bottom {
+            position: fixed;
+            left: 0; width: 100vw;
+            background-color: var(--bg);
+            z-index: 100;
+        }
+        .mask-top { top: 0; height: var(--h-top-mask); }
+        .mask-bottom { bottom: 0; height: var(--h-bottom-mask); }
+
+        /* Grade Principal Visível */
+        #ui-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            display: flex;
+            pointer-events: none; /* Deixa o scroll passar para o body */
+            z-index: 10;
+        }
+
+        #ui-layer > div { pointer-events: auto; }
+
+        /* COLUNA ESQUERDA (Listagem de Obras) */
+        .col-left {
+            width: var(--w-left);
+            height: 100vh;
+            overflow-y: hidden;
+            padding-top: var(--h-top-mask);
+            position: relative;
+        }
+        .scroll-list-container {
+            position: absolute;
+            top: var(--h-top-mask);
+            width: 100%;
+        }
+        .title-item {
+            height: 100vh; /* Cada item ocupa uma tela inteira na lógica de scroll */
+            position: relative;
+        }
+        .title-item span {
+            position: sticky;
+            top: var(--h-top-mask); /* Para no topo */
+            display: block;
+            font-weight: 300;
+            padding-left: 10px;
+        }
+
+        /* COLUNA CENTRAL (Visualização de Mídia e Ficha Técnica) */
+        .col-center {
+            width: var(--w-center);
+            margin: 0 var(--gap-horizontal);
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: flex-end; /* Alinha tudo pela base */
+            padding-top: var(--h-top-center);
+            padding-bottom: var(--h-bottom-center);
+        }
+
+        .image-stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .img-layer {
+            position: absolute;
+            bottom: 0; left: 0;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transform-origin: 0 0; /* Âncora superior esquerda por padrão */
+            will-change: transform, opacity;
+            opacity: 0; 
+        }
+
+        .ficha-stage {
+            position: absolute;
+            bottom: var(--h-bottom-center);
+            width: 100%;
+            background-color: var(--bg);
+            z-index: 50;
+            opacity: 0;
+            transform: translateY(20px);
+            will-change: transform, opacity;
+            padding: 10px 0;
+        }
+
+        /* CONTROLES DE INTERAÇÃO (+) */
+        .btn-plus {
+            position: absolute;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .plus-galeria { top: var(--h-top-center); left: 0; transform: translateY(-100%); }
+        .plus-ficha { right: 0; top: 0; }
+
+        /* COLUNA DIREITA (Listagem de Anos) */
+        .col-right {
+            width: var(--w-right);
+            height: 100vh;
+            padding-top: var(--h-top-mask);
+            text-align: right;
+            padding-right: 10px;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mask-top"></div>
+    <div class="mask-bottom"></div>
+
+    <main id="ui-layer">
+        <div class="col-left">
+            <!-- Container onde a listagem será injetada e rolará baseada no scroll da janela -->
+            <div id="lista-obras" class="scroll-list-container"></div>
+        </div>
+
+        <div class="col-center">
+            <div class="btn-plus plus-galeria" onclick="toggleGaleria(this)">+</div>
+            <div id="image-stage" class="image-stage"></div>
+            
+            <div id="ficha-stage" class="ficha-stage">
+                <div class="btn-plus plus-ficha" onclick="toggleFicha(this)">+</div>
+                <div id="ficha-content"></div>
+            </div>
+        </div>
+
+        <div class="col-right">
+            <div id="lista-anos" class="scroll-list-container"></div>
+        </div>
+    </main>
+
+<script>
+    // Parâmetros extraídos da versão anterior
+    const URL_JSON = "https://umpedrogallego.github.io/site/json/trabalhos.json"; //[cite: 1]
+    const THUMB_BASE = "https://umpedrogallego.github.io/site/thumb/"; //[cite: 1]
+    
+    let works = [];
+    let windowHeight = window.innerHeight;
+    
+    async function init() {
+        try {
+            const res = await fetch(URL_JSON); //[cite: 1]
+            const data = await res.json(); //[cite: 1]
+            
+            // Lógica de filtro e ordenação mantida do código original
+            works = data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== ""); //[cite: 1]
+            works.sort((a, b) => parseInt(a.DESTAQUE) - parseInt(b.DESTAQUE)); //[cite: 1]
+            
+            construirInterface();
+            configurarScroll();
+        } catch(e) { 
+            console.error("Erro no carregamento JSON:", e); 
+        }
+    }
+
+    function construirInterface() {
+        const listaObras = document.getElementById('lista-obras');
+        const listaAnos = document.getElementById('lista-anos');
+        const imageStage = document.getElementById('image-stage');
+
+        // Cria altura real para o body rolar. 1 item = 1 altura de tela (100vh)
+        document.body.style.height = `${(works.length * 100) + 100}vh`;
+
+        let currentYear = "";
+
+        works.forEach((obra, index) => {
+            // Títulos (Esquerda)
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'title-item';
+            titleDiv.innerHTML = `<span>${obra.TITULO}</span>`;
+            listaObras.appendChild(titleDiv);
+
+            // Anos (Direita) - Exibe apenas no primeiro item do ano
+            const yearDiv = document.createElement('div');
+            yearDiv.className = 'title-item';
+            if (obra.ANO !== currentYear) {
+                yearDiv.innerHTML = `<span>${obra.ANO}</span>`;
+                currentYear = obra.ANO;
+            }
+            listaAnos.appendChild(yearDiv);
+
+            // Imagens Iniciais (Centro)
+            const img = document.createElement('img');
+            img.src = `${THUMB_BASE}${obra.ID}a.avif`; //[cite: 1]
+            img.className = 'img-layer';
+            img.id = `img-${index}`;
+            imageStage.appendChild(img);
+        });
+    }
+
+    function configurarScroll() {
+        const listaObras = document.getElementById('lista-obras');
+        const listaAnos = document.getElementById('lista-anos');
+        const imgs = document.querySelectorAll('.img-layer');
+        const fichaStage = document.getElementById('ficha-stage');
+        const fichaContent = document.getElementById('ficha-content');
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            
+            // 1. Move os containeres laterais em sincronia com o scroll
+            listaObras.style.transform = `translateY(-${scrollY}px)`;
+            listaAnos.style.transform = `translateY(-${scrollY}px)`;
+
+            // 2. Calcula qual é o item ativo baseado na posição de rolagem
+            const currentIndex = Math.floor(scrollY / windowHeight);
+            const progress = (scrollY % windowHeight) / windowHeight; // Vai de 0.0 a 1.0 dentro da seção
+
+            // Previne erros nos limites do array
+            if(currentIndex >= 0 && currentIndex < works.length) {
+                atualizarAnimacoes(currentIndex, progress, imgs, fichaStage, fichaContent);
+            }
+        });
+    }
+
+    function atualizarAnimacoes(index, progress, imgs, fichaStage, fichaContent) {
+        // Zera as opacidades de tudo para garantir limpeza visual
+        imgs.forEach(i => { i.style.opacity = 0; i.style.zIndex = 1; });
+
+        const obraAtual = works[index];
+        const imgAtual = imgs[index];
+        const imgProxima = imgs[index + 1];
+
+        // CONFIGURAÇÃO IMAGEM ATUAL (diminuindo)
+        imgAtual.style.opacity = 1;
+        imgAtual.style.zIndex = 2;
+        // Âncora: Canto Superior Esquerdo
+        imgAtual.style.transformOrigin = "top left";
+        // Escala diminui conforme o scroll avança (de 1 para 0)
+        const scaleAtual = Math.max(0, 1 - progress);
+        imgAtual.style.transform = `scale(${scaleAtual})`;
+
+        // CONFIGURAÇÃO PRÓXIMA IMAGEM (crescendo e entrando com margem de 2%)
+        if (imgProxima) {
+            imgProxima.style.opacity = 1;
+            imgProxima.style.zIndex = 3;
+            // Âncora: Canto Inferior Direito
+            imgProxima.style.transformOrigin = "bottom right";
+            // Escala aumenta de 0 para 1
+            imgProxima.style.transform = `scale(${progress})`;
+            
+            // TODO: Aqui a lógica matemática calcula o gap horizontal de 2% para garantir 
+            // a distância exata exigida pelo layout durante a transição.
+        }
+
+        // FICHA TÉCNICA (Animação a partir de 70%)
+        if (progress > 0.7) {
+            const progressFicha = (progress - 0.7) / 0.3; // Normaliza de 0 a 1 nesse terço final
+            fichaStage.style.opacity = progressFicha;
+            fichaStage.style.transform = `translateY(${(1 - progressFicha) * 20}px)`;
+            
+            // Popula os dados
+            const proximaObra = works[index + 1] || obraAtual;
+            fichaContent.innerHTML = `<b>${proximaObra.TITULO}</b><br>${proximaObra.TECNICA}, ${proximaObra.DIMENSAO}`;
+        } else {
+            fichaStage.style.opacity = 1 - (progress / 0.7); // Esmaece a atual no início do scroll
+            fichaContent.innerHTML = `<b>${obraAtual.TITULO}</b><br>${obraAtual.TECNICA}, ${obraAtual.DIMENSAO}`;
+        }
+    }
+
+    // Funções para expansões (Substituir "+" por "X")
+    function toggleGaleria(btn) {
+        btn.innerText = btn.innerText === '+' ? 'x' : '+';
+        btn.classList.toggle('clicado');
+        // Implementar abertura do carrossel lateral
+    }
+
+    function toggleFicha(btn) {
+        btn.innerText = btn.innerText === '+' ? 'x' : '+';
+        btn.classList.toggle('clicado');
+        const stage = document.getElementById('ficha-stage');
+        stage.style.height = btn.innerText === 'x' ? '70vh' : 'auto';
+        // Implementar redimensionamento do conteúdo superior
+    }
+
+    init();
+</script>
+</body>
+</html>
