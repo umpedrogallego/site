@@ -18,6 +18,11 @@
             
             --font-site: 'Supreme', sans-serif;
             --header-height: 50px;
+
+            /* PADRONIZAÇÃO TIPOGRÁFICA COM CLAMP */
+            --font-base: clamp(12px, 1.2vw + 10px, 16px);       /* Texto geral */
+            --font-menu: clamp(15px, 1.5vw + 12.5px, 20px);     /* Menus e barras (+25%) */
+            --font-destaque: clamp(18px, 1.8vw + 15px, 24px);   /* Destaque hero (+50%) */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,7 +33,7 @@
             color: var(--texto-escuro); 
             overflow-x: hidden;
             font-weight: 400;
-            /* Removido o padding-top pois o header não é mais fixed */
+            font-size: var(--font-base); /* Aplica o texto geral */
         }
 
         a { color: inherit; font-weight: bold; text-decoration: underline; }
@@ -37,7 +42,7 @@
         .container-94 { width: 94vw; margin: 0 auto; }
         .container-88 { width: 88vw; margin: 0 auto; }
 
-        /* CABEÇALHO PRINCIPAL ESTÁTICO (Rola naturalmente com a página) */
+        /* CABEÇALHO PRINCIPAL ESTÁTICO */
         header {
             background-color: var(--fundo-cabecalho);
             color: var(--texto-claro);
@@ -49,7 +54,12 @@
             width: 100%;
         }
 
-        header h1 { font-size: 20px; font-weight: 700; text-transform: uppercase; }
+        header h1 { 
+            font-size: var(--font-menu); 
+            font-weight: 700; 
+            text-transform: uppercase; 
+        }
+        
         .header-icons { display: flex; gap: 15px; align-items: center; }
         .header-icons svg { cursor: pointer; }
 
@@ -65,6 +75,7 @@
             text-transform: uppercase;
             cursor: pointer;
             font-weight: 500;
+            font-size: var(--font-menu); /* Fonte para barras de menu */
         }
         
         .arrow { display: flex; align-items: center; transition: transform 0.3s ease; }
@@ -84,13 +95,14 @@
             border-bottom: 1px solid var(--texto-sem-selecao);
             padding: 10px 3vw;
             position: sticky;
-            top: 0; /* Gruda no topo zero da tela */
-            z-index: 100; /* Fica acima do conteúdo que rola por baixo */
+            top: 0;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             font-weight: 400;
+            font-size: var(--font-menu); /* Fonte para a barra sticky */
         }
 
         /* MENU DROPDOWN DE OBRAS */
@@ -110,14 +122,16 @@
             font-weight: 400;
         }
         
+        /* SCROLLBAR SEM BORDER-RADIUS */
         #dropdown-obras::-webkit-scrollbar { width: 6px; }
         #dropdown-obras::-webkit-scrollbar-track { background: transparent; }
-        #dropdown-obras::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 4px; }
+        #dropdown-obras::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 0; }
 
         .dropdown-item {
             padding: 12px 3vw;
             border-bottom: 1px solid rgba(24, 36, 32, 0.2);
             cursor: pointer;
+            font-size: var(--font-menu); /* Fonte para itens do dropdown */
         }
         .dropdown-item:hover { background-color: var(--fundo-claro); }
 
@@ -168,9 +182,10 @@
         
         .galeria-wrapper::after { content: ""; flex: 0 0 6vw; }
 
+        /* SCROLLBAR SEM BORDER-RADIUS */
         .galeria-wrapper::-webkit-scrollbar { height: 6px; }
         .galeria-wrapper::-webkit-scrollbar-track { background: transparent; }
-        .galeria-wrapper::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 4px; }
+        .galeria-wrapper::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 0; }
 
         .galeria-wrapper.is-single {
             overflow-x: hidden;
@@ -188,13 +203,14 @@
             color: var(--texto-escuro); 
             width: 88vw; 
             margin-left: auto; 
-            margin-right: auto; 
+            margin-right: auto;
+            font-size: var(--font-base); /* Garante a base tipográfica */
         }
         .ficha-tecnica b { font-weight: 500; }
-        .ficha-primary { font-size: 1.1rem; margin-bottom: 5px; }
+        .ficha-primary { margin-bottom: 5px; }
         .ficha-secondary { margin-bottom: 15px; color: var(--texto-escuro); }
 
-        /* LIGHTBOX REFINADO (COM CARACTERE ⨯) */
+        /* LIGHTBOX REFINADO */
         #lightbox {
             display: none;
             position: fixed;
@@ -226,7 +242,7 @@
             font-family: var(--font-site); 
         }
         .lb-close-btn {
-            font-size: 18.7px; /* 15% menor para igualar altura visual */
+            font-size: 18.7px; 
             line-height: 1;
         }
         .lb-nav-btn:hover { opacity: 1; }
@@ -246,12 +262,13 @@
 
         /* SEÇÃO EM EXPOSIÇÃO */
         #expo-section { display: none; }
-        #expo-dates { font-weight: 400; }
         .expo-info { padding: 20px 0; font-weight: 400; line-height: 1.4; }
         .expo-hero-img { width: 100%; height: auto; display: block; }
         .expo-flex { display: flex; flex-direction: column; }
-        .expo-intro { font-size: 1.4rem; font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
-        .expo-texto-body { font-size: 1rem; font-weight: 400; }
+        
+        /* Aplica tipografias específicas do hero */
+        .expo-intro { font-size: var(--font-destaque); font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
+        .expo-texto-body { font-size: var(--font-base); font-weight: 400; }
 
         /* MODO DESKTOP */
         @media (min-width: 768px) {
@@ -267,14 +284,19 @@
             }
 
             .expo-flex {
-                flex-direction: row;
+                /* Inversão: Texto na esquerda, imagem na direita */
+                flex-direction: row; 
                 align-items: center; 
-                width: 94vw; margin: 0 auto; gap: 40px; padding: 40px 0;
+                width: 94vw; 
+                margin: 0 auto; 
+                gap: 40px; /* 40px de gap entre texto e imagem */
+                padding: 40px 0;
             }
+            
             #expo-media, #expo-texto-container { width: 50%; margin: 0; padding: 0 !important; }
             .expo-hero-img { max-height: 60vh; width: auto; max-width: 100%; }
             #expo-texto-container { display: flex; justify-content: flex-start; }
-            .expo-texto-inner { width: 70%; }
+            .expo-texto-inner { width: 100%; } /* Ajuste para não forçar quebra prematura no container de texto 50% */
         }
     </style>
 </head>
@@ -289,16 +311,21 @@
     </header>
 
     <div id="expo-section">
+        <!-- BARRA EM EXPOSIÇÃO ATUALIZADA -->
         <div class="accordion-header" onclick="toggleAccordion(this, 'expo-content')">
-            <span>EM EXPOSIÇÃO</span>
-            <span id="expo-dates">--.-- — --.--</span>
+            <span>EM EXPOSIÇÃO / <span id="expo-dates">--.-- — --.--</span></span>
+            <span class="arrow" style="transform: rotate(0deg);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
         </div>
+        
         <div id="expo-content" class="accordion-content active">
+            <!-- HERÓI INVERTIDO PARA DESKTOP -->
             <div class="expo-flex">
-                <div class="container-94" id="expo-media"></div>
                 <div id="expo-texto-container">
                     <div class="expo-info expo-texto-inner container-88" id="expo-texto"></div>
                 </div>
+                <div class="container-94" id="expo-media"></div>
             </div>
         </div>
     </div>
@@ -311,7 +338,7 @@
     </div>
     
     <div id="trabalhos-conteudo" class="accordion-content active">
-        <!-- BARRA STICKY UNICA -->
+        <!-- BARRA STICKY -->
         <div id="obra-atual-header" onclick="toggleDropdown()">
             <span id="titulo-obra-visivel">Carregando...</span>
             <div style="display: flex; align-items: center; gap: 15px;">
@@ -494,23 +521,14 @@
             
             document.getElementById('btn-close-header').style.display = 'block';
             
-            // CÁLCULO DIRETO E PRECISO
-            // Aumentamos o timeout para 150ms para garantir que o navegador 
-            // desenhou a caixa do vídeo antes de medirmos a posição dela.
             setTimeout(() => {
                 const subHeader = document.getElementById('obra-atual-header');
                 const galeriaWrapper = container.querySelector('.galeria-wrapper');
                 
-                // Mede o topo absoluto do carrossel no documento
                 const wrapperRect = galeriaWrapper.getBoundingClientRect();
                 const absoluteWrapperTop = wrapperRect.top + window.scrollY;
-                
-                // Mede a altura da barra sticky
                 const subHeaderHeight = subHeader.offsetHeight;
                 
-                // Como não há mais cabeçalho escondendo/aparecendo, a matemática é simples:
-                // Queremos que o scroll pare exatamente na posição do carrossel, 
-                // descontando o espaço que a barra sticky ocupa, menos os 20px de respiro.
                 const targetY = absoluteWrapperTop - subHeaderHeight - 20;
                 
                 window.scrollTo({top: targetY, behavior: 'smooth'});
@@ -586,13 +604,13 @@
 
         function configurarScroll() {
             window.addEventListener('scroll', () => {
-                // Toda a lógica complexa de esconder o cabeçalho foi removida.
                 const containers = document.querySelectorAll('.item-obra-container');
                 let obraCentral = null;
                 const offsetCabecalho = document.getElementById('obra-atual-header').offsetHeight + 20;
 
                 for (let container of containers) {
                     const rect = container.getBoundingClientRect();
+                    // NOVA MEDIDA: 0.5 conforme solicitado no item 2
                     if (rect.bottom > (rect.height * 0.5) + offsetCabecalho) {
                         obraCentral = container;
                         break;
@@ -655,13 +673,18 @@
 
         window.addEventListener('click', (e) => {
             const headerObra = document.getElementById('obra-atual-header');
+            
             if (headerObra && !headerObra.contains(e.target)) {
                 document.getElementById('dropdown-obras').style.display = 'none';
                 const arrowDropdown = document.querySelector('.arrow-dropdown');
                 if(arrowDropdown) arrowDropdown.style.transform = 'rotate(0deg)';
             }
 
-            if (!e.target.closest('.expanded') && !e.target.classList.contains('img-obra') && !e.target.closest('#lightbox')) {
+            // CORREÇÃO DO BUG: Agora a galeria não fecha se clicarmos dentro da barra de títulos (headerObra)
+            if (!e.target.closest('.expanded') && 
+                !e.target.classList.contains('img-obra') && 
+                !e.target.closest('#lightbox') &&
+                !e.target.closest('#obra-atual-header')) {
                 fecharGaleria();
             }
         });
