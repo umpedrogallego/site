@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedro Gallego</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=supreme@100,200,300,400,500,700,800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --texto-escuro: #182420;
+            --texto-claro: #bbb2ad;
+            --fundo-claro: #bbb2ad;
+            --fundo-medio: #91837a;
+            --texto-sem-selecao: #605b54;
+            --fundo-cabecalho: #182420;
+            
+            --font-site: 'Supreme', sans-serif;
+            --header-height: 50px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: var(--font-site); 
+            background-color: var(--fundo-medio); 
+            color: var(--texto-escuro); 
+            overflow-x: hidden;
+            font-weight: 400; /* Regular default */
+        }
+
+        a {
+            color: inherit;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        a:hover {
+            text-decoration: none;
+        }
+
+        .container-94 { width: 94vw; margin: 0 auto; }
+        .container-88 { width: 88vw; margin: 0 auto; }
+
+        /* CABEÇALHO PRINCIPAL */
+        header {
+            background-color: var(--fundo-cabecalho);
+            color: var(--texto-claro);
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 3vw;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        header h1 { font-size: 20px; font-weight: 700; text-transform: uppercase; } /* Bold */
+        
+        .header-icons { 
+            display: flex; 
+            gap: 15px; 
+            align-items: center; 
+        }
+        .header-icons svg { cursor: pointer; }
+
+        /* ACORDEÕES GERAIS */
+        .accordion-header {
+            background-color: var(--fundo-medio);
+            color: var(--texto-escuro);
+            padding: 15px 3vw;
+            border-bottom: 1px solid var(--texto-sem-selecao);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-weight: 500; /* Medium */
+        }
+        
+        .arrow {
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-content {
+            background-color: var(--fundo-claro);
+            display: none;
+            width: 100%;
+            font-weight: 400; /* Regular */
+        }
+        .accordion-content.active { display: block; }
+
+        .trabalhos-content {
+            background-color: var(--fundo-claro);
+            padding-bottom: 50px;
+        }
+
+        /* SUB-CABEÇALHO DA OBRA (Sticky) */
+        #obra-atual-header {
+            background-color: var(--fundo-medio);
+            border-bottom: 1px solid var(--texto-sem-selecao);
+            padding: 10px 3vw;
+            position: sticky;
+            top: var(--header-height);
+            z-index: 90;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 400; /* Regular */
+        }
+
+        /* MENU DROPDOWN DE OBRAS */
+        #dropdown-obras {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 70vh;
+            background-color: var(--fundo-medio);
+            overflow-y: auto;
+            overscroll-behavior: contain; /* Impede scroll do body ao rolar a lista */
+            border-bottom: 1px solid var(--texto-escuro);
+            z-index: 95;
+            font-weight: 400; /* Regular */
+        }
+        
+        #dropdown-obras::-webkit-scrollbar { width: 6px; }
+        #dropdown-obras::-webkit-scrollbar-track { background: transparent; }
+        #dropdown-obras::-webkit-scrollbar-thumb {
+            background-color: var(--fundo-cabecalho);
+            border-radius: 4px;
+        }
+
+        .dropdown-item {
+            padding: 12px 3vw;
+            border-bottom: 1px solid rgba(24, 36, 32, 0.2);
+            cursor: pointer;
+        }
+        .dropdown-item:hover { background-color: var(--fundo-claro); }
+
+        /* GALERIA DE SCROLL CORRIDO */
+        .galeria-scroll {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            padding: 40px 0;
+        }
+
+        .item-obra-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .item-obra-container:nth-child(odd) { align-items: flex-start; }
+        .item-obra-container:nth-child(even) { align-items: flex-end; }
+
+        .img-obra {
+            width: auto;
+            max-width: 80vw;
+            max-height: 70vh;
+            display: block;
+            object-fit: contain;
+        }
+
+        /* SEÇÃO EM EXPOSIÇÃO */
+        #expo-section { display: none; }
+        #expo-dates { font-weight: 400; }
+        .expo-info { padding: 20px 0; font-weight: 400; line-height: 1.4; }
+        .expo-hero-img { width: 100%; height: auto; display: block; }
+        
+        /* Flexbox para EXPO (Mobile First) */
+        .expo-flex {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* MODO DESKTOP */
+        @media (min-width: 768px) {
+            .img-obra { max-width: none; }
+            
+            /* Divisão em 2 colunas para a seção EXPO no Desktop */
+            .expo-flex {
+                flex-direction: row;
+                width: 94vw;
+                margin: 0 auto;
+                gap: 40px;
+                padding: 40px 0;
+                align-items: flex-start;
+            }
+            .expo-flex .container-94, 
+            .expo-flex .container-88 {
+                width: 100%; 
+                margin: 0;
+                padding: 0 !important;
+            }
+            .expo-flex .expo-info {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Pedro Gallego</h1>
+        <div class="header-icons">
+            <!-- Ícone Search SVG -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <!-- Ícone Menu SVG -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </div>
+    </header>
+
+    <!-- SEÇÃO EM EXPOSIÇÃO (Sem seta) -->
+    <div id="expo-section">
+        <div class="accordion-header" onclick="toggleAccordion(this, 'expo-content')">
+            <span>EM EXPOSIÇÃO</span>
+            <span id="expo-dates">--.-- — --.--</span>
+        </div>
+        <div id="expo-content" class="accordion-content active">
+            <div class="expo-flex">
+                <div class="container-94" id="expo-media" style="padding-top: 20px;"></div>
+                <div class="expo-info container-88" id="expo-texto"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACORDEÃO TRABALHOS -->
+    <div class="accordion-header" onclick="toggleAccordion(this, 'trabalhos-conteudo')">
+        <span>TRABALHOS</span>
+        <!-- Seta inicia apontando pra cima porque já começa aberto (rotate 180deg) -->
+        <span class="arrow" style="transform: rotate(180deg);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </span>
+    </div>
+    
+    <div id="trabalhos-conteudo" class="accordion-content active">
+        <div id="obra-atual-header" onclick="toggleDropdown()">
+            <span id="titulo-obra-visivel">Carregando...</span>
+            <span class="arrow-dropdown" style="transition: transform 0.3s ease; display: flex;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+            <div id="dropdown-obras"></div>
+        </div>
+
+        <div class="trabalhos-content container-94">
+            <div class="galeria-scroll" id="galeria-feed"></div>
+        </div>
+    </div>
+
+    <!-- OUTROS ACORDEÕES -->
+    <div class="accordion-header" onclick="toggleAccordion(this, 'projetos-conteudo')">
+        <span>PROJETOS</span>
+        <span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+    </div>
+    <div id="projetos-conteudo" class="accordion-content"></div>
+
+    <div class="accordion-header" onclick="toggleAccordion(this, 'indice-conteudo')">
+        <span>ÍNDICE GERAL</span>
+        <span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+    </div>
+    <div id="indice-conteudo" class="accordion-content"></div>
+
+    <div class="accordion-header" onclick="toggleAccordion(this, 'cv-conteudo')">
+        <span>CV</span>
+        <span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+    </div>
+    <div id="cv-conteudo" class="accordion-content"></div>
+
+    <div class="accordion-header" onclick="toggleAccordion(this, 'contato-conteudo')">
+        <span>CONTATO</span>
+        <span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+    </div>
+    <div id="contato-conteudo" class="accordion-content"></div>
+
+    <script>
+        const URL_TRABALHOS = "https://umpedrogallego.github.io/site/json/trabalhos.json";
+        const URL_CV = "https://umpedrogallego.github.io/site/json/cv.json";
+        const WEBP_BASE = "https://umpedrogallego.github.io/site/img/webp/";
+
+        let listaObras = [];
+        let idObraVisivel = null;
+
+        async function init() {
+            await checarExposicao();
+            await carregarTrabalhos();
+            configurarScroll();
+        }
+
+        async function checarExposicao() {
+            try {
+                const res = await fetch(URL_CV);
+                const cvData = await res.json();
+                
+                // Zera as horas para comparar apenas os dias de forma segura
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                
+                const expoAtiva = cvData.find(item => {
+                    if(!item.FIM) return false;
+                    const dataFim = new Date(item.FIM);
+                    // Lógica 1: Exibe apenas se a data de hoje for menor ou igual à data de FIM
+                    return hoje <= dataFim;
+                });
+
+                if (expoAtiva) {
+                    document.getElementById('expo-section').style.display = 'block';
+                    
+                    document.getElementById('expo-media').innerHTML = `
+                        <img class="expo-hero-img" src="https://www.sescsp.org.br/wp-content/uploads/2025/11/Banner-o-mundo-atraves-da-IA-1-e1763745840758.png" alt="Banner da Exposição">
+                    `;
+                    
+                    // Lógica 4: Interpretando \n como <br>
+                    const introFormatada = expoAtiva.INTRO ? expoAtiva.INTRO.replace(/\n/g, '<br>') : '';
+                    const textoFormatado = expoAtiva.TEXTO ? expoAtiva.TEXTO.replace(/\n/g, '<br>') : '';
+
+                    document.getElementById('expo-texto').innerHTML = `
+                        <p>${introFormatada}</p><br><p>${textoFormatado}</p>
+                    `;
+                    
+                    const formatarData = (d) => {
+                        const dateObj = new Date(d);
+                        return `${String(dateObj.getDate()).padStart(2, '0')}.${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+                    };
+                    document.getElementById('expo-dates').innerText = `${formatarData(expoAtiva.INICIO)} — ${formatarData(expoAtiva.FIM)}`;
+                }
+            } catch(e) {
+                console.error("Erro ao carregar CV:", e);
+            }
+        }
+
+        async function carregarTrabalhos() {
+            try {
+                const res = await fetch(URL_TRABALHOS);
+                const data = await res.json();
+                
+                listaObras = data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "");
+                const galeriaFeed = document.getElementById('galeria-feed');
+                let htmlFeed = '';
+
+                listaObras.forEach((obra) => {
+                    htmlFeed += `
+                        <div class="item-obra-container" id="obra-${obra.ID}" data-titulo="${obra.TITULO}">
+                            <img class="img-obra" src="${WEBP_BASE}${obra.ID}a.webp" alt="${obra.TITULO}" loading="lazy" onerror="this.style.display='none'">
+                        </div>
+                    `;
+                });
+
+                galeriaFeed.innerHTML = htmlFeed;
+
+                if (listaObras.length > 0) {
+                    atualizarTituloEDropdown(listaObras[0].ID, listaObras[0].TITULO);
+                }
+
+            } catch (e) {
+                console.error("Erro ao carregar Trabalhos:", e);
+            }
+        }
+
+        function atualizarTituloEDropdown(idAtivo, titulo) {
+            if (idObraVisivel === idAtivo) return;
+            
+            idObraVisivel = idAtivo;
+            document.getElementById('titulo-obra-visivel').innerText = titulo;
+
+            const dropdown = document.getElementById('dropdown-obras');
+            let htmlDropdown = '';
+            
+            listaObras.forEach(obra => {
+                if (obra.ID !== idAtivo) {
+                    htmlDropdown += `<div class="dropdown-item" onclick="rolarParaObra('${obra.ID}', event)">${obra.TITULO}</div>`;
+                }
+            });
+            
+            dropdown.innerHTML = htmlDropdown;
+        }
+
+        function configurarScroll() {
+            window.addEventListener('scroll', () => {
+                const containers = document.querySelectorAll('.item-obra-container');
+                let obraCentral = null;
+                const offsetCabecalho = 90;
+
+                for (let container of containers) {
+                    const rect = container.getBoundingClientRect();
+                    // Altera quando a imagem atinge 60% rolada pra cima
+                    if (rect.bottom > (rect.height * 0.24) + offsetCabecalho) {
+                        obraCentral = container;
+                        break;
+                    }
+                }
+
+                if (obraCentral) {
+                    const id = obraCentral.id.replace('obra-', '');
+                    const titulo = obraCentral.getAttribute('data-titulo');
+                    atualizarTituloEDropdown(id, titulo);
+                }
+            });
+        }
+
+        function toggleAccordion(headerElement, contentId) {
+            const content = document.getElementById(contentId);
+            if (!content) return;
+            
+            const isActive = content.classList.contains('active');
+            
+            // Alterna a classe active no conteúdo
+            if (isActive) {
+                content.classList.remove('active');
+            } else {
+                content.classList.add('active');
+            }
+            
+            // Lógica 2: Alterna a rotação da seta, se houver
+            const arrow = headerElement.querySelector('.arrow');
+            if (arrow) {
+                arrow.style.transform = isActive ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdown-obras');
+            const arrowDropdown = document.querySelector('.arrow-dropdown');
+            
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+                arrowDropdown.style.transform = 'rotate(0deg)';
+            } else {
+                dropdown.style.display = 'block';
+                arrowDropdown.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function rolarParaObra(id, event) {
+            event.stopPropagation(); 
+            const elemento = document.getElementById(`obra-${id}`);
+            if(elemento) {
+                const y = elemento.getBoundingClientRect().top + window.scrollY - 100; 
+                window.scrollTo({top: y, behavior: 'smooth'});
+            }
+            // Garante que o menu feche visualmente correto
+            document.getElementById('dropdown-obras').style.display = 'none';
+            document.querySelector('.arrow-dropdown').style.transform = 'rotate(0deg)';
+        }
+
+        window.addEventListener('click', (e) => {
+            const headerObra = document.getElementById('obra-atual-header');
+            if (headerObra && !headerObra.contains(e.target)) {
+                document.getElementById('dropdown-obras').style.display = 'none';
+                const arrowDropdown = document.querySelector('.arrow-dropdown');
+                if(arrowDropdown) arrowDropdown.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
