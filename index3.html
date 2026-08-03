@@ -19,10 +19,9 @@
             --font-site: 'Supreme', sans-serif;
             --header-height: 50px;
 
-            /* PADRONIZAÇÃO TIPOGRÁFICA COM CLAMP */
-            --font-base: clamp(12px, 1.2vw + 10px, 16px);       /* Texto geral */
-            --font-menu: clamp(15px, 1.5vw + 12.5px, 20px);     /* Menus e barras (+25%) */
-            --font-destaque: clamp(18px, 1.8vw + 15px, 24px);   /* Destaque hero (+50%) */
+            /* PADRONIZAÇÃO TIPOGRÁFICA */
+            --font-base: clamp(12px, 1.2vw + 10px, 16px);       /* Texto geral e barras (Ajuste 3) */
+            --font-destaque: clamp(18px, 1.8vw + 15px, 24px);   /* Destaque hero */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,7 +32,7 @@
             color: var(--texto-escuro); 
             overflow-x: hidden;
             font-weight: 400;
-            font-size: var(--font-base); /* Aplica o texto geral */
+            font-size: var(--font-base); 
         }
 
         a { color: inherit; font-weight: bold; text-decoration: underline; }
@@ -42,7 +41,7 @@
         .container-94 { width: 94vw; margin: 0 auto; }
         .container-88 { width: 88vw; margin: 0 auto; }
 
-        /* CABEÇALHO PRINCIPAL ESTÁTICO */
+        /* CABEÇALHO PRINCIPAL */
         header {
             background-color: var(--fundo-cabecalho);
             color: var(--texto-claro);
@@ -55,7 +54,7 @@
         }
 
         header h1 { 
-            font-size: var(--font-menu); 
+            font-size: var(--font-base); 
             font-weight: 700; 
             text-transform: uppercase; 
         }
@@ -75,7 +74,7 @@
             text-transform: uppercase;
             cursor: pointer;
             font-weight: 500;
-            font-size: var(--font-menu); /* Fonte para barras de menu */
+            font-size: var(--font-base); /* Ajuste 3: Mesmo tamanho do texto geral */
         }
         
         .arrow { display: flex; align-items: center; transition: transform 0.3s ease; }
@@ -101,8 +100,8 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            font-weight: 400;
-            font-size: var(--font-menu); /* Fonte para a barra sticky */
+            font-weight: 500; /* Igualando weight com Trabalhos */
+            font-size: var(--font-base); /* Ajuste 3: Mesmo tamanho do texto geral */
         }
 
         /* MENU DROPDOWN DE OBRAS */
@@ -122,7 +121,6 @@
             font-weight: 400;
         }
         
-        /* SCROLLBAR SEM BORDER-RADIUS */
         #dropdown-obras::-webkit-scrollbar { width: 6px; }
         #dropdown-obras::-webkit-scrollbar-track { background: transparent; }
         #dropdown-obras::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 0; }
@@ -131,7 +129,7 @@
             padding: 12px 3vw;
             border-bottom: 1px solid rgba(24, 36, 32, 0.2);
             cursor: pointer;
-            font-size: var(--font-menu); /* Fonte para itens do dropdown */
+            font-size: var(--font-base);
         }
         .dropdown-item:hover { background-color: var(--fundo-claro); }
 
@@ -165,6 +163,8 @@
             cursor: pointer;
             flex-shrink: 0;
             background-color: transparent;
+            /* A transição abaixo ajuda na animação do script JS */
+            transition: transform 0.25s ease-out; 
         }
 
         /* VISUALIZAÇÃO DA GALERIA (EXPANDIDA) */
@@ -182,7 +182,6 @@
         
         .galeria-wrapper::after { content: ""; flex: 0 0 6vw; }
 
-        /* SCROLLBAR SEM BORDER-RADIUS */
         .galeria-wrapper::-webkit-scrollbar { height: 6px; }
         .galeria-wrapper::-webkit-scrollbar-track { background: transparent; }
         .galeria-wrapper::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 0; }
@@ -204,7 +203,7 @@
             width: 88vw; 
             margin-left: auto; 
             margin-right: auto;
-            font-size: var(--font-base); /* Garante a base tipográfica */
+            font-size: var(--font-base); 
         }
         .ficha-tecnica b { font-weight: 500; }
         .ficha-primary { margin-bottom: 5px; }
@@ -241,10 +240,7 @@
             opacity: 0.7;
             font-family: var(--font-site); 
         }
-        .lb-close-btn {
-            font-size: 18.7px; 
-            line-height: 1;
-        }
+        .lb-close-btn { font-size: 18.7px; line-height: 1; }
         .lb-nav-btn:hover { opacity: 1; }
 
         #lightbox-media-container {
@@ -260,43 +256,50 @@
             object-fit: contain;
         }
 
-        /* SEÇÃO EM EXPOSIÇÃO */
+        /* SEÇÃO EM EXPOSIÇÃO - MOBILE-FIRST (Ajuste 2) */
         #expo-section { display: none; }
-        .expo-info { padding: 20px 0; font-weight: 400; line-height: 1.4; }
-        .expo-hero-img { width: 100%; height: auto; display: block; }
-        .expo-flex { display: flex; flex-direction: column; }
         
-        /* Aplica tipografias específicas do hero */
+        /* Flex em coluna com imagem no topo colada na barra */
+        .expo-flex { 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        /* Imagem força ocupação total da tela e ignora paddings */
+        #expo-media { 
+            width: 100vw; 
+            margin-left: calc(-50vw + 50%); 
+        }
+        .expo-hero-img { 
+            width: 100%; 
+            height: auto; 
+            display: block; 
+        }
+        
+        .expo-info { padding: 20px 0; font-weight: 400; line-height: 1.4; }
         .expo-intro { font-size: var(--font-destaque); font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
         .expo-texto-body { font-size: var(--font-base); font-weight: 400; }
 
         /* MODO DESKTOP */
         @media (min-width: 768px) {
-            .img-obra, .galeria-item { 
-                height: 45vh; 
-                max-width: 70vw; 
-            }
-            
-            .ficha-tecnica {
-                width: auto;
-                margin-left: 6vw;
-                margin-right: 24vw;
-            }
+            .img-obra, .galeria-item { height: 45vh; max-width: 70vw; }
+            .ficha-tecnica { width: auto; margin-left: 6vw; margin-right: 24vw; }
 
+            /* Desktop: Texto na Esquerda, Imagem na Direita com 40px de Gap */
             .expo-flex {
-                /* Inversão: Texto na esquerda, imagem na direita */
-                flex-direction: row; 
+                flex-direction: row-reverse; 
                 align-items: center; 
                 width: 94vw; 
                 margin: 0 auto; 
-                gap: 40px; /* 40px de gap entre texto e imagem */
+                gap: 40px; 
                 padding: 40px 0;
             }
             
+            /* Restaura o tamanho do container no desktop */
             #expo-media, #expo-texto-container { width: 50%; margin: 0; padding: 0 !important; }
             .expo-hero-img { max-height: 60vh; width: auto; max-width: 100%; }
             #expo-texto-container { display: flex; justify-content: flex-start; }
-            .expo-texto-inner { width: 100%; } /* Ajuste para não forçar quebra prematura no container de texto 50% */
+            .expo-texto-inner { width: 100%; } 
         }
     </style>
 </head>
@@ -311,21 +314,21 @@
     </header>
 
     <div id="expo-section">
-        <!-- BARRA EM EXPOSIÇÃO ATUALIZADA -->
+        <!-- BARRA EM EXPOSIÇÃO - Ajuste 4 -->
         <div class="accordion-header" onclick="toggleAccordion(this, 'expo-content')">
-            <span>EM EXPOSIÇÃO / <span id="expo-dates">--.-- — --.--</span></span>
+            <span id="expo-header-text">EM EXPOSIÇÃO</span>
             <span class="arrow" style="transform: rotate(0deg);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </span>
         </div>
         
         <div id="expo-content" class="accordion-content active">
-            <!-- HERÓI INVERTIDO PARA DESKTOP -->
+            <!-- HTML Invertido: Mídia vem primeiro no DOM para o Mobile (Ajuste 2) -->
             <div class="expo-flex">
+                <div id="expo-media"></div>
                 <div id="expo-texto-container">
                     <div class="expo-info expo-texto-inner container-88" id="expo-texto"></div>
                 </div>
-                <div class="container-94" id="expo-media"></div>
             </div>
         </div>
     </div>
@@ -434,7 +437,9 @@
                         const dateObj = new Date(d);
                         return `${String(dateObj.getDate()).padStart(2, '0')}.${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
                     };
-                    document.getElementById('expo-dates').innerText = `${formatarData(expoAtiva.INICIO)} — ${formatarData(expoAtiva.FIM)}`;
+                    
+                    // Ajuste 4: Altera o texto injetando a data da coluna FIM do json
+                    document.getElementById('expo-header-text').innerHTML = `EM EXPOSIÇÃO até ${formatarData(expoAtiva.FIM)}`;
                 }
             } catch(e) { console.error("Erro ao carregar CV:", e); }
         }
@@ -509,22 +514,15 @@
             `;
         }
 
-        function abrirObra(id, event) {
-            if (event) event.stopPropagation();
-            fecharGaleria(); 
-            
-            const container = document.getElementById(`obra-${id}`);
-            const obra = listaObras.find(o => o.ID === id);
-            
+        // Helper para renderizar a galeria expandida sem repetir código
+        function renderizarObraExpandida(container, obra, id) {
             container.classList.add('expanded');
             container.innerHTML = buildGalleryHTML(obra);
-            
             document.getElementById('btn-close-header').style.display = 'block';
             
             setTimeout(() => {
                 const subHeader = document.getElementById('obra-atual-header');
                 const galeriaWrapper = container.querySelector('.galeria-wrapper');
-                
                 const wrapperRect = galeriaWrapper.getBoundingClientRect();
                 const absoluteWrapperTop = wrapperRect.top + window.scrollY;
                 const subHeaderHeight = subHeader.offsetHeight;
@@ -538,6 +536,40 @@
             document.getElementById('dropdown-obras').style.display = 'none';
             const arrowDropdown = document.querySelector('.arrow-dropdown');
             if(arrowDropdown) arrowDropdown.style.transform = 'rotate(0deg)';
+        }
+
+        function abrirObra(id, event) {
+            if (event) event.stopPropagation();
+            
+            const container = document.getElementById(`obra-${id}`);
+            if (container.classList.contains('expanded')) return;
+            
+            fecharGaleria(); 
+            const obra = listaObras.find(o => o.ID === id);
+
+            // [ANIMAÇÃO THUMB CARROSSEL] - Ajuste 5
+            // Verifica se o contêiner está alinhado à direita antes de abri-lo
+            const isRightAligned = window.getComputedStyle(container).alignItems === 'flex-end';
+            
+            if (isRightAligned) {
+                const img = container.querySelector('.img-obra');
+                if (img) {
+                    // Calcula exatamente a distância da imagem até a borda esquerda do container
+                    const moveX = container.getBoundingClientRect().width - img.getBoundingClientRect().width;
+                    
+                    // Dispara a transição para deslocar a imagem para a esquerda
+                    img.style.transform = `translateX(-${moveX}px)`;
+                    
+                    // Aguarda a transição terminar antes de renderizar a obra expandida real
+                    setTimeout(() => {
+                        renderizarObraExpandida(container, obra, id);
+                    }, 250);
+                    return; 
+                }
+            }
+
+            // Se for ímpar (alinhado à esquerda), abre direto
+            renderizarObraExpandida(container, obra, id);
         }
 
         function fecharGaleria(event) {
@@ -610,8 +642,8 @@
 
                 for (let container of containers) {
                     const rect = container.getBoundingClientRect();
-                    // NOVA MEDIDA: 0.5 conforme solicitado no item 2
-                    if (rect.bottom > (rect.height * 0.4) + offsetCabecalho) {
+                    // Ajuste 1: Ponto de mudança para (rect.height * 0.4)
+                    if (rect.bottom > (rect.height * 0.25) + offsetCabecalho) {
                         obraCentral = container;
                         break;
                     }
@@ -680,7 +712,6 @@
                 if(arrowDropdown) arrowDropdown.style.transform = 'rotate(0deg)';
             }
 
-            // CORREÇÃO DO BUG: Agora a galeria não fecha se clicarmos dentro da barra de títulos (headerObra)
             if (!e.target.closest('.expanded') && 
                 !e.target.classList.contains('img-obra') && 
                 !e.target.closest('#lightbox') &&
