@@ -27,6 +27,7 @@
             color: var(--texto-escuro); 
             overflow-x: hidden;
             font-weight: 400;
+            padding-top: var(--header-height); /* Compensa o header fixed */
         }
 
         a { color: inherit; font-weight: bold; text-decoration: underline; }
@@ -35,7 +36,7 @@
         .container-94 { width: 94vw; margin: 0 auto; }
         .container-88 { width: 88vw; margin: 0 auto; }
 
-        /* CABEÇALHO PRINCIPAL */
+        /* CABEÇALHO PRINCIPAL (FIXED) */
         header {
             background-color: var(--fundo-cabecalho);
             color: var(--texto-claro);
@@ -44,12 +45,19 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 3vw;
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 100;
+            transition: transform 0.3s ease;
         }
-        header h1 { font-size: 20px; font-weight: 700; text-transform: uppercase; }
         
+        body.header-hidden header {
+            transform: translateY(-100%);
+        }
+
+        header h1 { font-size: 20px; font-weight: 700; text-transform: uppercase; }
         .header-icons { display: flex; gap: 15px; align-items: center; }
         .header-icons svg { cursor: pointer; }
 
@@ -79,7 +87,7 @@
 
         .trabalhos-content { background-color: var(--fundo-claro); padding-bottom: 50px; }
 
-        /* SUB-CABEÇALHO DA OBRA */
+        /* SUB-CABEÇALHO DA OBRA (STICKY) */
         #obra-atual-header {
             background-color: var(--fundo-medio);
             border-bottom: 1px solid var(--texto-sem-selecao);
@@ -92,6 +100,11 @@
             align-items: center;
             cursor: pointer;
             font-weight: 400;
+            transition: top 0.3s ease;
+        }
+        
+        body.header-hidden #obra-atual-header {
+            top: 0;
         }
 
         /* MENU DROPDOWN DE OBRAS */
@@ -125,18 +138,32 @@
         /* GALERIA DE FEED */
         .galeria-scroll { display: flex; flex-direction: column; gap: 40px; padding: 40px 0; }
         
-        .item-obra-container { display: flex; flex-direction: column; width: 100%; position: relative; }
+        .item-obra-container { 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%; 
+            position: relative; 
+            transition: margin 0.3s ease;
+        }
         .item-obra-container:nth-child(odd) { align-items: flex-start; }
         .item-obra-container:nth-child(even) { align-items: flex-end; }
-        .item-obra-container.expanded { align-items: flex-start !important; }
+        
+        /* Respiro ao redor da galeria expandida */
+        .item-obra-container.expanded { 
+            align-items: flex-start !important; 
+            margin-top: 10vh;
+            margin-bottom: 10vh;
+        }
 
-        .img-obra {
+        /* PADRONIZAÇÃO DE IMAGENS (Feed e Galeria) */
+        .img-obra, .galeria-item {
+            height: 60vh;
             width: auto;
             max-width: 80vw;
-            max-height: 70vh;
             display: block;
             object-fit: contain;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         /* VISUALIZAÇÃO DA GALERIA (EXPANDIDA) */
@@ -146,34 +173,22 @@
             display: flex;
             gap: 20px;
             overflow-x: auto;
-            padding-left: 3vw; /* Alinhamento inicial */
-            padding-bottom: 15px; /* Espaço para a scrollbar */
+            padding-left: 3vw;
+            padding-bottom: 15px; 
             scroll-behavior: smooth;
             position: relative;
         }
         
-        /* Respiro ao final da rolagem horizontal */
         .galeria-wrapper::after {
             content: "";
             flex: 0 0 6vw; 
         }
 
-        /* Nova barra de rolagem para a galeria */
         .galeria-wrapper::-webkit-scrollbar { height: 6px; }
         .galeria-wrapper::-webkit-scrollbar-track { background: transparent; }
         .galeria-wrapper::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 4px; }
-        
-        .galeria-item {
-            height: 70vh; /* Mesma altura da miniatura do scroll */
-            width: auto;
-            max-width: 88vw;
-            flex-shrink: 0;
-            object-fit: contain;
-            cursor: pointer;
-            background-color: var(--fundo-claro); /* Previne saltos de cor em imagens transparentes */
-        }
 
-        /* Ficha Técnica (Mobile padrão) */
+        /* FICHA TÉCNICA */
         .ficha-tecnica { 
             margin-top: 10px; 
             font-weight: 400; 
@@ -198,7 +213,6 @@
             justify-content: center;
         }
         
-        /* Barra superior do Lightbox centralizada */
         .lb-top-bar {
             position: absolute;
             top: 20px;
@@ -216,7 +230,7 @@
             cursor: pointer;
             user-select: none;
             opacity: 0.7;
-            font-family: monospace; /* Para ícones < e > consistentes */
+            font-family: monospace; 
         }
         .lb-nav-btn:hover { opacity: 1; }
 
@@ -244,9 +258,8 @@
 
         /* MODO DESKTOP */
         @media (min-width: 768px) {
-            .img-obra { max-width: none; }
+            .img-obra, .galeria-item { max-width: 70vw; } /* Ajuste de largura no Desktop */
             
-            /* Ajuste de Margens da Ficha Técnica no Desktop */
             .ficha-tecnica {
                 width: auto;
                 margin-left: 6vw;
@@ -267,7 +280,7 @@
 </head>
 <body>
 
-    <header>
+    <header id="main-header">
         <h1>Pedro Gallego</h1>
         <div class="header-icons">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -301,7 +314,6 @@
         <div id="obra-atual-header" onclick="toggleDropdown()">
             <span id="titulo-obra-visivel">Carregando...</span>
             <div style="display: flex; align-items: center; gap: 15px;">
-                <!-- Ícone X no cabeçalho -->
                 <span id="btn-close-header" style="display: none; font-weight: bold; cursor: pointer; font-size: 18px;" onclick="fecharGaleria(event)">X</span>
                 <span class="arrow-dropdown" style="transition: transform 0.3s ease; display: flex;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -361,6 +373,7 @@
         let idObraVisivel = null;
         let lbElements = [];
         let lbCurrentIndex = 0;
+        let lastScrollY = window.scrollY;
 
         async function init() {
             await checarExposicao();
@@ -473,11 +486,11 @@
             container.classList.add('expanded');
             container.innerHTML = buildGalleryHTML(obra);
             
-            // Exibe o botão de fechar no cabeçalho
             document.getElementById('btn-close-header').style.display = 'block';
             
             setTimeout(() => {
-                const y = container.getBoundingClientRect().top + window.scrollY - 120;
+                const headerOffset = document.body.classList.contains('header-hidden') ? 50 : 100;
+                const y = container.getBoundingClientRect().top + window.scrollY - headerOffset;
                 window.scrollTo({top: y, behavior: 'smooth'});
             }, 50);
 
@@ -495,7 +508,6 @@
                 el.classList.remove('expanded');
                 el.innerHTML = renderizarMiniatura(obra);
             });
-            // Esconde o botão de fechar no cabeçalho
             const btnClose = document.getElementById('btn-close-header');
             if(btnClose) btnClose.style.display = 'none';
         }
@@ -544,9 +556,7 @@
             let htmlDropdown = '';
             listaObras.forEach(obra => {
                 if (obra.ID !== idAtivo) {
-                    // Formata com o ano, se existir
-                    const anoTexto = obra.ANO ? `, ${obra.ANO}` : '';
-                    htmlDropdown += `<div class="dropdown-item" onclick="abrirObra('${obra.ID}', event)">${obra.TITULO}${anoTexto}</div>`;
+                    htmlDropdown += `<div class="dropdown-item" onclick="abrirObra('${obra.ID}', event)">${obra.TITULO}</div>`;
                 }
             });
             dropdown.innerHTML = htmlDropdown;
@@ -554,14 +564,24 @@
 
         function configurarScroll() {
             window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                
+                // Lógica para esconder o cabeçalho principal
+                if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                    document.body.classList.add('header-hidden');
+                } else if (currentScrollY < lastScrollY) {
+                    document.body.classList.remove('header-hidden');
+                }
+                lastScrollY = currentScrollY;
+
+                // Lógica de atualização do título da obra
                 const containers = document.querySelectorAll('.item-obra-container');
                 let obraCentral = null;
                 const offsetCabecalho = 90;
 
                 for (let container of containers) {
                     const rect = container.getBoundingClientRect();
-                    // Altera o título quando a base atinge 24% visível
-                    if (rect.bottom > (rect.height * 0.5) + offsetCabecalho) {
+                    if (rect.bottom > (rect.height * 0.24) + offsetCabecalho) {
                         obraCentral = container;
                         break;
                     }
@@ -587,7 +607,6 @@
         }
 
         function toggleDropdown() {
-            // Se clicar no dropdown, não fechar caso já estivesse processando fechar galeria
             const dropdown = document.getElementById('dropdown-obras');
             const arrowDropdown = document.querySelector('.arrow-dropdown');
             if (dropdown.style.display === 'block') {
@@ -599,7 +618,7 @@
             }
         }
 
-        // FECHAMENTOS GLOBAIS E TECLADO
+        // EVENTOS DE TECLADO
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('lightbox').style.display === 'flex') {
                 if (e.key === "Escape") fecharLightbox();
@@ -610,7 +629,7 @@
             }
         });
 
-        // NAVEGAÇÃO DO LIGHTBOX POR SCROLL (Mouse Wheel)
+        // NAVEGAÇÃO DO LIGHTBOX POR SCROLL
         let wheelTimeout;
         document.getElementById('lightbox').addEventListener('wheel', (e) => {
             if (wheelTimeout) return;
