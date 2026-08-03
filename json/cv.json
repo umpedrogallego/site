@@ -1,5 +1,20 @@
 [
   {
+    "INCLUIR": "",
+    "CATEGORIA": "Coletiva",
+    "ANO": 2026,
+    "TITULO": "O Mundo Através da IA",
+    "CURADORIA": "Antonio Somaini",
+    "LOCAL": "SESC 24 de Maio",
+    "CIDADE": "São Paulo, Brasil",
+    "INICIO": "2026-08-05T03:00:00.000Z",
+    "FIM": "2026-09-24T03:00:00.000Z",
+    "VINCULO": "Acapulco",
+    "INFO": "",
+    "INTRO": "<a href=\"https://maps.app.goo.gl/nWejLDWa2GmAjxSC7\" target=\"_blank\">SESC 24 de Maio</a>\nde terça a domingo, das 8h às 20h",
+    "TEXTO": "Aqui um exemplo de texto extra pra falar da expo. É muito simples, é briguidi plavrala bramana grompf est fsgueilm estadt Amact Gamp Umi ima tarva.\n\nImpossível não pular linhas e fazer o teste do n como célula e código de pular essas linhas gigantes astrópofos hierofantes carcundas bizarros. Emelenda grafaldo oplen mislein graf.\n\nDe 5 de agosto a 24 de novembro de 2024 você pode visitar o babadoooooo quiridaaaa!!!"
+  },
+  {
     "INCLUIR": ";",
     "CATEGORIA": "Individual",
     "ANO": 2025,
@@ -7,9 +22,12 @@
     "CURADORIA": "",
     "LOCAL": "Saturna Estúdio",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "de 1 a 15 de novembro",
+    "INICIO": "2025-11-01T03:00:00.000Z",
+    "FIM": "2025-11-15T03:00:00.000Z",
+    "VINCULO": "BetShopTV.com",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -19,9 +37,12 @@
     "CURADORIA": "Antonio Somaini",
     "LOCAL": "SESC Campinas",
     "CIDADE": "Campinas, Brasil",
-    "PERÍODO": "de 26 de novembro de 2025 a 24 de abril de 2026",
+    "INICIO": "2025-11-26T03:00:00.000Z",
+    "FIM": "2026-04-24T03:00:00.000Z",
+    "VINCULO": "Acapulco",
     "INFO": "https://www.sescsp.org.br/editorial/o-mundo-atraves-da-ia/",
-    "VINCULO": "Acapulco"
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -31,9 +52,12 @@
     "CURADORIA": "Bruna Costa e Rubens Takamine",
     "LOCAL": "Capacete / xow.rumi",
     "CIDADE": "Rio de Janeiro, Brasil",
-    "PERÍODO": "de 9 de setembro a 4 de outubro",
+    "INICIO": "2025-09-09T03:00:00.000Z",
+    "FIM": "2025-10-04T03:00:00.000Z",
+    "VINCULO": "BetShopTV.com",
     "INFO": "https://www.instagram.com/p/DOHc1RVjkpa",
-    "VINCULO": "BetShopTV.com"
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -43,9 +67,12 @@
     "CURADORIA": "Érica Burini",
     "LOCAL": "SAHA Studio",
     "CIDADE": "Istambul, Turquia",
-    "PERÍODO": "24 de maio",
+    "INICIO": "2025-05-24T03:00:00.000Z",
+    "FIM": "",
+    "VINCULO": "Ficção de personalidade",
     "INFO": "https://www.saha.org.tr/en/studio/program/cross-cuts-erica-burini",
-    "VINCULO": "Ficção de Personalidade"
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -55,9 +82,12 @@
     "CURADORIA": "Élcio Miazaki, Marcelo Amorim e Mateus Azevedo (org.)",
     "LOCAL": "Residência FONTE",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "de 17 a 25 de maio",
+    "INICIO": "2025-05-17T03:00:00.000Z",
+    "FIM": "2025-05-25T03:00:00.000Z",
+    "VINCULO": "6x1, Tonta, Torcida",
     "INFO": "https://font-e.org/post/784822672162996224/volante-a-ilus%C3%A3o-do-brilho",
-    "VINCULO": "6x1, Tonta, Torcida"
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -67,9 +97,12 @@
     "CURADORIA": "Érica Burini",
     "LOCAL": "Ateliê397",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "2025-02-15T03:00:00.000Z",
+    "FIM": "2025-04-12T03:00:00.000Z",
+    "VINCULO": "Meu nariz vai crescer agora",
     "INFO": "",
-    "VINCULO": "Meu nariz vai crescer agora"
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -79,9 +112,12 @@
     "CURADORIA": "Thaís Rivitti, Caio Bonifácio, Érica Burini e Tania Rivitti",
     "LOCAL": "SESC Pinheiros",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "de 12 de janeiro a 24 de abril",
+    "INICIO": "2022-01-12T03:00:00.000Z",
+    "FIM": "2022-04-24T03:00:00.000Z",
+    "VINCULO": "Nada machuca nem cansa, acordo de Emergência",
     "INFO": "https://atelie397.com/estamos-aqui/",
-    "VINCULO": "Nada machuca nem cansa, acordo de Emergência"
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -91,9 +127,12 @@
     "CURADORIA": "Eduardo Araújo (org.)",
     "LOCAL": "Colabirinto",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Screensaver",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -103,21 +142,12 @@
     "CURADORIA": "Thais Rivitti, Flora Leite e Carollina Lauriano",
     "LOCAL": "Ateliê397",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Screensaver",
     "INFO": "",
-    "VINCULO": ""
-  },
-  {
-    "INCLUIR": ";",
-    "CATEGORIA": "Coletiva",
-    "ANO": 2018,
-    "TITULO": "G>E de Peito Aberto",
-    "CURADORIA": "Karlla Girotto e Bruno Mendonça",
-    "LOCAL": "Casa do Povo",
-    "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
-    "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -127,9 +157,27 @@
     "CURADORIA": "Paula Borghi",
     "LOCAL": "Palacete 1922",
     "CIDADE": "Ribeirão Preto, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Um infinito de qualquer coisa",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
+  },
+  {
+    "INCLUIR": ";",
+    "CATEGORIA": "Coletiva",
+    "ANO": 2018,
+    "TITULO": "G>E de Peito Aberto",
+    "CURADORIA": "Karlla Girotto e Bruno Mendonça",
+    "LOCAL": "Casa do Povo",
+    "CIDADE": "São Paulo, Brasil",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Um infinito de qualquer coisa",
+    "INFO": "",
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -139,9 +187,12 @@
     "CURADORIA": "Laurem Crossetti",
     "LOCAL": "Espacio Tangente",
     "CIDADE": "Burgos, Espanha",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Ficção de personalidade",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -151,9 +202,12 @@
     "CURADORIA": "Daniel Steegmann Mangrané, Livia Flores e Michelle Sommer",
     "LOCAL": "A Gentil Carioca",
     "CIDADE": "Rio de Janeiro, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Confronto final, Domingo Maior",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": "",
@@ -163,9 +217,12 @@
     "CURADORIA": "Leo Ayres",
     "LOCAL": "Galeria BangBang",
     "CIDADE": "Lisboa, Portugal",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -175,9 +232,12 @@
     "CURADORIA": "",
     "LOCAL": "",
     "CIDADE": "Nova Iorque, EUA",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -187,9 +247,27 @@
     "CURADORIA": "",
     "LOCAL": "La Maudite",
     "CIDADE": "Paris, França",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Ficção de personalidade",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
+  },
+  {
+    "INCLUIR": "",
+    "CATEGORIA": "Coletiva",
+    "ANO": 2015,
+    "TITULO": "Contraprova",
+    "CURADORIA": "",
+    "LOCAL": "Paço das Artes",
+    "CIDADE": "São Paulo, Brasil",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
+    "INFO": "",
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": "",
@@ -199,9 +277,12 @@
     "CURADORIA": "Paula Borghi",
     "LOCAL": "Red Bull Station",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -211,9 +292,12 @@
     "CURADORIA": "",
     "LOCAL": "Instituto Tomie Ohtake",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Ficção de personalidade, série Show de Talentos, Domingo Maior",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": "",
@@ -223,9 +307,12 @@
     "CURADORIA": "Paulo Gallina",
     "LOCAL": "LAB570",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -235,9 +322,12 @@
     "CURADORIA": "",
     "LOCAL": "Instituto Tomie Ohtake",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -247,21 +337,27 @@
     "CURADORIA": "",
     "LOCAL": "Largo Cultural das Mercês",
     "CIDADE": "Belém, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
     "CATEGORIA": "Exibições",
     "ANO": 2014,
-    "TITULO": "Ficção de Personalidade",
+    "TITULO": "Ficção de personalidade",
     "CURADORIA": "",
     "LOCAL": "qualcasa",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Ficção de personalidade",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": "",
@@ -271,9 +367,12 @@
     "CURADORIA": "",
     "LOCAL": "Ateliê397",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -283,9 +382,12 @@
     "CURADORIA": "Paula Borghi",
     "LOCAL": "CCSP",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -295,9 +397,12 @@
     "CURADORIA": "",
     "LOCAL": "Ateliê397",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "Sucesso, aqui vou eu!",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -307,9 +412,12 @@
     "CURADORIA": "",
     "LOCAL": "Pinacoteca Municipal Miguel Dutra",
     "CIDADE": "Piracicaba, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": "",
@@ -319,9 +427,12 @@
     "CURADORIA": "",
     "LOCAL": "Ateliê397",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -331,9 +442,12 @@
     "CURADORIA": "",
     "LOCAL": "Pinacoteca Municipal Miguel Dutra",
     "CIDADE": "Piracicaba, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": "",
@@ -343,9 +457,12 @@
     "CURADORIA": "Mariana Trevas",
     "LOCAL": "Ateliê397",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -355,9 +472,12 @@
     "CURADORIA": "",
     "LOCAL": "",
     "CIDADE": "Rio de Janeiro, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": ";",
@@ -367,9 +487,12 @@
     "CURADORIA": "",
     "LOCAL": "Liceu de Artes e Ofícios",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   },
   {
     "INCLUIR": "",
@@ -379,8 +502,11 @@
     "CURADORIA": "",
     "LOCAL": "Ateliê397",
     "CIDADE": "São Paulo, Brasil",
-    "PERÍODO": "",
+    "INICIO": "",
+    "FIM": "",
+    "VINCULO": "",
     "INFO": "",
-    "VINCULO": ""
+    "INTRO": "",
+    "TEXTO": ""
   }
 ]
