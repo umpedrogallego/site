@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedro Gallego</title>
+    <!-- Fonte Supreme -->
     <link href="https://api.fontshare.com/v2/css?f[]=supreme@100,200,300,400,500,700,800&display=swap" rel="stylesheet">
 
     <style>
@@ -27,7 +28,7 @@
             color: var(--texto-escuro); 
             overflow-x: hidden;
             font-weight: 400;
-            padding-top: var(--header-height); /* Compensa o header fixed */
+            /* Removido o padding-top pois o header não é mais fixed */
         }
 
         a { color: inherit; font-weight: bold; text-decoration: underline; }
@@ -36,7 +37,7 @@
         .container-94 { width: 94vw; margin: 0 auto; }
         .container-88 { width: 88vw; margin: 0 auto; }
 
-        /* CABEÇALHO PRINCIPAL (FIXED) */
+        /* CABEÇALHO PRINCIPAL ESTÁTICO (Rola naturalmente com a página) */
         header {
             background-color: var(--fundo-cabecalho);
             color: var(--texto-claro);
@@ -45,16 +46,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 3vw;
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
-            z-index: 100;
-            transition: transform 0.3s ease;
-        }
-        
-        body.header-hidden header {
-            transform: translateY(-100%);
         }
 
         header h1 { font-size: 20px; font-weight: 700; text-transform: uppercase; }
@@ -84,27 +76,21 @@
             font-weight: 400;
         }
         .accordion-content.active { display: block; }
-
         .trabalhos-content { background-color: var(--fundo-claro); padding-bottom: 50px; }
 
-        /* SUB-CABEÇALHO DA OBRA (STICKY) */
+        /* ÚNICO ELEMENTO STICKY: BARRA DE TÍTULOS DE TRABALHOS */
         #obra-atual-header {
             background-color: var(--fundo-medio);
             border-bottom: 1px solid var(--texto-sem-selecao);
             padding: 10px 3vw;
             position: sticky;
-            top: var(--header-height);
-            z-index: 90;
+            top: 0; /* Gruda no topo zero da tela */
+            z-index: 100; /* Fica acima do conteúdo que rola por baixo */
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             font-weight: 400;
-            transition: top 0.3s ease;
-        }
-        
-        body.header-hidden #obra-atual-header {
-            top: 0;
         }
 
         /* MENU DROPDOWN DE OBRAS */
@@ -148,22 +134,23 @@
         .item-obra-container:nth-child(odd) { align-items: flex-start; }
         .item-obra-container:nth-child(even) { align-items: flex-end; }
         
-        /* Respiro ao redor da galeria expandida */
         .item-obra-container.expanded { 
             align-items: flex-start !important; 
-            margin-top: 10vh;
-            margin-bottom: 10vh;
+            margin-top: 60px;
+            margin-bottom: 60px;
         }
 
-        /* PADRONIZAÇÃO DE IMAGENS (Feed e Galeria) */
+        /* PADRONIZAÇÃO DE IMAGENS */
         .img-obra, .galeria-item {
-            height: 60vh;
+            height: 50vw; 
+            max-height: 45vh; 
             width: auto;
-            max-width: 80vw;
+            max-width: 88vw;
             display: block;
             object-fit: contain;
             cursor: pointer;
             flex-shrink: 0;
+            background-color: transparent;
         }
 
         /* VISUALIZAÇÃO DA GALERIA (EXPANDIDA) */
@@ -179,14 +166,19 @@
             position: relative;
         }
         
-        .galeria-wrapper::after {
-            content: "";
-            flex: 0 0 6vw; 
-        }
+        .galeria-wrapper::after { content: ""; flex: 0 0 6vw; }
 
         .galeria-wrapper::-webkit-scrollbar { height: 6px; }
         .galeria-wrapper::-webkit-scrollbar-track { background: transparent; }
         .galeria-wrapper::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 4px; }
+
+        .galeria-wrapper.is-single {
+            overflow-x: hidden;
+            padding-bottom: 0;
+        }
+        .galeria-wrapper.is-single::after {
+            display: none;
+        }
 
         /* FICHA TÉCNICA */
         .ficha-tecnica { 
@@ -202,7 +194,7 @@
         .ficha-primary { font-size: 1.1rem; margin-bottom: 5px; }
         .ficha-secondary { margin-bottom: 15px; color: var(--texto-escuro); }
 
-        /* LIGHTBOX */
+        /* LIGHTBOX REFINADO (COM CARACTERE ⨯) */
         #lightbox {
             display: none;
             position: fixed;
@@ -215,22 +207,27 @@
         
         .lb-top-bar {
             position: absolute;
-            top: 20px;
+            top: 15px; 
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 50px;
+            gap: 65px; 
             z-index: 10001;
         }
         
         .lb-nav-btn {
-            font-size: 30px;
+            font-size: 22px; 
+            line-height: 1;
             color: white;
             cursor: pointer;
             user-select: none;
             opacity: 0.7;
-            font-family: monospace; 
+            font-family: var(--font-site); 
+        }
+        .lb-close-btn {
+            font-size: 18.7px; /* 15% menor para igualar altura visual */
+            line-height: 1;
         }
         .lb-nav-btn:hover { opacity: 1; }
 
@@ -258,7 +255,10 @@
 
         /* MODO DESKTOP */
         @media (min-width: 768px) {
-            .img-obra, .galeria-item { max-width: 70vw; } /* Ajuste de largura no Desktop */
+            .img-obra, .galeria-item { 
+                height: 45vh; 
+                max-width: 70vw; 
+            }
             
             .ficha-tecnica {
                 width: auto;
@@ -311,10 +311,11 @@
     </div>
     
     <div id="trabalhos-conteudo" class="accordion-content active">
+        <!-- BARRA STICKY UNICA -->
         <div id="obra-atual-header" onclick="toggleDropdown()">
             <span id="titulo-obra-visivel">Carregando...</span>
             <div style="display: flex; align-items: center; gap: 15px;">
-                <span id="btn-close-header" style="display: none; font-weight: bold; cursor: pointer; font-size: 18px;" onclick="fecharGaleria(event)">X</span>
+                <span id="btn-close-header" style="display: none; font-weight: bold; cursor: pointer; font-size: 18.7px; line-height: 1;" onclick="fecharGaleria(event)">⨯</span>
                 <span class="arrow-dropdown" style="transition: transform 0.3s ease; display: flex;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </span>
@@ -331,7 +332,7 @@
     <div id="lightbox" onclick="fecharLightbox(event)">
         <div class="lb-top-bar">
             <span class="lb-nav-btn" onclick="navLightbox(-1, event)">&lt;</span>
-            <span class="lb-nav-btn" onclick="fecharLightbox(event)" style="font-family: var(--font-site); font-size: 24px; margin-top: 2px;">X</span>
+            <span class="lb-nav-btn lb-close-btn" onclick="fecharLightbox(event)">⨯</span>
             <span class="lb-nav-btn" onclick="navLightbox(1, event)">&gt;</span>
         </div>
         <div id="lightbox-media-container" onclick="event.stopPropagation()"></div>
@@ -373,7 +374,6 @@
         let idObraVisivel = null;
         let lbElements = [];
         let lbCurrentIndex = 0;
-        let lastScrollY = window.scrollY;
 
         async function init() {
             await checarExposicao();
@@ -448,11 +448,17 @@
         function buildGalleryHTML(obra) {
             let mediaHtml = '';
             
+            let totalMidias = 0;
             if (obra.PLAYER && obra.PLAYER.trim() !== "") {
                 mediaHtml += `<video class="galeria-item lb-item" src="${PLAYER_BASE}${obra.ID}play.mp4" controls onclick="abrirLightbox(this, event)"></video>`;
+                totalMidias++;
             }
 
             const count = parseInt(obra.IMG_COUNT) || 1;
+            totalMidias += count; 
+
+            const singleClass = totalMidias === 1 ? 'is-single' : '';
+            
             const letras = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
             const isMidiaVideo = (obra.MIDIA && obra.MIDIA.length > 2);
             
@@ -467,7 +473,7 @@
             
             const sobre = obra.SOBRE ? obra.SOBRE.replace(/\n/g, '<br>') : '';
             return `
-                <div class="galeria-wrapper">${mediaHtml}</div>
+                <div class="galeria-wrapper ${singleClass}">${mediaHtml}</div>
                 <div class="ficha-tecnica">
                     <div class="ficha-primary"><b>${obra.TITULO || ''}</b>, ${obra.ANO || ''}</div>
                     <div class="ficha-secondary">${obra.TECNICA || ''}, ${obra.DIMENSAO || ''}</div>
@@ -488,11 +494,27 @@
             
             document.getElementById('btn-close-header').style.display = 'block';
             
+            // CÁLCULO DIRETO E PRECISO
+            // Aumentamos o timeout para 150ms para garantir que o navegador 
+            // desenhou a caixa do vídeo antes de medirmos a posição dela.
             setTimeout(() => {
-                const headerOffset = document.body.classList.contains('header-hidden') ? 50 : 100;
-                const y = container.getBoundingClientRect().top + window.scrollY - headerOffset;
-                window.scrollTo({top: y, behavior: 'smooth'});
-            }, 50);
+                const subHeader = document.getElementById('obra-atual-header');
+                const galeriaWrapper = container.querySelector('.galeria-wrapper');
+                
+                // Mede o topo absoluto do carrossel no documento
+                const wrapperRect = galeriaWrapper.getBoundingClientRect();
+                const absoluteWrapperTop = wrapperRect.top + window.scrollY;
+                
+                // Mede a altura da barra sticky
+                const subHeaderHeight = subHeader.offsetHeight;
+                
+                // Como não há mais cabeçalho escondendo/aparecendo, a matemática é simples:
+                // Queremos que o scroll pare exatamente na posição do carrossel, 
+                // descontando o espaço que a barra sticky ocupa, menos os 20px de respiro.
+                const targetY = absoluteWrapperTop - subHeaderHeight - 20;
+                
+                window.scrollTo({top: targetY, behavior: 'smooth'});
+            }, 150);
 
             atualizarTituloEDropdown(id, obra.TITULO);
             document.getElementById('dropdown-obras').style.display = 'none';
@@ -564,20 +586,10 @@
 
         function configurarScroll() {
             window.addEventListener('scroll', () => {
-                const currentScrollY = window.scrollY;
-                
-                // Lógica para esconder o cabeçalho principal
-                if (currentScrollY > lastScrollY && currentScrollY > 50) {
-                    document.body.classList.add('header-hidden');
-                } else if (currentScrollY < lastScrollY) {
-                    document.body.classList.remove('header-hidden');
-                }
-                lastScrollY = currentScrollY;
-
-                // Lógica de atualização do título da obra
+                // Toda a lógica complexa de esconder o cabeçalho foi removida.
                 const containers = document.querySelectorAll('.item-obra-container');
                 let obraCentral = null;
-                const offsetCabecalho = 90;
+                const offsetCabecalho = document.getElementById('obra-atual-header').offsetHeight + 20;
 
                 for (let container of containers) {
                     const rect = container.getBoundingClientRect();
@@ -618,7 +630,7 @@
             }
         }
 
-        // EVENTOS DE TECLADO
+        // EVENTOS GLOBAIS
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('lightbox').style.display === 'flex') {
                 if (e.key === "Escape") fecharLightbox();
@@ -629,7 +641,6 @@
             }
         });
 
-        // NAVEGAÇÃO DO LIGHTBOX POR SCROLL
         let wheelTimeout;
         document.getElementById('lightbox').addEventListener('wheel', (e) => {
             if (wheelTimeout) return;
