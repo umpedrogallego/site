@@ -611,7 +611,7 @@
                 for (let container of containers) {
                     const rect = container.getBoundingClientRect();
                     // NOVA MEDIDA: 0.5 conforme solicitado no item 2
-                    if (rect.bottom > (rect.height * 0.5) + offsetCabecalho) {
+                    if (rect.bottom > (rect.height * 0.4) + offsetCabecalho) {
                         obraCentral = container;
                         break;
                     }
