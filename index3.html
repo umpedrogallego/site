@@ -26,17 +26,11 @@
             background-color: var(--fundo-medio); 
             color: var(--texto-escuro); 
             overflow-x: hidden;
-            font-weight: 400; /* Regular default */
+            font-weight: 400;
         }
 
-        a {
-            color: inherit;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-        a:hover {
-            text-decoration: none;
-        }
+        a { color: inherit; font-weight: bold; text-decoration: underline; }
+        a:hover { text-decoration: none; }
 
         .container-94 { width: 94vw; margin: 0 auto; }
         .container-88 { width: 88vw; margin: 0 auto; }
@@ -54,13 +48,9 @@
             top: 0;
             z-index: 100;
         }
-        header h1 { font-size: 20px; font-weight: 700; text-transform: uppercase; } /* Bold */
+        header h1 { font-size: 20px; font-weight: 700; text-transform: uppercase; }
         
-        .header-icons { 
-            display: flex; 
-            gap: 15px; 
-            align-items: center; 
-        }
+        .header-icons { display: flex; gap: 15px; align-items: center; }
         .header-icons svg { cursor: pointer; }
 
         /* ACORDEÕES GERAIS */
@@ -74,29 +64,22 @@
             align-items: center;
             text-transform: uppercase;
             cursor: pointer;
-            font-weight: 500; /* Medium */
+            font-weight: 500;
         }
         
-        .arrow {
-            display: flex;
-            align-items: center;
-            transition: transform 0.3s ease;
-        }
+        .arrow { display: flex; align-items: center; transition: transform 0.3s ease; }
 
         .accordion-content {
             background-color: var(--fundo-claro);
             display: none;
             width: 100%;
-            font-weight: 400; /* Regular */
+            font-weight: 400;
         }
         .accordion-content.active { display: block; }
 
-        .trabalhos-content {
-            background-color: var(--fundo-claro);
-            padding-bottom: 50px;
-        }
+        .trabalhos-content { background-color: var(--fundo-claro); padding-bottom: 50px; }
 
-        /* SUB-CABEÇALHO DA OBRA (Sticky) */
+        /* SUB-CABEÇALHO DA OBRA */
         #obra-atual-header {
             background-color: var(--fundo-medio);
             border-bottom: 1px solid var(--texto-sem-selecao);
@@ -108,7 +91,7 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            font-weight: 400; /* Regular */
+            font-weight: 400;
         }
 
         /* MENU DROPDOWN DE OBRAS */
@@ -121,18 +104,16 @@
             height: 70vh;
             background-color: var(--fundo-medio);
             overflow-y: auto;
-            overscroll-behavior: contain; /* Impede scroll do body ao rolar a lista */
+            overscroll-behavior: contain;
+            border-top: 1px solid rgba(24, 36, 32, 0.2); 
             border-bottom: 1px solid var(--texto-escuro);
             z-index: 95;
-            font-weight: 400; /* Regular */
+            font-weight: 400;
         }
         
         #dropdown-obras::-webkit-scrollbar { width: 6px; }
         #dropdown-obras::-webkit-scrollbar-track { background: transparent; }
-        #dropdown-obras::-webkit-scrollbar-thumb {
-            background-color: var(--fundo-cabecalho);
-            border-radius: 4px;
-        }
+        #dropdown-obras::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 4px; }
 
         .dropdown-item {
             padding: 12px 3vw;
@@ -141,27 +122,114 @@
         }
         .dropdown-item:hover { background-color: var(--fundo-claro); }
 
-        /* GALERIA DE SCROLL CORRIDO */
-        .galeria-scroll {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-            padding: 40px 0;
-        }
-
-        .item-obra-container {
-            display: flex;
-            flex-direction: column;
-        }
+        /* GALERIA DE FEED */
+        .galeria-scroll { display: flex; flex-direction: column; gap: 40px; padding: 40px 0; }
         
+        .item-obra-container { display: flex; flex-direction: column; width: 100%; position: relative; }
         .item-obra-container:nth-child(odd) { align-items: flex-start; }
         .item-obra-container:nth-child(even) { align-items: flex-end; }
+        .item-obra-container.expanded { align-items: flex-start !important; }
 
         .img-obra {
             width: auto;
             max-width: 80vw;
             max-height: 70vh;
             display: block;
+            object-fit: contain;
+            cursor: pointer;
+        }
+
+        /* VISUALIZAÇÃO DA GALERIA (EXPANDIDA) */
+        .galeria-wrapper {
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-left: 3vw; /* Alinhamento inicial */
+            padding-bottom: 15px; /* Espaço para a scrollbar */
+            scroll-behavior: smooth;
+            position: relative;
+        }
+        
+        /* Respiro ao final da rolagem horizontal */
+        .galeria-wrapper::after {
+            content: "";
+            flex: 0 0 6vw; 
+        }
+
+        /* Nova barra de rolagem para a galeria */
+        .galeria-wrapper::-webkit-scrollbar { height: 6px; }
+        .galeria-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .galeria-wrapper::-webkit-scrollbar-thumb { background-color: var(--fundo-cabecalho); border-radius: 4px; }
+        
+        .galeria-item {
+            height: 70vh; /* Mesma altura da miniatura do scroll */
+            width: auto;
+            max-width: 88vw;
+            flex-shrink: 0;
+            object-fit: contain;
+            cursor: pointer;
+            background-color: var(--fundo-claro); /* Previne saltos de cor em imagens transparentes */
+        }
+
+        /* Ficha Técnica (Mobile padrão) */
+        .ficha-tecnica { 
+            margin-top: 10px; 
+            font-weight: 400; 
+            line-height: 1.4; 
+            color: var(--texto-escuro); 
+            width: 88vw; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+        .ficha-tecnica b { font-weight: 500; }
+        .ficha-primary { font-size: 1.1rem; margin-bottom: 5px; }
+        .ficha-secondary { margin-bottom: 15px; color: var(--texto-escuro); }
+
+        /* LIGHTBOX */
+        #lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Barra superior do Lightbox centralizada */
+        .lb-top-bar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            z-index: 10001;
+        }
+        
+        .lb-nav-btn {
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+            opacity: 0.7;
+            font-family: monospace; /* Para ícones < e > consistentes */
+        }
+        .lb-nav-btn:hover { opacity: 1; }
+
+        #lightbox-media-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .lightbox-media {
+            max-width: 90vw;
+            max-height: 85vh;
             object-fit: contain;
         }
 
@@ -170,35 +238,30 @@
         #expo-dates { font-weight: 400; }
         .expo-info { padding: 20px 0; font-weight: 400; line-height: 1.4; }
         .expo-hero-img { width: 100%; height: auto; display: block; }
-        
-        /* Flexbox para EXPO (Mobile First) */
-        .expo-flex {
-            display: flex;
-            flex-direction: column;
-        }
+        .expo-flex { display: flex; flex-direction: column; }
+        .expo-intro { font-size: 1.4rem; font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
+        .expo-texto-body { font-size: 1rem; font-weight: 400; }
 
         /* MODO DESKTOP */
         @media (min-width: 768px) {
             .img-obra { max-width: none; }
             
-            /* Divisão em 2 colunas para a seção EXPO no Desktop */
+            /* Ajuste de Margens da Ficha Técnica no Desktop */
+            .ficha-tecnica {
+                width: auto;
+                margin-left: 6vw;
+                margin-right: 24vw;
+            }
+
             .expo-flex {
                 flex-direction: row;
-                width: 94vw;
-                margin: 0 auto;
-                gap: 40px;
-                padding: 40px 0;
-                align-items: flex-start;
+                align-items: center; 
+                width: 94vw; margin: 0 auto; gap: 40px; padding: 40px 0;
             }
-            .expo-flex .container-94, 
-            .expo-flex .container-88 {
-                width: 100%; 
-                margin: 0;
-                padding: 0 !important;
-            }
-            .expo-flex .expo-info {
-                padding: 0;
-            }
+            #expo-media, #expo-texto-container { width: 50%; margin: 0; padding: 0 !important; }
+            .expo-hero-img { max-height: 60vh; width: auto; max-width: 100%; }
+            #expo-texto-container { display: flex; justify-content: flex-start; }
+            .expo-texto-inner { width: 70%; }
         }
     </style>
 </head>
@@ -207,21 +270,11 @@
     <header>
         <h1>Pedro Gallego</h1>
         <div class="header-icons">
-            <!-- Ícone Search SVG -->
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <!-- Ícone Menu SVG -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </div>
     </header>
 
-    <!-- SEÇÃO EM EXPOSIÇÃO (Sem seta) -->
     <div id="expo-section">
         <div class="accordion-header" onclick="toggleAccordion(this, 'expo-content')">
             <span>EM EXPOSIÇÃO</span>
@@ -229,16 +282,16 @@
         </div>
         <div id="expo-content" class="accordion-content active">
             <div class="expo-flex">
-                <div class="container-94" id="expo-media" style="padding-top: 20px;"></div>
-                <div class="expo-info container-88" id="expo-texto"></div>
+                <div class="container-94" id="expo-media"></div>
+                <div id="expo-texto-container">
+                    <div class="expo-info expo-texto-inner container-88" id="expo-texto"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ACORDEÃO TRABALHOS -->
     <div class="accordion-header" onclick="toggleAccordion(this, 'trabalhos-conteudo')">
         <span>TRABALHOS</span>
-        <!-- Seta inicia apontando pra cima porque já começa aberto (rotate 180deg) -->
         <span class="arrow" style="transform: rotate(180deg);">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </span>
@@ -247,9 +300,13 @@
     <div id="trabalhos-conteudo" class="accordion-content active">
         <div id="obra-atual-header" onclick="toggleDropdown()">
             <span id="titulo-obra-visivel">Carregando...</span>
-            <span class="arrow-dropdown" style="transition: transform 0.3s ease; display: flex;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <!-- Ícone X no cabeçalho -->
+                <span id="btn-close-header" style="display: none; font-weight: bold; cursor: pointer; font-size: 18px;" onclick="fecharGaleria(event)">X</span>
+                <span class="arrow-dropdown" style="transition: transform 0.3s ease; display: flex;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </span>
+            </div>
             <div id="dropdown-obras"></div>
         </div>
 
@@ -258,7 +315,17 @@
         </div>
     </div>
 
-    <!-- OUTROS ACORDEÕES -->
+    <!-- LIGHTBOX HTML -->
+    <div id="lightbox" onclick="fecharLightbox(event)">
+        <div class="lb-top-bar">
+            <span class="lb-nav-btn" onclick="navLightbox(-1, event)">&lt;</span>
+            <span class="lb-nav-btn" onclick="fecharLightbox(event)" style="font-family: var(--font-site); font-size: 24px; margin-top: 2px;">X</span>
+            <span class="lb-nav-btn" onclick="navLightbox(1, event)">&gt;</span>
+        </div>
+        <div id="lightbox-media-container" onclick="event.stopPropagation()"></div>
+    </div>
+
+    <!-- OUTROS ACORDEÕES... -->
     <div class="accordion-header" onclick="toggleAccordion(this, 'projetos-conteudo')">
         <span>PROJETOS</span>
         <span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
@@ -287,9 +354,13 @@
         const URL_TRABALHOS = "https://umpedrogallego.github.io/site/json/trabalhos.json";
         const URL_CV = "https://umpedrogallego.github.io/site/json/cv.json";
         const WEBP_BASE = "https://umpedrogallego.github.io/site/img/webp/";
+        const MIDIA_BASE = "https://umpedrogallego.github.io/site/midia/";
+        const PLAYER_BASE = "https://umpedrogallego.github.io/site/player/";
 
         let listaObras = [];
         let idObraVisivel = null;
+        let lbElements = [];
+        let lbCurrentIndex = 0;
 
         async function init() {
             await checarExposicao();
@@ -302,31 +373,22 @@
                 const res = await fetch(URL_CV);
                 const cvData = await res.json();
                 
-                // Zera as horas para comparar apenas os dias de forma segura
                 const hoje = new Date();
                 hoje.setHours(0, 0, 0, 0);
                 
                 const expoAtiva = cvData.find(item => {
                     if(!item.FIM) return false;
                     const dataFim = new Date(item.FIM);
-                    // Lógica 1: Exibe apenas se a data de hoje for menor ou igual à data de FIM
                     return hoje <= dataFim;
                 });
 
                 if (expoAtiva) {
                     document.getElementById('expo-section').style.display = 'block';
+                    document.getElementById('expo-media').innerHTML = `<img class="expo-hero-img" src="https://www.sescsp.org.br/wp-content/uploads/2025/11/Banner-o-mundo-atraves-da-IA-1-e1763745840758.png" alt="Banner da Exposição">`;
                     
-                    document.getElementById('expo-media').innerHTML = `
-                        <img class="expo-hero-img" src="https://www.sescsp.org.br/wp-content/uploads/2025/11/Banner-o-mundo-atraves-da-IA-1-e1763745840758.png" alt="Banner da Exposição">
-                    `;
-                    
-                    // Lógica 4: Interpretando \n como <br>
                     const introFormatada = expoAtiva.INTRO ? expoAtiva.INTRO.replace(/\n/g, '<br>') : '';
                     const textoFormatado = expoAtiva.TEXTO ? expoAtiva.TEXTO.replace(/\n/g, '<br>') : '';
-
-                    document.getElementById('expo-texto').innerHTML = `
-                        <p>${introFormatada}</p><br><p>${textoFormatado}</p>
-                    `;
+                    document.getElementById('expo-texto').innerHTML = `<div class="expo-intro">${introFormatada}</div><div class="expo-texto-body">${textoFormatado}</div>`;
                     
                     const formatarData = (d) => {
                         const dateObj = new Date(d);
@@ -334,8 +396,16 @@
                     };
                     document.getElementById('expo-dates').innerText = `${formatarData(expoAtiva.INICIO)} — ${formatarData(expoAtiva.FIM)}`;
                 }
-            } catch(e) {
-                console.error("Erro ao carregar CV:", e);
+            } catch(e) { console.error("Erro ao carregar CV:", e); }
+        }
+
+        function renderizarMiniatura(obra) {
+            if (obra.MIDIA && obra.MIDIA.trim() !== "") {
+                return `<video class="img-obra" muted loop playsinline autoplay onclick="abrirObra('${obra.ID}', event)">
+                            <source src="${MIDIA_BASE}${obra.ID}a.${obra.MIDIA}" type="video/mp4">
+                        </video>`;
+            } else {
+                return `<img class="img-obra" src="${WEBP_BASE}${obra.ID}a.webp" alt="${obra.TITULO}" loading="lazy" onerror="this.style.display='none'" onclick="abrirObra('${obra.ID}', event)">`;
             }
         }
 
@@ -351,37 +421,134 @@
                 listaObras.forEach((obra) => {
                     htmlFeed += `
                         <div class="item-obra-container" id="obra-${obra.ID}" data-titulo="${obra.TITULO}">
-                            <img class="img-obra" src="${WEBP_BASE}${obra.ID}a.webp" alt="${obra.TITULO}" loading="lazy" onerror="this.style.display='none'">
+                            ${renderizarMiniatura(obra)}
                         </div>
                     `;
                 });
 
                 galeriaFeed.innerHTML = htmlFeed;
+                if (listaObras.length > 0) atualizarTituloEDropdown(listaObras[0].ID, listaObras[0].TITULO);
 
-                if (listaObras.length > 0) {
-                    atualizarTituloEDropdown(listaObras[0].ID, listaObras[0].TITULO);
-                }
+            } catch (e) { console.error("Erro ao carregar Trabalhos:", e); }
+        }
 
-            } catch (e) {
-                console.error("Erro ao carregar Trabalhos:", e);
+        function buildGalleryHTML(obra) {
+            let mediaHtml = '';
+            
+            if (obra.PLAYER && obra.PLAYER.trim() !== "") {
+                mediaHtml += `<video class="galeria-item lb-item" src="${PLAYER_BASE}${obra.ID}play.mp4" controls onclick="abrirLightbox(this, event)"></video>`;
             }
+
+            const count = parseInt(obra.IMG_COUNT) || 1;
+            const letras = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+            const isMidiaVideo = (obra.MIDIA && obra.MIDIA.length > 2);
+            
+            for (let j = 0; j < count; j++) {
+                if (j === 0 && isMidiaVideo) {
+                    mediaHtml += `<video class="galeria-item lb-item" muted loop playsinline autoplay onclick="abrirLightbox(this, event)"><source src="${MIDIA_BASE}${obra.ID}a.${obra.MIDIA}" type="video/mp4"></video>`;
+                } else {
+                    const letra = letras[j] || 'a';
+                    mediaHtml += `<img class="galeria-item lb-item" src="${WEBP_BASE}${obra.ID}${letra}.webp" loading="lazy" onclick="abrirLightbox(this, event)">`;
+                }
+            }
+            
+            const sobre = obra.SOBRE ? obra.SOBRE.replace(/\n/g, '<br>') : '';
+            return `
+                <div class="galeria-wrapper">${mediaHtml}</div>
+                <div class="ficha-tecnica">
+                    <div class="ficha-primary"><b>${obra.TITULO || ''}</b>, ${obra.ANO || ''}</div>
+                    <div class="ficha-secondary">${obra.TECNICA || ''}, ${obra.DIMENSAO || ''}</div>
+                    <div class="ficha-sobre">${sobre}</div>
+                </div>
+            `;
+        }
+
+        function abrirObra(id, event) {
+            if (event) event.stopPropagation();
+            fecharGaleria(); 
+            
+            const container = document.getElementById(`obra-${id}`);
+            const obra = listaObras.find(o => o.ID === id);
+            
+            container.classList.add('expanded');
+            container.innerHTML = buildGalleryHTML(obra);
+            
+            // Exibe o botão de fechar no cabeçalho
+            document.getElementById('btn-close-header').style.display = 'block';
+            
+            setTimeout(() => {
+                const y = container.getBoundingClientRect().top + window.scrollY - 120;
+                window.scrollTo({top: y, behavior: 'smooth'});
+            }, 50);
+
+            atualizarTituloEDropdown(id, obra.TITULO);
+            document.getElementById('dropdown-obras').style.display = 'none';
+            const arrowDropdown = document.querySelector('.arrow-dropdown');
+            if(arrowDropdown) arrowDropdown.style.transform = 'rotate(0deg)';
+        }
+
+        function fecharGaleria(event) {
+            if(event) event.stopPropagation();
+            document.querySelectorAll('.item-obra-container.expanded').forEach(el => {
+                const id = el.id.replace('obra-', '');
+                const obra = listaObras.find(o => o.ID === id);
+                el.classList.remove('expanded');
+                el.innerHTML = renderizarMiniatura(obra);
+            });
+            // Esconde o botão de fechar no cabeçalho
+            const btnClose = document.getElementById('btn-close-header');
+            if(btnClose) btnClose.style.display = 'none';
+        }
+
+        // LIGHTBOX LOGIC
+        function abrirLightbox(element, event) {
+            event.stopPropagation();
+            const galeria = element.closest('.galeria-wrapper');
+            lbElements = Array.from(galeria.querySelectorAll('.lb-item'));
+            lbCurrentIndex = lbElements.indexOf(element);
+            
+            document.getElementById('lightbox').style.display = 'flex';
+            atualizarLightbox();
+        }
+
+        function atualizarLightbox() {
+            const container = document.getElementById('lightbox-media-container');
+            const el = lbElements[lbCurrentIndex];
+            
+            if (el.tagName === 'VIDEO') {
+                container.innerHTML = `<video class="lightbox-media" src="${el.querySelector('source') ? el.querySelector('source').src : el.src}" controls autoplay></video>`;
+            } else {
+                container.innerHTML = `<img class="lightbox-media" src="${el.src}">`;
+            }
+        }
+
+        function navLightbox(dir, event) {
+            if(event) event.stopPropagation();
+            lbCurrentIndex += dir;
+            if (lbCurrentIndex < 0) lbCurrentIndex = lbElements.length - 1;
+            if (lbCurrentIndex >= lbElements.length) lbCurrentIndex = 0;
+            atualizarLightbox();
+        }
+
+        function fecharLightbox(event) {
+            if(event) event.stopPropagation();
+            document.getElementById('lightbox').style.display = 'none';
+            document.getElementById('lightbox-media-container').innerHTML = '';
         }
 
         function atualizarTituloEDropdown(idAtivo, titulo) {
             if (idObraVisivel === idAtivo) return;
-            
             idObraVisivel = idAtivo;
             document.getElementById('titulo-obra-visivel').innerText = titulo;
-
             const dropdown = document.getElementById('dropdown-obras');
             let htmlDropdown = '';
-            
             listaObras.forEach(obra => {
                 if (obra.ID !== idAtivo) {
-                    htmlDropdown += `<div class="dropdown-item" onclick="rolarParaObra('${obra.ID}', event)">${obra.TITULO}</div>`;
+                    // Formata com o ano, se existir
+                    const anoTexto = obra.ANO ? `, ${obra.ANO}` : '';
+                    htmlDropdown += `<div class="dropdown-item" onclick="abrirObra('${obra.ID}', event)">${obra.TITULO}${anoTexto}</div>`;
                 }
             });
-            
             dropdown.innerHTML = htmlDropdown;
         }
 
@@ -393,8 +560,8 @@
 
                 for (let container of containers) {
                     const rect = container.getBoundingClientRect();
-                    // Altera quando a imagem atinge 60% rolada pra cima
-                    if (rect.bottom > (rect.height * 0.24) + offsetCabecalho) {
+                    // Altera o título quando a base atinge 24% visível
+                    if (rect.bottom > (rect.height * 0.5) + offsetCabecalho) {
                         obraCentral = container;
                         break;
                     }
@@ -411,27 +578,18 @@
         function toggleAccordion(headerElement, contentId) {
             const content = document.getElementById(contentId);
             if (!content) return;
-            
             const isActive = content.classList.contains('active');
+            if (isActive) content.classList.remove('active');
+            else content.classList.add('active');
             
-            // Alterna a classe active no conteúdo
-            if (isActive) {
-                content.classList.remove('active');
-            } else {
-                content.classList.add('active');
-            }
-            
-            // Lógica 2: Alterna a rotação da seta, se houver
             const arrow = headerElement.querySelector('.arrow');
-            if (arrow) {
-                arrow.style.transform = isActive ? 'rotate(0deg)' : 'rotate(180deg)';
-            }
+            if (arrow) arrow.style.transform = isActive ? 'rotate(0deg)' : 'rotate(180deg)';
         }
 
         function toggleDropdown() {
+            // Se clicar no dropdown, não fechar caso já estivesse processando fechar galeria
             const dropdown = document.getElementById('dropdown-obras');
             const arrowDropdown = document.querySelector('.arrow-dropdown');
-            
             if (dropdown.style.display === 'block') {
                 dropdown.style.display = 'none';
                 arrowDropdown.style.transform = 'rotate(0deg)';
@@ -441,17 +599,29 @@
             }
         }
 
-        function rolarParaObra(id, event) {
-            event.stopPropagation(); 
-            const elemento = document.getElementById(`obra-${id}`);
-            if(elemento) {
-                const y = elemento.getBoundingClientRect().top + window.scrollY - 100; 
-                window.scrollTo({top: y, behavior: 'smooth'});
+        // FECHAMENTOS GLOBAIS E TECLADO
+        window.addEventListener('keydown', (e) => {
+            if (document.getElementById('lightbox').style.display === 'flex') {
+                if (e.key === "Escape") fecharLightbox();
+                if (e.key === "ArrowLeft") navLightbox(-1, e);
+                if (e.key === "ArrowRight") navLightbox(1, e);
+            } else if (e.key === "Escape") {
+                fecharGaleria();
             }
-            // Garante que o menu feche visualmente correto
-            document.getElementById('dropdown-obras').style.display = 'none';
-            document.querySelector('.arrow-dropdown').style.transform = 'rotate(0deg)';
-        }
+        });
+
+        // NAVEGAÇÃO DO LIGHTBOX POR SCROLL (Mouse Wheel)
+        let wheelTimeout;
+        document.getElementById('lightbox').addEventListener('wheel', (e) => {
+            if (wheelTimeout) return;
+            if (e.deltaX > 20 || e.deltaY > 20) { 
+                navLightbox(1, e); 
+                wheelTimeout = setTimeout(() => wheelTimeout = null, 300);
+            } else if (e.deltaX < -20 || e.deltaY < -20) { 
+                navLightbox(-1, e); 
+                wheelTimeout = setTimeout(() => wheelTimeout = null, 300);
+            }
+        });
 
         window.addEventListener('click', (e) => {
             const headerObra = document.getElementById('obra-atual-header');
@@ -459,6 +629,10 @@
                 document.getElementById('dropdown-obras').style.display = 'none';
                 const arrowDropdown = document.querySelector('.arrow-dropdown');
                 if(arrowDropdown) arrowDropdown.style.transform = 'rotate(0deg)';
+            }
+
+            if (!e.target.closest('.expanded') && !e.target.classList.contains('img-obra') && !e.target.closest('#lightbox')) {
+                fecharGaleria();
             }
         });
 
