@@ -20,8 +20,8 @@
             --header-height: 50px;
 
             /* PADRONIZAÇÃO TIPOGRÁFICA */
-            --font-base: clamp(12px, 1.2vw + 10px, 16px);       /* Texto geral e barras (Ajuste 3) */
-            --font-destaque: clamp(18px, 1.8vw + 15px, 24px);   /* Destaque hero */
+            --font-base: clamp(12px, 1.2vw + 10px, 16px);       
+            --font-destaque: clamp(18px, 1.8vw + 15px, 24px);   
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -74,7 +74,7 @@
             text-transform: uppercase;
             cursor: pointer;
             font-weight: 500;
-            font-size: var(--font-base); /* Ajuste 3: Mesmo tamanho do texto geral */
+            font-size: var(--font-base);
         }
         
         .arrow { display: flex; align-items: center; transition: transform 0.3s ease; }
@@ -100,8 +100,8 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            font-weight: 500; /* Igualando weight com Trabalhos */
-            font-size: var(--font-base); /* Ajuste 3: Mesmo tamanho do texto geral */
+            font-weight: 500; 
+            font-size: var(--font-base); 
         }
 
         /* MENU DROPDOWN DE OBRAS */
@@ -163,7 +163,6 @@
             cursor: pointer;
             flex-shrink: 0;
             background-color: transparent;
-            /* A transição abaixo ajuda na animação do script JS */
             transition: transform 0.25s ease-out; 
         }
 
@@ -174,12 +173,14 @@
             display: flex;
             gap: 20px;
             overflow-x: auto;
-            padding-left: 3vw;
+            /* Ajuste 1: padding-left alterado para 6vw para alinhar perfeitamente com a margem do texto abaixo */
+            padding-left: 6vw;
             padding-bottom: 15px; 
             scroll-behavior: smooth;
             position: relative;
         }
         
+        /* Ajuste 1: o espaçamento final precisa acompanhar os 6vw para manter a simetria no scroll horizontal */
         .galeria-wrapper::after { content: ""; flex: 0 0 6vw; }
 
         .galeria-wrapper::-webkit-scrollbar { height: 6px; }
@@ -205,9 +206,11 @@
             margin-right: auto;
             font-size: var(--font-base); 
         }
-        .ficha-tecnica b { font-weight: 500; }
-        .ficha-primary { margin-bottom: 5px; }
-        .ficha-secondary { margin-bottom: 15px; color: var(--texto-escuro); }
+        
+        /* Ajuste 2: Equiparando os pesos da fonte para título, ano, técnica e dimensão */
+        .ficha-primary { margin-bottom: 5px; font-weight: 500; }
+        .ficha-secondary { margin-bottom: 15px; font-weight: 500; color: var(--texto-escuro); }
+        .ficha-sobre { font-weight: 400; } /* O texto descritivo segue com peso normal */
 
         /* LIGHTBOX REFINADO */
         #lightbox {
@@ -256,36 +259,27 @@
             object-fit: contain;
         }
 
-        /* SEÇÃO EM EXPOSIÇÃO - MOBILE-FIRST (Ajuste 2) */
+        /* SEÇÃO EM EXPOSIÇÃO */
         #expo-section { display: none; }
-        
-        /* Flex em coluna com imagem no topo colada na barra */
-        .expo-flex { 
-            display: flex; 
-            flex-direction: column; 
-        }
-        
-        /* Imagem força ocupação total da tela e ignora paddings */
-        #expo-media { 
-            width: 100vw; 
-            margin-left: calc(-50vw + 50%); 
-        }
-        .expo-hero-img { 
-            width: 100%; 
-            height: auto; 
-            display: block; 
-        }
+        .expo-flex { display: flex; flex-direction: column; }
+        #expo-media { width: 100vw; margin-left: calc(-50vw + 50%); }
+        .expo-hero-img { width: 100%; height: auto; display: block; }
         
         .expo-info { padding: 20px 0; font-weight: 400; line-height: 1.4; }
         .expo-intro { font-size: var(--font-destaque); font-weight: 700; margin-bottom: 15px; line-height: 1.2; }
         .expo-texto-body { font-size: var(--font-base); font-weight: 400; }
 
-        /* MODO DESKTOP */
+/* MODO DESKTOP */
         @media (min-width: 768px) {
+            /* Alinhamento perfeito do carrossel com o texto (9vw de margem absoluta) */
+            .galeria-wrapper { padding-left: 9vw; }
+            .galeria-wrapper::after { flex: 0 0 9vw; }
+
             .img-obra, .galeria-item { height: 45vh; max-width: 70vw; }
+            
+            /* O texto tem 3vw do contêiner pai + 6vw de margin-left = 9vw */
             .ficha-tecnica { width: auto; margin-left: 6vw; margin-right: 24vw; }
 
-            /* Desktop: Texto na Esquerda, Imagem na Direita com 40px de Gap */
             .expo-flex {
                 flex-direction: row-reverse; 
                 align-items: center; 
@@ -295,7 +289,6 @@
                 padding: 40px 0;
             }
             
-            /* Restaura o tamanho do container no desktop */
             #expo-media, #expo-texto-container { width: 50%; margin: 0; padding: 0 !important; }
             .expo-hero-img { max-height: 60vh; width: auto; max-width: 100%; }
             #expo-texto-container { display: flex; justify-content: flex-start; }
@@ -314,7 +307,6 @@
     </header>
 
     <div id="expo-section">
-        <!-- BARRA EM EXPOSIÇÃO - Ajuste 4 -->
         <div class="accordion-header" onclick="toggleAccordion(this, 'expo-content')">
             <span id="expo-header-text">EM EXPOSIÇÃO</span>
             <span class="arrow" style="transform: rotate(0deg);">
@@ -323,7 +315,6 @@
         </div>
         
         <div id="expo-content" class="accordion-content active">
-            <!-- HTML Invertido: Mídia vem primeiro no DOM para o Mobile (Ajuste 2) -->
             <div class="expo-flex">
                 <div id="expo-media"></div>
                 <div id="expo-texto-container">
@@ -341,7 +332,6 @@
     </div>
     
     <div id="trabalhos-conteudo" class="accordion-content active">
-        <!-- BARRA STICKY -->
         <div id="obra-atual-header" onclick="toggleDropdown()">
             <span id="titulo-obra-visivel">Carregando...</span>
             <div style="display: flex; align-items: center; gap: 15px;">
@@ -368,7 +358,6 @@
         <div id="lightbox-media-container" onclick="event.stopPropagation()"></div>
     </div>
 
-    <!-- OUTROS ACORDEÕES... -->
     <div class="accordion-header" onclick="toggleAccordion(this, 'projetos-conteudo')">
         <span>PROJETOS</span>
         <span class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
@@ -405,6 +394,28 @@
         let lbElements = [];
         let lbCurrentIndex = 0;
 
+        // Ajuste 3: Script Anti-Viúvas
+        // Esta função recebe um texto longo, separa pelas quebras de linha e injeta um &nbsp; entre as duas últimas palavras.
+        function tratarViuvas(texto) {
+            if (!texto) return "";
+            const paragrafos = texto.split('\n');
+            
+            const paragrafosTratados = paragrafos.map(p => {
+                const palavras = p.trim().split(' ');
+                // Só aplica se o parágrafo tiver pelo menos 3 palavras
+                if (palavras.length > 3) {
+                    const ultima = palavras.pop();
+                    const penultima = palavras.pop();
+                    // Une as duas últimas com o espaço inquebrável
+                    palavras.push(penultima + '&nbsp;' + ultima);
+                    return palavras.join(' ');
+                }
+                return p;
+            });
+            // Retorna o texto unindo os parágrafos convertendo as quebras em <br> pro HTML
+            return paragrafosTratados.join('<br>');
+        }
+
         async function init() {
             await checarExposicao();
             await carregarTrabalhos();
@@ -429,8 +440,10 @@
                     document.getElementById('expo-section').style.display = 'block';
                     document.getElementById('expo-media').innerHTML = `<img class="expo-hero-img" src="https://www.sescsp.org.br/wp-content/uploads/2025/11/Banner-o-mundo-atraves-da-IA-1-e1763745840758.png" alt="Banner da Exposição">`;
                     
-                    const introFormatada = expoAtiva.INTRO ? expoAtiva.INTRO.replace(/\n/g, '<br>') : '';
-                    const textoFormatado = expoAtiva.TEXTO ? expoAtiva.TEXTO.replace(/\n/g, '<br>') : '';
+                    // Ajuste 3: Aplicando o filtro anti-viúvas nos textos da Hero Section
+                    const introFormatada = tratarViuvas(expoAtiva.INTRO);
+                    const textoFormatado = tratarViuvas(expoAtiva.TEXTO);
+                    
                     document.getElementById('expo-texto').innerHTML = `<div class="expo-intro">${introFormatada}</div><div class="expo-texto-body">${textoFormatado}</div>`;
                     
                     const formatarData = (d) => {
@@ -438,7 +451,6 @@
                         return `${String(dateObj.getDate()).padStart(2, '0')}.${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
                     };
                     
-                    // Ajuste 4: Altera o texto injetando a data da coluna FIM do json
                     document.getElementById('expo-header-text').innerHTML = `EM EXPOSIÇÃO até ${formatarData(expoAtiva.FIM)}`;
                 }
             } catch(e) { console.error("Erro ao carregar CV:", e); }
@@ -490,7 +502,6 @@
             totalMidias += count; 
 
             const singleClass = totalMidias === 1 ? 'is-single' : '';
-            
             const letras = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
             const isMidiaVideo = (obra.MIDIA && obra.MIDIA.length > 2);
             
@@ -503,18 +514,24 @@
                 }
             }
             
-            const sobre = obra.SOBRE ? obra.SOBRE.replace(/\n/g, '<br>') : '';
+            // Ajuste 3: Passando o texto descritivo no filtro anti-viúvas antes de injetar
+            const sobreTratado = tratarViuvas(obra.SOBRE);
+
+            // Ajuste 2: Construindo a pontuação da ficha técnica corretamente via array.filter.join
+            // Se o dado existir, ele entra na lista. O .join junta as informações com a pontuação escolhida.
+            const linhaPrimaria = [obra.TITULO, obra.ANO].filter(Boolean).join(', ');
+            const linhaSecundaria = [obra.TECNICA, obra.DIMENSAO].filter(Boolean).join('. '); // Usa o ponto final aqui
+
             return `
                 <div class="galeria-wrapper ${singleClass}">${mediaHtml}</div>
                 <div class="ficha-tecnica">
-                    <div class="ficha-primary"><b>${obra.TITULO || ''}</b>, ${obra.ANO || ''}</div>
-                    <div class="ficha-secondary">${obra.TECNICA || ''}, ${obra.DIMENSAO || ''}</div>
-                    <div class="ficha-sobre">${sobre}</div>
+                    <div class="ficha-primary">${linhaPrimaria}</div>
+                    <div class="ficha-secondary">${linhaSecundaria}</div>
+                    <div class="ficha-sobre">${sobreTratado}</div>
                 </div>
             `;
         }
 
-        // Helper para renderizar a galeria expandida sem repetir código
         function renderizarObraExpandida(container, obra, id) {
             container.classList.add('expanded');
             container.innerHTML = buildGalleryHTML(obra);
@@ -547,20 +564,14 @@
             fecharGaleria(); 
             const obra = listaObras.find(o => o.ID === id);
 
-            // [ANIMAÇÃO THUMB CARROSSEL] - Ajuste 5
-            // Verifica se o contêiner está alinhado à direita antes de abri-lo
             const isRightAligned = window.getComputedStyle(container).alignItems === 'flex-end';
             
             if (isRightAligned) {
                 const img = container.querySelector('.img-obra');
                 if (img) {
-                    // Calcula exatamente a distância da imagem até a borda esquerda do container
                     const moveX = container.getBoundingClientRect().width - img.getBoundingClientRect().width;
-                    
-                    // Dispara a transição para deslocar a imagem para a esquerda
                     img.style.transform = `translateX(-${moveX}px)`;
                     
-                    // Aguarda a transição terminar antes de renderizar a obra expandida real
                     setTimeout(() => {
                         renderizarObraExpandida(container, obra, id);
                     }, 250);
@@ -568,7 +579,6 @@
                 }
             }
 
-            // Se for ímpar (alinhado à esquerda), abre direto
             renderizarObraExpandida(container, obra, id);
         }
 
@@ -584,7 +594,6 @@
             if(btnClose) btnClose.style.display = 'none';
         }
 
-        // LIGHTBOX LOGIC
         function abrirLightbox(element, event) {
             event.stopPropagation();
             const galeria = element.closest('.galeria-wrapper');
@@ -642,7 +651,6 @@
 
                 for (let container of containers) {
                     const rect = container.getBoundingClientRect();
-                    // Ajuste 1: Ponto de mudança para (rect.height * 0.4)
                     if (rect.bottom > (rect.height * 0.25) + offsetCabecalho) {
                         obraCentral = container;
                         break;
@@ -680,7 +688,6 @@
             }
         }
 
-        // EVENTOS GLOBAIS
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('lightbox').style.display === 'flex') {
                 if (e.key === "Escape") fecharLightbox();
