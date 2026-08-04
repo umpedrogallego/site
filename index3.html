@@ -22,6 +22,30 @@
             /* PADRONIZAÇÃO TIPOGRÁFICA */
             --font-base: clamp(12px, 1.2vw + 10px, 16px);       
             --font-destaque: clamp(18px, 1.8vw + 15px, 24px);   
+        }/* MODO DESKTOP */
+        @media (min-width: 768px) {
+            /* Alinhamento perfeito do carrossel com o texto (9vw de margem absoluta) */
+            .galeria-wrapper { padding-left: 9vw; }
+            .galeria-wrapper::after { flex: 0 0 9vw; }
+
+            .img-obra, .galeria-item { height: 45vh; max-width: 70vw; }
+            
+            /* O texto tem 3vw do contêiner pai + 6vw de margin-left = 9vw */
+            .ficha-tecnica { width: auto; margin-left: 6vw; margin-right: 24vw; }
+
+            .expo-flex {
+                flex-direction: row-reverse; 
+                align-items: center; 
+                width: 94vw; 
+                margin: 0 auto; 
+                gap: 40px; 
+                padding: 40px 0;
+            }
+            
+            #expo-media, #expo-texto-container { width: 50%; margin: 0; padding: 0 !important; }
+            .expo-hero-img { max-height: 60vh; width: auto; max-width: 100%; }
+            #expo-texto-container { display: flex; justify-content: flex-start; }
+            .expo-texto-inner { width: 100%; } 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -56,7 +80,6 @@
         header h1 { 
             font-size: var(--font-base); 
             font-weight: 700; 
-            text-transform: uppercase; 
         }
         
         .header-icons { display: flex; gap: 15px; align-items: center; }
@@ -71,7 +94,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            text-transform: uppercase;
             cursor: pointer;
             font-weight: 500;
             font-size: var(--font-base);
@@ -651,7 +673,7 @@
 
                 for (let container of containers) {
                     const rect = container.getBoundingClientRect();
-                    if (rect.bottom > (rect.height * 0.25) + offsetCabecalho) {
+                    if (rect.bottom > (rect.height * 0.4) + offsetCabecalho) {
                         obraCentral = container;
                         break;
                     }
