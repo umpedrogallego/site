@@ -1,0 +1,549 @@
+/* Resets & Globals */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    background-color: #888888;
+    color: #182420;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Ocultar Scrollbars */
+::-webkit-scrollbar {
+    display: none;
+}
+* {
+    scrollbar-width: none;
+}
+
+/* Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 2px solid #182420;
+    font-size: 0.875rem;
+    color: #182420;
+}
+
+.logo {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.nav-links {
+    color: #182420;
+}
+
+.nav-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: #182420;
+}
+
+/* Main Layout (2 Columns) */
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.main-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    border-right: 2px solid #182420;
+}
+
+.col-sidebar {
+    width: 248px; /* Further 10% reduction */
+    overflow-y: hidden; /* Accordion handles scroll */
+    font-size: 0.875rem;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    min-height: 0;
+}
+
+/* Accordion */
+.accordion-item {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 2px solid #182420;
+    position: relative;
+}
+.accordion-item:last-child {
+    border-bottom: none;
+}
+.accordion-header {
+    background: none;
+    border: none;
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-size: 0.875rem;
+    color: #182420;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.accordion-header:hover {
+    background-color: rgba(97, 93, 86, 0.1);
+}
+.accordion-content {
+    display: none;
+    overflow-y: auto;
+    padding: 0.75rem 0 2rem 0;
+    flex: 1;
+    min-height: 0;
+    direction: rtl; /* Custom scrollbar on left */
+}
+.accordion-content > * {
+    direction: ltr; /* Reset direction for content */
+}
+
+/* Custom Scrollbar for specific containers */
+.accordion-content, .sobre-text {
+    scrollbar-width: thin;
+    scrollbar-color: #182420 transparent;
+}
+
+/* On WebKit browsers (Chrome, Edge, Safari), override scrollbar-color so custom -webkit-scrollbar rules apply cleanly */
+@supports selector(::-webkit-scrollbar) {
+    .accordion-content, .sobre-text {
+        scrollbar-width: auto;
+        scrollbar-color: auto;
+    }
+}
+
+.accordion-content::-webkit-scrollbar, 
+.sobre-text::-webkit-scrollbar {
+    display: block !important;
+    width: 6px !important;
+    height: 6px !important;
+}
+
+.accordion-content::-webkit-scrollbar-button, 
+.sobre-text::-webkit-scrollbar-button,
+.accordion-content::-webkit-scrollbar-button:single-button, 
+.sobre-text::-webkit-scrollbar-button:single-button,
+.accordion-content::-webkit-scrollbar-button:vertical:decrement, 
+.sobre-text::-webkit-scrollbar-button:vertical:decrement,
+.accordion-content::-webkit-scrollbar-button:vertical:increment, 
+.sobre-text::-webkit-scrollbar-button:vertical:increment,
+.accordion-content::-webkit-scrollbar-button:start:decrement,
+.sobre-text::-webkit-scrollbar-button:start:decrement,
+.accordion-content::-webkit-scrollbar-button:end:increment,
+.sobre-text::-webkit-scrollbar-button:end:increment {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+.accordion-content::-webkit-scrollbar-track, 
+.sobre-text::-webkit-scrollbar-track {
+    background: transparent !important;
+    border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border: none !important;
+}
+
+.accordion-content::-webkit-scrollbar-thumb, 
+.sobre-text::-webkit-scrollbar-thumb {
+    background: #182420 !important;
+    background-color: #182420 !important;
+    border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.accordion-content::-webkit-scrollbar-corner, 
+.sobre-text::-webkit-scrollbar-corner {
+    background: transparent !important;
+}
+
+.accordion-item.active {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+.accordion-item.active .accordion-header {
+    border-bottom: 2px solid #182420;
+}
+.accordion-item.active .accordion-content {
+    display: block;
+}
+
+.sidebar-text {
+    white-space: pre-line;
+    padding: 0 1rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+#titles-container {
+    position: relative;
+    padding-right: 0px; 
+    padding-left: 0px;
+    padding-top: 0.25rem; /* Space from top */
+    direction: ltr;
+}
+
+/* View Layers (Transitions X-Axis) */
+.view-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.grid-layer {
+    transform: translateX(0);
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+.grid-layer.slide-right {
+    transform: translateX(100%);
+    pointer-events: none;
+}
+
+.expanded-layer {
+    transform: translateX(-100%);
+    pointer-events: none;
+    display: flex;
+    flex-direction: row;
+}
+.expanded-layer.active {
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.ficha-col {
+    width: 315px;
+    border-right: 2px solid #182420;
+    padding: 6rem 0 2.8rem 1rem;
+    overflow-y: hidden;
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+}
+
+.carousel-col {
+    flex: 1;
+    width: calc(100% - 315px);
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+/* List Items (Títulos) */
+.list-item {
+    margin-bottom: 0.2rem;
+    cursor: pointer;
+    position: relative;
+    padding: 0.2rem 8px 0.2rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.list-item.hover-active,
+.list-item.filtered-active {
+    text-decoration: underline;
+}
+
+/* Grid de Imagens (Center Column) */
+.grid-view {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: flex-start;
+    gap: 0.93rem;
+    width: 100%;
+    margin: 0;
+}
+
+.thumb-wrapper {
+    width: calc(33.333% - 0.62rem); /* 3 cols */
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: #182420;
+}
+
+@media (max-width: 1200px) {
+    .thumb-wrapper { width: calc(50% - 0.465rem); }
+}
+
+.thumb-wrapper img, 
+.thumb-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Visualização Expandida (Obra) */
+.expanded-view {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.expanded-media-container {
+    display: flex;
+    gap: 2.8rem;
+    overflow-x: auto;
+    height: 100%;
+    align-items: flex-end;
+    padding: 0;
+    container-type: size;
+}
+
+.expanded-media-container img {
+    max-height: 100%;
+    height: 100%;
+    max-width: 88%;
+    width: auto;
+    object-fit: contain;
+    object-position: bottom left;
+    flex-shrink: 0;
+    display: block;
+    align-self: flex-end;
+}
+
+.expanded-media-container video,
+.video-embed {
+    --v-ratio: 1.7777778;
+    max-height: 100%;
+    max-width: 88%;
+    width: min(88cqw, calc(100cqh * var(--v-ratio)));
+    height: auto;
+    aspect-ratio: var(--v-ratio);
+    object-fit: contain;
+    flex-shrink: 0;
+    display: block;
+    border: none;
+    align-self: flex-start;
+}
+
+.expanded-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #182420;
+    width: 100%;
+    margin-bottom: 2rem;
+    flex-shrink: 0;
+    position: absolute;
+    top: 0.6rem;
+    left: 0;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+.expanded-nav button {
+    background: none;
+    border: none;
+    color: #182420;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+    pointer-events: auto;
+    padding: 0;
+}
+
+.expanded-nav button:hover {
+    opacity: 0.6;
+}
+
+.expanded-nav button svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.expanded-media-container::-webkit-scrollbar {
+    display: none;
+}
+.expanded-media-container {
+    scrollbar-width: none;
+}
+
+.ficha-tecnica {
+    font-size: 0.875rem;
+    color: #182420;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding-top: 1rem;
+    position: relative;
+    overflow: hidden;
+    justify-content: flex-end;
+}
+
+.ficha-meta {
+    position: relative;
+    z-index: 10;
+    background-color: #888888;
+    padding-bottom: 0.5rem;
+    padding-right: 1rem;
+    flex-shrink: 0;
+}
+
+.ficha-meta p {
+    margin-bottom: 1.2rem;
+}
+
+.ficha-meta p:last-child {
+    margin-bottom: 0;
+}
+
+.sobre-text {
+    flex-shrink: 1;
+    overflow-y: auto;
+    margin-right: 0;
+    padding-right: 1rem;
+    margin-top: -0.5rem;
+    padding-top: 1rem;
+    position: relative;
+    z-index: 1;
+    min-height: 0;
+    direction: ltr;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Mobile Layout */
+#mobile-index-btn {
+    display: none;
+}
+.drawer {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    body {
+        overflow: auto; 
+    }
+    .col-left, .col-right {
+        display: none;
+    }
+    .col-center {
+        width: 100vw;
+        border: none;
+        padding: 0;
+        overflow: visible;
+    }
+    .view-layer {
+        padding: 1rem;
+        padding-bottom: 5rem;
+    }
+    .grid-view {
+        grid-template-columns: 1fr;
+    }
+    
+    #mobile-index-btn {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #182420;
+        color: #888888;
+        padding: 1.2rem;
+        text-align: center;
+        border: none;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        cursor: pointer;
+        z-index: 10;
+        letter-spacing: 0.05em;
+    }
+    
+    .drawer {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        width: 100%;
+        height: 75vh;
+        background: #888888;
+        z-index: 20;
+        transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-top: 2px solid #182420;
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+    }
+    .drawer.open {
+        bottom: 0;
+    }
+    .drawer-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 2px solid #182420;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.1rem;
+        color: #182420;
+    }
+    #close-drawer {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: #182420;
+        cursor: pointer;
+    }
+    .drawer-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+    }
+    .drawer-item {
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        color: #182420;
+        border-bottom: 2px solid rgba(97, 93, 86, 0.2);
+        padding-bottom: 0.5rem;
+    }
+}

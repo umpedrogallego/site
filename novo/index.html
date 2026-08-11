@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedro Gallego</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">PEDRO GALLEGO</div>
+    </header>
+
+    <main class="main-content">
+        <!-- Área Principal: Grid ou Galeria -->
+        <div class="main-area" id="main-area">
+            <div id="grid-layer" class="view-layer grid-layer">
+                <div class="grid-view" id="grid-view"></div>
+            </div>
+            <div id="expanded-layer" class="view-layer expanded-layer">
+                <!-- Coluna Esquerda na Galeria: Ficha Técnica -->
+                <div class="ficha-col" id="ficha-col"></div>
+                <!-- Coluna Central na Galeria: Carrossel -->
+                <div class="carousel-col" id="carousel-col">
+                    <div class="expanded-view" id="expanded-view"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna Direita: Sidebar Acordeão -->
+        <div class="col-sidebar" id="col-sidebar">
+            <div class="accordion-item active" id="acc-trabalhos">
+                <button class="accordion-header" data-target="content-trabalhos">
+                    Trabalhos
+                    <span class="acc-icon">/\</span>
+                </button>
+                <div class="accordion-content" id="content-trabalhos">
+                    <div id="titles-container">
+                        <div id="titles-list"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item" id="acc-cv">
+                <button class="accordion-header" data-target="content-cv">
+                    CV
+                    <span class="acc-icon">\/</span>
+                </button>
+                <div class="accordion-content" id="content-cv">
+                    <div class="sidebar-text">Curriculum Vitae content...</div>
+                </div>
+            </div>
+            
+            <div class="accordion-item" id="acc-info">
+                <button class="accordion-header" data-target="content-info">
+                    Info
+                    <span class="acc-icon">\/</span>
+                </button>
+                <div class="accordion-content" id="content-info">
+                    <div class="sidebar-text">Information content...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- UI Mobile -->
+    <button id="mobile-index-btn">ÍNDICE</button>
+    <div id="mobile-drawer" class="drawer">
+        <div class="drawer-header">
+            <span>Índice</span>
+            <button id="close-drawer">✕</button>
+        </div>
+        <div class="drawer-content" id="drawer-content"></div>
+    </div>
+
+    <script type="module" src="/script.js"></script>
+</body>
+</html>
