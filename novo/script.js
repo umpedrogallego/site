@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             const letters = ['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'];
-            for (let j = 0; j < count - 1; p++) {
+            for (let j = 0; j < count - 1; j++) {
                 const img = document.createElement('img');
                 img.src = `${THUMB_BASE}${o.ID}${letters[j]}.avif`;
                 workMediaList.push(img);
