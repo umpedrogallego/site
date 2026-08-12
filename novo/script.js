@@ -168,6 +168,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         header.appendChild(nextBtn);
         fichaCol.appendChild(header);
 
+        if (id === '25-bstv-') {
+            window.initBSTV(fichaCol, expandedView, prevBtn, closeBtn, nextBtn, groupIndex, gridWorks, closeGallery, openGallery);
+            
+            // Dispara transição
+            gridLayer.classList.add('slide-right');
+            expandedLayer.classList.add('active');
+            return;
+        }
+
         // Container Mídias
         const mediaContainer = document.createElement('div');
         mediaContainer.className = 'expanded-media-container';
@@ -250,8 +259,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 workMediaList.push(img);
             }
 
-            const letters = ['b', 'c', 'd', 'e', 'f', 'g'];
-            for (let j = 0; j < count - 1; j++) {
+            const letters = ['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'];
+            for (let j = 0; j < count - 1; p++) {
                 const img = document.createElement('img');
                 img.src = `${THUMB_BASE}${o.ID}${letters[j]}.avif`;
                 workMediaList.push(img);
@@ -324,3 +333,412 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 600);
     }
 });
+
+// ============================================================================
+// BETSHOPTV (25-bstv-) SPECIFIC LOGIC
+// ============================================================================
+
+let bstvAllPecas = [];
+let bstvDisplayList = [];
+let bstvActiveGroup = null;
+let bstvCurrentSort = 'random';
+let bstvCurrentPieceId = null;
+let bstvEvaRendered = false;
+
+window.initBSTV = function(fichaCol, carouselCol, prevBtn, closeBtn, nextBtn, groupIndex, gridWorks, closeGallery, openGallery) {
+    // 1. Build Ficha Técnica (Sidebar) specific for BSTV
+    const sidebar = document.createElement('div');
+    sidebar.style.display = 'flex';
+    sidebar.style.flexDirection = 'column';
+    sidebar.style.flex = '1';
+    sidebar.style.minHeight = '0';
+    sidebar.innerHTML = `
+        <div class="accordion-item" id="bstv-acc-eva" style="border-bottom: 2px solid #182420; flex-shrink: 0;">
+            <button class="accordion-header" id="bstv-btn-acc-eva" style="width: 100%; border: none; background: transparent; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit; font-size: 0.875rem; color: #182420;">
+                EVA TV Man
+                <span class="acc-icon" id="bstv-icon-acc-eva">\\/</span>
+            </button>
+            <div class="accordion-content" id="bstv-content-eva" style="display: none; padding: 0; direction: rtl;">
+                <div style="direction: ltr; padding: 1rem 1.5rem; padding-left: 1.5rem; padding-right: 0.5rem; font-size: 0.875rem; line-height: 1.4; background-color: #182420; color: #888888;">
+                    <p style="margin: 0 0 0.5rem 0;"><strong>EVA TV Man</strong>, 2025</p>
+                    <p style="margin: 0 0 0.5rem 0;">Página da revista Playboy brasileira contendo reprodução da serigrafia TV Man, de Keith Haring, transferida para refugo de EVA, tinta acrílica, ferragens e ímãs</p>
+                    <p style="margin: 0;">60 x 40 x 15 cm</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item" id="bstv-acc-chop" style="border-bottom: 2px solid #182420; flex: initial; display: block; flex-direction: column; overflow: hidden; min-height: 0;">
+            <button class="accordion-header" id="bstv-btn-acc-chop" style="width: 100%; border: none; background: transparent; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit; font-size: 0.875rem; color: #182420;">
+                Chop Shop AV
+                <span class="acc-icon" id="bstv-icon-acc-chop">\\/</span>
+            </button>
+            <div class="accordion-content" id="bstv-content-chop" style="display: none; flex-direction: column; flex: 1; padding: 0; overflow: hidden !important; min-height: 0;">
+                
+                <div id="bstv-chop-info" style="padding: 1rem 1.5rem; font-size: 0.875rem; line-height: 1.4; flex-shrink: 0; background-color: #182420; color: #888888;">
+                    <p style="margin: 0 0 0.5rem 0;"><strong>Chop Shop AV</strong>, 2025</p>
+                    <p style="margin: 0 0 0.5rem 0;">Páginas da revista Playboy brasileira publicadas entre fevereiro e agosto de 1990 transferidas para EVA</p>
+                    <p style="margin: 0;">Políptico, dimensões variáveis</p>
+                </div>
+
+                <div id="bstv-left-ficha-tecnica" class="bstv-left-ficha" style="display: none; background-color: #182420; color: #888888; padding: 1rem 1.5rem; margin-bottom: 0; flex-shrink: 0;"></div>
+
+                <div class="accordion-item" id="bstv-acc-filtrar-acervo" style="border-top: 2px solid #182420; border-bottom: 2px solid #182420; flex-shrink: 0;">
+                    <button class="accordion-header" id="bstv-btn-acc-filtrar" style="width: 100%; border: none; background: transparent; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; font-family: inherit; font-size: 0.875rem; color: #182420;">
+                        FILTRAR PEÇAS
+                        <span class="acc-icon" id="bstv-icon-acc-filtrar">\\/</span>
+                    </button>
+                    <div class="accordion-content" id="bstv-content-filtrar" style="display: none; padding: 0; direction: rtl;">
+                        <div style="direction: ltr; padding: 0 0.5rem 1rem 1.5rem;">
+                            <div class="bstv-filters" id="bstv-filters" style="margin-bottom: 0; display: flex; flex-direction: column; gap: 10px;">
+                                <div class="filters-group" style="display: flex; flex-direction: row; align-items: center; gap: 8px;">
+                                    <span class="filters-label" style="width: 65px; flex-shrink: 0;">ORDEM</span>
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; flex: 1;">
+                                        <button class="chip" id="bstv-btn-sort-asc" title="Crescente" style="padding: 0; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-family: inherit;">↑</button>
+                                        <button class="chip" id="bstv-btn-sort-desc" title="Decrescente" style="padding: 0; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-family: inherit;">↓</button>
+                                        <button class="chip is-active" id="bstv-btn-shuffle" title="Aleatória" style="padding: 0; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">↻</button>
+                                    </div>
+                                </div>
+                                <div class="filters-group" style="display: flex; flex-direction: row; align-items: flex-start; gap: 8px;">
+                                    <span class="filters-label" style="width: 65px; flex-shrink: 0; margin-top: 6px;">GRUPOS</span>
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; flex: 1;">
+                                        <button class="chip is-active" id="bstv-btn-group-all" style="grid-column: span 2; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">TODOS</button>
+                                        <button class="chip bstv-group-btn" data-group="02" style="grid-column: span 1; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">02</button>
+                                        <button class="chip bstv-group-btn" data-group="03" style="grid-column: span 1; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">03</button>
+                                        <button class="chip bstv-group-btn" data-group="04" style="grid-column: span 1; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">04</button>
+                                        <button class="chip bstv-group-btn" data-group="05" style="grid-column: span 1; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">05</button>
+                                        <button class="chip bstv-group-btn" data-group="06" style="grid-column: span 1; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">06</button>
+                                        <button class="chip bstv-group-btn" data-group="07" style="grid-column: span 1; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">07</button>
+                                        <button class="chip bstv-group-btn" data-group="08" style="grid-column: span 1; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">08</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sobre-text" style="flex: 1; overflow-y: auto; padding: 0; direction: rtl;">
+                    <div id="bstv-titles-list" style="direction: ltr; padding: 1rem 1.5rem; padding-left: 1.5rem; padding-right: 0.5rem; display: flex; flex-direction: column;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    fichaCol.appendChild(sidebar);
+
+    // 2. Build Carousel specifically for BSTV
+    const carouselContainer = document.createElement('div');
+    carouselContainer.style.display = 'flex';
+    carouselContainer.style.flexDirection = 'column';
+    carouselContainer.style.height = '100%';
+    carouselContainer.style.width = '100%';
+    carouselContainer.innerHTML = `
+        <div id="bstv-grid-view" class="grid-layer" style="display: none; height: 100%; overflow-y: auto; padding: 1.5rem;">
+            <div class="bstv-grid-view" id="bstv-grid-container"></div>
+        </div>
+        <div id="bstv-feed-view" class="expanded-view" style="display: none; height: 100%;">
+            <div class="expanded-media-container" id="bstv-feed-media-container" style="display:flex; flex-direction:row;"></div>
+        </div>
+        <div id="bstv-eva-feed-view" class="expanded-view" style="display: none; height: 100%;">
+            <div class="expanded-media-container" id="bstv-eva-media-container" style="display:flex; flex-direction:row;"></div>
+        </div>
+    `;
+    carouselCol.appendChild(carouselContainer);
+
+    // Setup Listeners for BSTV interactions
+    document.getElementById('bstv-btn-acc-eva').onclick = () => window.toggleBSTVWorkView('eva');
+    document.getElementById('bstv-btn-acc-chop').onclick = () => window.toggleBSTVWorkView('chop');
+    
+    document.getElementById('bstv-btn-acc-filtrar').onclick = () => {
+        const c = document.getElementById('bstv-content-filtrar');
+        const i = document.getElementById('bstv-icon-acc-filtrar');
+        const isOpen = c.style.display !== 'none';
+        c.style.display = isOpen ? 'none' : 'block';
+        i.textContent = isOpen ? '\\/' : '/\\';
+    };
+
+    document.getElementById('bstv-btn-sort-asc').onclick = () => { if (!bstvCurrentPieceId) { bstvCurrentSort = 'asc'; window.applyBSTVFilters(); } };
+    document.getElementById('bstv-btn-sort-desc').onclick = () => { if (!bstvCurrentPieceId) { bstvCurrentSort = 'desc'; window.applyBSTVFilters(); } };
+    document.getElementById('bstv-btn-shuffle').onclick = () => { 
+        if (bstvCurrentPieceId) return;
+        bstvCurrentSort = 'random';
+        if (bstvActiveGroup) { window.bstvShuffleArray(bstvDisplayList); window.renderBSTVAll(); }
+        else { window.bstvShuffleArray(bstvAllPecas); window.applyBSTVFilters(); }
+    };
+
+    document.getElementById('bstv-btn-group-all').onclick = () => window.toggleBSTVGroup(null);
+    document.querySelectorAll('.bstv-group-btn').forEach(btn => {
+        btn.onclick = (e) => window.toggleBSTVGroup(e.target.dataset.group);
+    });
+
+    // Integrated Navigation handling
+    window.updateBSTVNavIcons = () => {
+        if (bstvCurrentPieceId) {
+            const idx = bstvDisplayList.findIndex(p => p.id_peca === bstvCurrentPieceId);
+            prevBtn.style.opacity = idx > 0 ? '1' : '0.2';
+            prevBtn.style.cursor = idx > 0 ? 'pointer' : 'default';
+            nextBtn.style.opacity = (idx >= 0 && idx < bstvDisplayList.length - 1) ? '1' : '0.2';
+            nextBtn.style.cursor = (idx >= 0 && idx < bstvDisplayList.length - 1) ? 'pointer' : 'default';
+        } else {
+            prevBtn.style.opacity = groupIndex > 0 ? '1' : '0.2';
+            prevBtn.style.cursor = groupIndex > 0 ? 'pointer' : 'default';
+            nextBtn.style.opacity = groupIndex < gridWorks.length - 1 ? '1' : '0.2';
+            nextBtn.style.cursor = groupIndex < gridWorks.length - 1 ? 'pointer' : 'default';
+        }
+    };
+
+    prevBtn.onclick = () => {
+        if (bstvCurrentPieceId) {
+            const idx = bstvDisplayList.findIndex(p => p.id_peca === bstvCurrentPieceId);
+            if (idx > 0) window.setBSTVPiece(bstvDisplayList[idx - 1].id_peca);
+        } else {
+            if (groupIndex > 0) openGallery(gridWorks[groupIndex - 1].ID);
+        }
+    };
+
+    nextBtn.onclick = () => {
+        if (bstvCurrentPieceId) {
+            const idx = bstvDisplayList.findIndex(p => p.id_peca === bstvCurrentPieceId);
+            if (idx >= 0 && idx < bstvDisplayList.length - 1) window.setBSTVPiece(bstvDisplayList[idx + 1].id_peca);
+        } else {
+            if (groupIndex < gridWorks.length - 1) openGallery(gridWorks[groupIndex + 1].ID);
+        }
+    };
+
+    closeBtn.onclick = () => {
+        if (bstvCurrentPieceId) {
+            window.setBSTVPiece(null);
+        } else {
+            closeGallery();
+        }
+    };
+
+    window.updateBSTVNavIcons();
+    window.loadBSTVData();
+};
+
+window.bstvShuffleArray = function(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+};
+
+window.loadBSTVData = async function() {
+    if (bstvAllPecas.length > 0) {
+        window.applyBSTVFilters();
+        return;
+    }
+    try {
+        const res = await fetch('https://betshoptv.github.io/dados/pecas.json');
+        const data = await res.json();
+        bstvAllPecas = data.filter(p => p.imagens && p.imagens.length > 0);
+        window.bstvShuffleArray(bstvAllPecas);
+        window.applyBSTVFilters();
+    } catch(e) { console.error("Erro ao carregar dados BSTV:", e); }
+};
+
+window.toggleBSTVWorkView = function(work) {
+    const accEva = document.getElementById('bstv-acc-eva');
+    const contentEva = document.getElementById('bstv-content-eva');
+    const iconEva = document.getElementById('bstv-icon-acc-eva');
+    
+    const accChop = document.getElementById('bstv-acc-chop');
+    const contentChop = document.getElementById('bstv-content-chop');
+    const iconChop = document.getElementById('bstv-icon-acc-chop');
+
+    if (work === 'eva') {
+        if (accEva.classList.contains('active')) {
+            accEva.classList.remove('active');
+            contentEva.style.display = 'none';
+            iconEva.textContent = '\\/';
+            document.getElementById('bstv-eva-feed-view').style.display = 'none';
+        } else {
+            accEva.classList.add('active');
+            contentEva.style.display = 'block';
+            iconEva.textContent = '/\\';
+            
+            accChop.classList.remove('active');
+            accChop.style.flex = 'initial';
+            contentChop.style.display = 'none';
+            iconChop.textContent = '\\/';
+            
+            document.getElementById('bstv-grid-view').style.display = 'none';
+            document.getElementById('bstv-feed-view').style.display = 'none';
+            document.getElementById('bstv-eva-feed-view').style.display = 'flex';
+            window.renderBSTVEvaImages();
+        }
+    } else if (work === 'chop') {
+        if (accChop.classList.contains('active')) {
+            if (bstvCurrentPieceId) {
+                bstvCurrentPieceId = null;
+                bstvActiveGroup = null;
+                bstvCurrentSort = 'random';
+                window.applyBSTVFilters();
+                document.getElementById('bstv-grid-view').style.display = 'block';
+                document.getElementById('bstv-feed-view').style.display = 'none';
+                window.updateBSTVNavIcons();
+            } else {
+                accChop.classList.remove('active');
+                accChop.style.flex = 'initial';
+                contentChop.style.display = 'none';
+                iconChop.textContent = '\\/';
+                document.getElementById('bstv-grid-view').style.display = 'none';
+            }
+        } else {
+            accChop.classList.add('active');
+            accChop.style.flex = '1';
+            contentChop.style.display = 'flex';
+            iconChop.textContent = '/\\';
+            
+            accEva.classList.remove('active');
+            contentEva.style.display = 'none';
+            iconEva.textContent = '\\/';
+            
+            bstvCurrentPieceId = null;
+            bstvActiveGroup = null;
+            bstvCurrentSort = 'random';
+            window.applyBSTVFilters();
+            
+            document.getElementById('bstv-eva-feed-view').style.display = 'none';
+            document.getElementById('bstv-grid-view').style.display = 'block';
+            document.getElementById('bstv-feed-view').style.display = 'none';
+            window.updateBSTVNavIcons();
+        }
+    }
+};
+
+window.renderBSTVEvaImages = function() {
+    if (bstvEvaRendered) return;
+    const c = document.getElementById('bstv-eva-media-container');
+    c.innerHTML = '';
+    ['ETM_001.jpg', 'ETM_002.jpg', 'ETM_003.jpg', 'ETM_004.jpg', 'ETM_005.jpg', 'ETM_006.jpg'].forEach(imgName => {
+        const img = document.createElement('img');
+        img.src = `https://betshoptv.github.io/galeria/${imgName}`;
+        img.loading = 'lazy';
+        img.alt = 'EVA TV Man';
+        c.appendChild(img);
+    });
+    bstvEvaRendered = true;
+};
+
+window.toggleBSTVGroup = function(group) {
+    if (bstvCurrentPieceId !== null) {
+        bstvCurrentPieceId = null;
+        if (bstvActiveGroup === group) {
+            window.applyBSTVFilters();
+            return;
+        }
+    }
+    
+    if (group === null || bstvActiveGroup === group) {
+        bstvActiveGroup = null;
+        bstvCurrentSort = 'random';
+    } else {
+        bstvActiveGroup = group;
+        bstvCurrentSort = 'asc';
+    }
+    
+    document.getElementById('bstv-btn-group-all').classList.toggle('is-active', bstvActiveGroup === null);
+    document.querySelectorAll('.bstv-group-btn').forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.group === bstvActiveGroup);
+    });
+    
+    window.applyBSTVFilters();
+};
+
+window.applyBSTVFilters = function() {
+    document.getElementById('bstv-btn-sort-asc').classList.toggle('is-active', bstvCurrentSort === 'asc');
+    document.getElementById('bstv-btn-sort-desc').classList.toggle('is-active', bstvCurrentSort === 'desc');
+    document.getElementById('bstv-btn-shuffle').classList.toggle('is-active', bstvCurrentSort === 'random');
+    
+    if (bstvActiveGroup) {
+        bstvDisplayList = bstvAllPecas.filter(p => String(p.id_peca).startsWith(bstvActiveGroup));
+    } else {
+        bstvDisplayList = [...bstvAllPecas];
+    }
+    
+    if (bstvCurrentSort !== 'random') {
+        const groupKey = p => parseInt(String(p.id_peca).slice(0, 2)) || 0;
+        const numKey = p => parseInt(p.id_peca) || 0;
+        if (bstvCurrentSort === 'asc') bstvDisplayList.sort((a, b) => (groupKey(a) - groupKey(b)) || (numKey(a) - numKey(b)));
+        else if (bstvCurrentSort === 'desc') bstvDisplayList.sort((a, b) => (groupKey(b) - groupKey(a)) || (numKey(b) - numKey(a)));
+    }
+    
+    window.renderBSTVAll();
+};
+
+window.setBSTVPiece = function(id) {
+    bstvCurrentPieceId = id;
+    window.renderBSTVAll();
+};
+
+window.renderBSTVAll = function() {
+    const titlesList = document.getElementById('bstv-titles-list');
+    titlesList.innerHTML = '';
+    const sortedTitles = [...bstvDisplayList].sort((a, b) => (parseInt(a.id_peca)||0) - (parseInt(b.id_peca)||0));
+    
+    sortedTitles.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        if (p.id_peca === bstvCurrentPieceId) item.classList.add('active');
+        item.textContent = p.titulo || `Peça ${p.id_peca}`;
+        item.onclick = () => window.setBSTVPiece(p.id_peca);
+        titlesList.appendChild(item);
+    });
+    
+    window.updateBSTVNavIcons();
+    
+    if (bstvCurrentPieceId) {
+        document.getElementById('bstv-grid-view').style.display = 'none';
+        document.getElementById('bstv-feed-view').style.display = 'flex';
+        document.getElementById('bstv-left-ficha-tecnica').style.display = 'flex';
+        document.getElementById('bstv-chop-info').style.display = 'none';
+        
+        const p = bstvAllPecas.find(x => x.id_peca === bstvCurrentPieceId);
+        if (p) {
+            const feed = document.getElementById('bstv-feed-media-container');
+            feed.innerHTML = '';
+            p.imagens.forEach(imgName => {
+                const img = document.createElement('img');
+                img.src = `https://betshoptv.github.io/img/otm/${imgName}.avif`;
+                img.onerror = () => { if (img.src.endsWith('.avif')) img.src = img.src.replace('.avif', '.jpg'); };
+                feed.appendChild(img);
+            });
+            document.getElementById('bstv-left-ficha-tecnica').innerHTML = `
+                <p style="margin: 0 0 0.5rem 0;"><strong>${p.titulo || `Peça ${p.id_peca}`}</strong>, 2025</p>
+                <p style="margin: 0 0 0.5rem 0;">${p.tecnica || ''}</p>
+                <p style="margin: 0;">${p.dimensao || ''}</p>
+            `;
+            feed.scrollLeft = 0;
+        }
+    } else {
+        document.getElementById('bstv-grid-view').style.display = 'block';
+        document.getElementById('bstv-feed-view').style.display = 'none';
+        document.getElementById('bstv-left-ficha-tecnica').style.display = 'none';
+        document.getElementById('bstv-chop-info').style.display = 'block';
+        
+        const grid = document.getElementById('bstv-grid-view');
+        grid.scrollTop = 0;
+        const gridContainer = document.getElementById('bstv-grid-container');
+        gridContainer.innerHTML = '';
+        
+        const cols = [];
+        for (let i = 0; i < 3; i++) {
+            const col = document.createElement('div');
+            col.className = 'bstv-grid-column';
+            gridContainer.appendChild(col);
+            cols.push(col);
+        }
+
+        bstvDisplayList.forEach((p, index) => {
+            const thumb = document.createElement('div');
+            thumb.className = 'bstv-thumb-wrapper';
+            const img = document.createElement('img');
+            img.src = `https://betshoptv.github.io/img/tmb/${p.imagens[0]}.avif`;
+            img.onerror = () => { if (img.src.endsWith('.avif')) img.src = img.src.replace('.avif', '.jpg'); };
+            img.alt = p.titulo;
+            thumb.appendChild(img);
+            thumb.onclick = () => window.setBSTVPiece(p.id_peca);
+            cols[index % 3].appendChild(thumb);
+        });
+    }
+};
