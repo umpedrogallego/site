@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const res = await fetch(URL_JSON);
         const data = await res.json();
         
-        validData = data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "");
+        validData = data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "" && w.IMG_COUNT && String(w.IMG_COUNT).trim() !== "");
         validData.sort((a, b) => parseInt(a.DESTAQUE) - parseInt(b.DESTAQUE));
 
         const seenSeries = new Set();
@@ -266,8 +266,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 workMediaList.push(img);
             }
 
-            if (hasPlayer) workMediaList.reverse();
-            
             workMediaList.forEach(el => mediaContainer.appendChild(el));
         });
         
