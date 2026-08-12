@@ -15,27 +15,114 @@ document.addEventListener('DOMContentLoaded', async () => {
     const expandedView = document.getElementById('expanded-view');
     const fichaCol = document.getElementById('ficha-col');
     
-    // Accordion Logic
+    // Accordion Logic & Mobile State Management
+    function updateTrabalhosState() {
+        const accTrabalhos = document.getElementById('acc-trabalhos');
+        if (accTrabalhos) {
+            if (!accTrabalhos.classList.contains('active')) {
+                document.body.classList.add('trabalhos-collapsed');
+            } else {
+                document.body.classList.remove('trabalhos-collapsed');
+            }
+        }
+    }
+
     const accordionHeaders = document.querySelectorAll('.accordion-header');
     accordionHeaders.forEach(header => {
-        header.addEventListener('click', () => {
+        header.addEventListener('click', (e) => {
+            if (e.target.closest('#mobile-list-btn')) return;
+
+            const parent = header.parentElement;
+            const isActive = parent.classList.contains('active');
+
             // Close all
             document.querySelectorAll('.accordion-item').forEach(item => {
                 item.classList.remove('active');
                 const icon = item.querySelector('.acc-icon');
                 if (icon) icon.textContent = '\\/';
             });
-            // Open clicked
-            header.parentElement.classList.add('active');
-            const icon = header.querySelector('.acc-icon');
-            if (icon) icon.textContent = '/\\';
+
+            if (!isActive) {
+                parent.classList.add('active');
+                const icon = header.querySelector('.acc-icon');
+                if (icon) icon.textContent = '/\\';
+            }
+
+            updateTrabalhosState();
         });
     });
 
+    const svgList = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+    </svg>`;
+
+    const svgFeed = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="12" rx="1"></rect>
+        <line x1="3" y1="19" x2="16" y2="19"></line>
+    </svg>`;
+
+    const mobileListBtn = document.getElementById('mobile-list-btn');
+    if (mobileListBtn) {
+        mobileListBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const accTrabalhos = document.getElementById('acc-trabalhos');
+            if (accTrabalhos) {
+                accTrabalhos.classList.add('active');
+                const icon = accTrabalhos.querySelector('.acc-icon');
+                if (icon) icon.textContent = '/\\';
+            }
+            document.body.classList.remove('trabalhos-collapsed');
+            
+            const isList = document.body.classList.toggle('mobile-list-active');
+            mobileListBtn.classList.toggle('is-active', isList);
+            mobileListBtn.innerHTML = isList ? svgFeed : svgList;
+        });
+    }
+
     try {
-        const res = await fetch(URL_JSON);
+        const [res, cvRes] = await Promise.all([
+            fetch(URL_JSON),
+            fetch("https://umpedrogallego.github.io/site/json/cv.json")
+        ]);
         const data = await res.json();
+        let cvData = [];
+        try {
+            cvData = await cvRes.json();
+        } catch (e) {
+            console.error("Erro ao carregar CV:", e);
+        }
         
+        // Verifica se há alguma exposição em andamento
+        const now = new Date();
+        const ongoingExpo = cvData.find(item => {
+            if (!item.INICIO || !item.FIM) return false;
+            const start = new Date(item.INICIO);
+            const end = new Date(item.FIM);
+            return now >= start && now <= end;
+        });
+
+        if (ongoingExpo) {
+            const formatText = (str) => str ? String(str).trim().replace(/\\n/g, '\n') : '';
+            const heroSection = document.createElement('div');
+            heroSection.className = 'hero-section';
+            heroSection.innerHTML = `<div class="hero-col hero-left"><h2 class="hero-title-main">EM EXPOSIÇÃO</h2><h3 class="hero-title-sub">${formatText(ongoingExpo.TITULO)}</h3>${ongoingExpo.INTRO ? `<div class="hero-text-content hero-text-intro">${formatText(ongoingExpo.INTRO)}</div>` : ''}</div><div class="hero-col hero-center">${ongoingExpo.IMG ? `<img src="https://umpedrogallego.github.io/site/img/hero/${ongoingExpo.IMG}.jpg" alt="${ongoingExpo.TITULO || ''}">` : ''}</div><div class="hero-col hero-right">${ongoingExpo.TEXTO ? `<div class="hero-text-content hero-text-body">${formatText(ongoingExpo.TEXTO)}</div>` : ''}${ongoingExpo.TEXTO ? `<button class="hero-toggle-btn" id="hero-toggle-btn" aria-label="Expandir texto">+</button>` : ''}</div>`;
+
+            const heroToggleBtn = heroSection.querySelector('#hero-toggle-btn');
+            if (heroToggleBtn) {
+                heroToggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isExpanded = heroSection.classList.toggle('hero-text-expanded');
+                    heroToggleBtn.textContent = isExpanded ? '✕' : '+';
+                });
+            }
+            gridLayer.insertBefore(heroSection, gridView);
+        }
+
         validData = data.filter(w => w.DESTAQUE !== 'N' && w.INCLUIR !== "" && w.IMG_COUNT && String(w.IMG_COUNT).trim() !== "");
         validData.sort((a, b) => parseInt(a.DESTAQUE) - parseInt(b.DESTAQUE));
 
@@ -86,6 +173,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 thumbWrapper.appendChild(img);
             }
             
+            const thumbTitle = document.createElement('div');
+            thumbTitle.className = 'thumb-title';
+            thumbTitle.textContent = work.SERIE ? `série ${work.SERIE}` : work.TITULO;
+            thumbWrapper.appendChild(thumbTitle);
+            
             thumbWrapper.addEventListener('click', () => openGallery(work.ID));
             gridView.appendChild(thumbWrapper);
         });
@@ -129,6 +221,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function openGallery(id) {
+        document.body.classList.remove('mobile-list-active');
+        if (mobileListBtn) {
+            mobileListBtn.classList.remove('is-active');
+            mobileListBtn.innerHTML = svgList;
+        }
+
         const mainObra = gridWorks.find(o => o.ID === id);
         const groupIndex = gridWorks.indexOf(mainObra);
         const serieObras = mainObra.SERIE ? validData.filter(o => o.SERIE === mainObra.SERIE) : [mainObra];
@@ -278,39 +376,91 @@ document.addEventListener('DOMContentLoaded', async () => {
         const fichaMeta = document.createElement('div');
         fichaMeta.className = 'ficha-meta';
 
+        const headerRow = document.createElement('div');
+        headerRow.className = 'ficha-header-row';
+
         const titleYear = document.createElement('p');
+        titleYear.className = 'ficha-title-year';
         titleYear.innerHTML = `<strong>${ref.TITULO}</strong>, ${ref.ANO}`;
-        fichaMeta.appendChild(titleYear);
+        headerRow.appendChild(titleYear);
+
+        const fichaToggleBtn = document.createElement('button');
+        fichaToggleBtn.className = 'ficha-toggle-btn';
+        fichaToggleBtn.setAttribute('aria-label', 'Expandir ficha técnica');
+        fichaToggleBtn.textContent = '+';
+        headerRow.appendChild(fichaToggleBtn);
+
+        fichaMeta.appendChild(headerRow);
         
         const tecnicas = [...new Set(serieObras.map(i => i.TECNICA).filter(Boolean))].join(' / ');
+        if (tecnicas) {
+            const techEl = document.createElement('p');
+            techEl.textContent = tecnicas;
+            fichaMeta.appendChild(techEl);
+        }
+
         const dimensoes = [...new Set(serieObras.map(i => i.DIMENSAO).filter(Boolean))].join(' / ');
-        if (tecnicas || dimensoes) {
-            const techDim = document.createElement('p');
-            techDim.textContent = [tecnicas, dimensoes].filter(Boolean).join('. ') + '.';
-            fichaMeta.appendChild(techDim);
+        if (dimensoes) {
+            const dimEl = document.createElement('p');
+            dimEl.textContent = dimensoes;
+            fichaMeta.appendChild(dimEl);
         }
 
         const parcerias = [...new Set(serieObras.map(i => i.PARCERIA).filter(Boolean))].join(' / ');
         const creditos = [...new Set(serieObras.map(i => i.CREDITOS).filter(Boolean))].join(' / ');
-        if (parcerias || creditos) {
-            const extra = document.createElement('p');
-            const extras = [];
-            if (parcerias) extras.push(`Parceria: ${parcerias}`);
-            if (creditos) extras.push(`Créditos: ${creditos}`);
-            extra.textContent = extras.join(' / ');
-            fichaMeta.appendChild(extra);
+        const edicao = [...new Set(serieObras.map(i => i.EDICAO || i.TIRAGEM || i.LOCAL || i.COLECAO).filter(Boolean))].join(' / ');
+        const extras = [];
+        if (parcerias) extras.push(`Parceria: ${parcerias}`);
+        if (creditos) extras.push(`Créditos: ${creditos}`);
+        if (edicao) extras.push(edicao);
+        if (extras.length > 0) {
+            const extraEl = document.createElement('p');
+            extraEl.textContent = extras.join(' / ');
+            fichaMeta.appendChild(extraEl);
         }
 
         ficha.appendChild(fichaMeta);
 
         // Bloco SOBRE (Sobreposição)
         const sobreTexts = serieObras.map(i => i.SOBRE).filter(Boolean);
-        if (sobreTexts.length > 0) {
+        const hasSobre = sobreTexts.length > 0;
+
+        if (hasSobre) {
             const sobreContent = document.createElement('div');
             sobreContent.className = 'sobre-text';
             sobreContent.innerHTML = sobreTexts.join('<br><br>');
+            
+            sobreContent.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    e.stopPropagation();
+                    toggleFichaExpanded();
+                }
+            });
+
             ficha.appendChild(sobreContent);
         }
+
+        if (!hasSobre) {
+            fichaToggleBtn.style.display = 'none';
+        }
+
+        function toggleFichaExpanded() {
+            if (window.innerWidth <= 768 && hasSobre) {
+                const isExp = ficha.classList.toggle('is-expanded');
+                fichaToggleBtn.textContent = isExp ? '✕' : '+';
+            }
+        }
+
+        fichaToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleFichaExpanded();
+        });
+
+        fichaMeta.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                toggleFichaExpanded();
+            }
+        });
 
         fichaCol.appendChild(ficha);
 
