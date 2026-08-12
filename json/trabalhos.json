@@ -507,7 +507,7 @@
   },
   {
     "ID": "15-paquera-",
-    "ORDEM": 22,
+    "ORDEM": "N",
     "TITULO": "A Ciência da Paquera",
     "ANO": 2015,
     "FIM": "",
@@ -881,7 +881,7 @@
   },
   {
     "ID": "15-comedouro-",
-    "ORDEM": "",
+    "ORDEM": "N",
     "TITULO": "Comedouro ilustrado",
     "ANO": 2015,
     "FIM": "",
