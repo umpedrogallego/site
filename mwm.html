@@ -131,7 +131,7 @@
   <div id="blackout"></div>
 
   <div id="bg-video-container">
-    <video id="home-video" src="https://umpedrogallego.github.io/site/midia/6x1-bg.webm" muted autoplay playsinline loop></video>
+    <video id="home-video" src="https://umpedrogallego.github.io/site/midia/6x1-pingpong.webm" muted autoplay playsinline loop></video>
   </div>
 
   <div id="start-overlay">
@@ -314,21 +314,18 @@
         currentSegment++;
         
         if (currentSegment < obraAtiva.segmentos.length) {
-          ytPlayer.pauseVideo();
-          setTimeout(() => {
+
             ytPlayer.seekTo(obraAtiva.segmentos[currentSegment].start, true);
-            ytPlayer.playVideo();
-            // A interface some rapidinho no escuro, removemos o blackout em 1.5s
+          
             setTimeout(() => {
               dom.blackout.classList.remove('ativo');
               timeChecker = setInterval(checarSaltosYT, 100);
-            }, 2500); 
-          }, 5000); // 5s respirando no preto
-        } else {
+            }, 1500); 
+          
+         } else {
           entrarEmEspera();
         }
       }
-    }
 
     function checarFimYT() {
       if (!ytPlayer || !ytPlayer.getDuration) return;
