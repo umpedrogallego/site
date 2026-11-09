@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>★</title>
 
-  <link rel="icon" type="image/x-icon" href="http://umpedrogallego.github.io/site/wmw.ico">
+  <link rel="icon" type="image/x-icon" href="wmw.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
@@ -49,16 +49,16 @@
       z-index: 10;
     }
     #start-overlay h1 {
-      color: var(--bg-dark); font-weight: 600; 
+      color:rgba(242, 255, 142, 0.69); font-weight: 600; 
       font-size: calc(clamp(3.75rem, 6.25vw, 7.5rem) * 2.08); /* +25% */
       width: 94vw; text-align: center; margin-bottom: 13vh;
       letter-spacing: -0.04em; cursor: pointer;
       opacity: .13; filter: blur(6px);
       transition: color 3.8s, opacity 6.6s, filter 4.2s;
     }
-    #start-overlay h1:hover { color:rgba(242, 255, 142, 0.88); opacity: 0.13; filter: blur(4px) }
+    #start-overlay h1:hover { color: var(--bg-dark); opacity: 0.13; filter: blur(4px) }
 
-    /* Grid de Letreiros (Centralizado e Snap) */
+/* Grid de Letreiros (Centralizado e Snap) */
     #grid-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background-color: var(--bg-dark); z-index: 20;
@@ -72,18 +72,29 @@
     .grid-item {
       display: flex; justify-content: space-between; align-items: baseline;
       min-height: 25vh; padding: 0 66px; 
-      scroll-snap-align: center; scroll-behavior: smooth; transition: color 0.38s; cursor: pointer;
+      scroll-snap-align: center; scroll-behavior: smooth; 
+      pointer-events: none; /* Mata o clique no buraco vazio */
     }
 
-    .grid-item:hover { color:rgba(242, 255, 142, 0.88); }
+    .grid-item:hover .grid-titulo, 
+    .grid-item:hover .grid-ano { 
+      color: rgba(242, 255, 142, 0.88); 
+    }
+    
     .grid-titulo { 
       font-weight: 700; text-align: left; color: var(--text-title); 
       font-size: calc(clamp(2.6rem, 6.5vw, 6.5rem) + 6px); /* +30% */
-      }
+      pointer-events: auto; /* Devolve o clique para o título */
+      cursor: pointer; 
+      transition: color 0.38s;
+    }
     
-      .grid-ano { 
+    .grid-ano { 
       font-weight: 600; text-align: right; color: var(--text-main);
-      font-size: calc(clamp(1rem, 2.5vw, 2.5rem) + 2px); pointer-events: none;
+      font-size: calc(clamp(1rem, 2.5vw, 2.5rem) + 2px); 
+      pointer-events: auto; /* Devolve o clique para o ano */
+      cursor: pointer; 
+      transition: color 0.38s;
     }
 
     /* Exibição */
@@ -319,7 +330,7 @@
               if (!pulandoSegmento) {
               setTimeout(() => {
                 dom.blackout.classList.remove('ativo');
-              }, 2400); 
+              }, 3113); 
             }
               if (!modoManual) {
                 clearInterval(timeChecker);
