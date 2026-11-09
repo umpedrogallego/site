@@ -1,5 +1,5 @@
 /**
- * CONFIGURAÇÃO DA APRESENTAÇÃO
+ * CONFIGURAÇÃO DA APRESENTAÇÃO (Final)
  */
 const APRESENTACAO = [
   {
@@ -17,11 +17,11 @@ const APRESENTACAO = [
       { start: 230, end: 391 },
       { start: 1485, end: 1620 }
     ],
-    fadeColor: "#000000" // Cor de saída pro modo espera
+    fadeColor: "#000000"
   },
   {
     id: "obra-02",
-    titulo: "Acordo de Emergência",
+    titulo: "acordo de Emergência",
     ano: "2020",
     tipo: "video-continuo",
     provedor: "youtube",
@@ -31,7 +31,7 @@ const APRESENTACAO = [
     desabilitarLegenda: true,
     inicio: 0,
     fim: null,
-    fadeColor: "#002d85" // Azul bafo
+    fadeColor: "#002d85" 
   },
   {
     id: "obra-03",
@@ -46,7 +46,7 @@ const APRESENTACAO = [
       "https://umpedrogallego.github.io/site/thumb/25-torcida-e.avif",
       "https://umpedrogallego.github.io/site/thumb/25-torcida-b.avif"
     ],
-    fadeColor: "#000000" // Galerias não entram em espera, mas se precisarem de cor de saída, tá aqui
+    fadeColor: "#000000"
   },
   {
     id: "obra-04",
@@ -60,7 +60,7 @@ const APRESENTACAO = [
     desabilitarLegenda: true,
     inicio: 0,
     fim: null,
-    fadeColor: "#ff0000" // Vermelho sangrando pro próximo
+    fadeColor: "#ff0000"
   },
   {
     id: "obra-05",
@@ -72,7 +72,7 @@ const APRESENTACAO = [
       "https://umpedrogallego.github.io/site/thumb/13-dm-a.avif",
       "https://umpedrogallego.github.io/site/thumb/13-dm-b.avif",
       "https://umpedrogallego.github.io/site/thumb/13-dm-c.avif"
-    ],
-    fadeColor: "#000000"
+    ]
+    // A última obra dita o fim do ciclo (Shift+Seta para direita volta à Tela Inicial)
   }
 ];
