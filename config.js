@@ -74,5 +74,12 @@ const APRESENTACAO = [
       "https://umpedrogallego.github.io/site/thumb/13-dm-c.avif"
     ]
     // A última obra dita o fim do ciclo (Shift+Seta para direita volta à Tela Inicial)
+  },
+  {
+    titulo: "Screensaver",
+    ano: "2018 —",
+    provedor: "vimeo",
+    vimeoId: "1217454502",
+    fadeColor: "#5d665a"
   }
 ];
