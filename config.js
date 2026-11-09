@@ -4,8 +4,8 @@
 const APRESENTACAO = [
   {
     id: "obra-01",
-    titulo: "Sessão Inicial",
-    ano: "2024",
+    titulo: "Ficção de personalidade",
+    ano: "2014",
     tipo: "video-sequenciado",
     provedor: "youtube",
     videoId: "zujWETunt7U",
@@ -21,7 +21,7 @@ const APRESENTACAO = [
   },
   {
     id: "obra-02",
-    titulo: "Acordo de Emergência",
+    titulo: "acordo de Emergência",
     ano: "2020",
     tipo: "video-continuo",
     provedor: "youtube",
