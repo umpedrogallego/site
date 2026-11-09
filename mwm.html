@@ -13,9 +13,9 @@
 
   <style>
     :root {
-      --bg-dark: rgba(0, 36, 36, 0.88);
+      --bg-dark: rgba(0, 36, 36, 0.988);
       --text-main: oklch(99.733% 0.00913 113.424);
-      --text-title: oklch(99.733% 0.00913 113.424 / 97%);
+      --text-title: oklch(99.733% 0.00913 113.424 / 0.988);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,7 +42,7 @@
       position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none;
     }
     #bg-video-container video {
-      width: 100%; height: 100%; object-fit: cover;
+      width: 100%; height: 100%; object-fit: cover; filter: brightness(1.13);
     }
     #start-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -55,9 +55,9 @@
       width: 94vw; text-align: center; margin-bottom: 13vh;
       letter-spacing: -0.04em; cursor: pointer;
       opacity: .13; filter: blur(6px);
-      transition: color 3.8s, opacity 6.6s, filter 4.2s;
+      transition: color 3.8s, opacity 6.6s, filter 4.2s, letter-spacing 8.8s, font-weight 13s;
     }
-    #start-overlay h1:hover { color: var(--bg-dark); opacity: 0.13; filter: blur(4px) }
+    #start-overlay h1:hover { color: var(--bg-dark); opacity: 0.24; filter: blur(8px); letter-spacing: -0.024em; font-weight: 800; }
 
 /* Grid de Letreiros (Centralizado e Snap) */
     #grid-screen {
