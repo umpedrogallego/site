@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>★★★★★★★★★★★★★</title>
 
-  <link rel="icon" type="image/x-icon" href="wmw.ico">
+  <link rel="icon" type="image/x-icon" href="http://umpedrogallego.github.io/site/mwm.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
@@ -330,7 +330,7 @@
               if (!pulandoSegmento) {
               setTimeout(() => {
                 dom.blackout.classList.remove('ativo');
-              }, 3113); 
+              }, 4242); 
             }
               if (!modoManual) {
                 clearInterval(timeChecker);
@@ -466,7 +466,7 @@
         case 'ArrowLeft':
           const dir = e.key === 'ArrowRight' ? 1 : -1;
           
-          // Sair da Galeria ou avançar da Espera
+          // 1. Sair da Galeria ou avançar da Espera (Continua igual)
           if ((e.shiftKey && e.key === 'ArrowRight' && obraAtiva?.tipo.includes('galeria')) || (modoEspera && e.key === 'ArrowRight')) {
             indexAtual++;
             if (indexAtual >= APRESENTACAO.length) {
@@ -477,20 +477,25 @@
             return;
           }
 
+          // 2. Navegação na Galeria (Se for galeria, seta muda de foto)
           if (obraAtiva?.tipo.includes('galeria')) {
             const galeria = document.getElementById('gallery-container');
             if (galeria) {
-              const imgs = galeria.querySelectorAll('img');
-              galeriaIndex = Math.max(0, Math.min(galeriaIndex + dir, imgs.length - 1));
-              imgs[galeriaIndex].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+              const slides = galeria.querySelectorAll('.gallery-slide');
+              galeriaIndex = Math.max(0, Math.min(galeriaIndex + dir, slides.length - 1));
+              slides[galeriaIndex].scrollIntoView({ behavior: 'smooth', inline: 'start' });
             }
           } 
+          // 3. Modo Manual em Vídeos (Com saltos diferentes para Seta Pura vs Shift + Seta)
           else if (modoManual) {
+            // Se apertar Shift junto, pula 5 segundos. Se for só a seta, pula 30 segundos!
+            const segundosPulo = e.shiftKey ? 5 : 30;
+
             if (obraAtiva?.provedor === 'youtube' && ytPlayer) {
-              ytPlayer.seekTo(ytPlayer.getCurrentTime() + (30 * dir), true);
+              ytPlayer.seekTo(ytPlayer.getCurrentTime() + (segundosPulo * dir), true);
             } else {
               const vid = dom.mediaContainer.querySelector('video');
-              if (vid) vid.currentTime += (30 * dir);
+              if (vid) vid.currentTime += (segundosPulo * dir);
             }
           }
           break;
