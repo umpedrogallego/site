@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="https://srv881-files.hstgr.io/73569734360acf18/files/public_html/check/ScreenSaver.ico">
   <title>★</title>
-
+  
   <link rel="icon" type="image/x-icon" href="https://check/ScreenSaver.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +13,6 @@
 
   <style>
     :root {
-      /* Mude as cores aqui facilmente */
       --bg-dark: oklch(0.1513 0.0402 194.77);
       --text-main: oklch(0.8269 0.096 18.25 / 100%);
       --text-title: oklch(0.8269 0.096 18.25 / 88%);
@@ -32,17 +31,16 @@
 
     body.modo-manual { cursor: auto; }
 
-    /* Cortina de Transição */
+    /* Cortina de Transição: Fade de 1.5s */
     #blackout {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background-color: #000; /* Dinâmico via JS */
-      z-index: 9999; opacity: 0;
+      background-color: #000; z-index: 9999; opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s ease-in-out, background-color 0.5s ease;
+      transition: opacity 1.5s ease-in-out, background-color 1.5s ease;
     }
     #blackout.ativo { opacity: 1; pointer-events: all; }
 
-    /* Vídeo BG Fixo (Fica por trás de tudo) */
+    /* Vídeo BG Fixo Inicial */
     #bg-video-container {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       z-index: -1;
@@ -58,12 +56,16 @@
       z-index: 10;
     }
     #start-overlay h1 {
-      color: var(--text-title); font-weight: 500; font-size: clamp(3rem, 5vw, 6rem);
+      color: var(--bg-dark); /* Texto Escuro */
+      font-weight: 500; 
+      font-size: clamp(3.75rem, 6.25vw, 7.5rem); /* 25% maior */
       width: 60vw; text-align: center; margin-bottom: 10vh;
       letter-spacing: 0.1em; cursor: pointer;
+      opacity: 1; transition: opacity 0.3s;
     }
+    #start-overlay h1:hover { opacity: 0.66; }
 
-    /* Grid Textual (Scroll Snap Vertical) */
+    /* Grid Textual */
     #grid-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background-color: var(--bg-dark); z-index: 20;
@@ -74,14 +76,19 @@
     #grid-screen::-webkit-scrollbar { display: none; }
     
     .grid-item {
-      display: flex; justify-content: space-between; align-items: center;
-      min-height: 33.33vh; /* 3 itens por tela aprox */
-      padding: 0 10vw; scroll-snap-align: center; cursor: pointer;
-      font-size: clamp(2rem, 4vw, 4rem); transition: color 0.3s;
+      display: flex; justify-content: space-between; align-items: baseline;
+      min-height: 33.33vh; padding: 0 44px; /* Margens 44px */
+      scroll-snap-align: center; transition: opacity 0.3s;
     }
-    .grid-item:hover { color: #fff; }
-    .grid-ano { font-weight: 400; opacity: 0.7; }
-    .grid-titulo { font-weight: 600; text-align: right; color: var(--text-title); }
+    .grid-item:hover { opacity: 0.66; }
+    .grid-titulo { 
+      font-weight: 600; text-align: left; color: var(--text-title); 
+      font-size: clamp(2rem, 5vw, 5rem); cursor: pointer;
+    }
+    .grid-ano { 
+      font-weight: 400; text-align: right; color: var(--text-main);
+      font-size: clamp(1rem, 2.5vw, 2.5rem); cursor: pointer;
+    }
 
     /* Exibição */
     #exhibition-screen {
@@ -96,7 +103,7 @@
     }
     iframe, video { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
-    /* Capa Mágica do Modo Manual (Protege o Foco) */
+    /* Capa Mágica do Modo Manual */
     #magic-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       z-index: 10; cursor: pointer; display: none;
@@ -106,8 +113,8 @@
     /* Galeria Scroll Horizontal */
     #gallery-container {
       display: flex; height: 100%; width: 100%; overflow-x: auto;
-      scroll-snap-type: x mandatory; gap: 24px; padding: 0 24px;
-      align-items: center; scrollbar-width: none;
+      scroll-snap-type: x mandatory; align-items: center; scrollbar-width: none;
+      /* O gap será injetado via JS puxando do config */
     }
     #gallery-container::-webkit-scrollbar { display: none; }
     #gallery-container img { height: 100%; object-fit: contain; scroll-snap-align: center; }
@@ -126,28 +133,22 @@
 
   <div id="blackout"></div>
 
-  <!-- BG Fixo -->
   <div id="bg-video-container">
     <video src="https://umpedrogallego.github.io/site/midia/6x1-bg.webm" muted autoplay playsinline loop></video>
   </div>
 
-  <!-- Tela Inicial -->
   <div id="start-overlay">
     <h1 id="btn-iniciar">GALLEGO</h1>
   </div>
 
-  <!-- Tela Grid Textual -->
   <div id="grid-screen"></div>
 
-  <!-- Tela Exibição -->
   <div id="exhibition-screen">
     <div id="media-container">
-      <!-- Injetado via JS -->
       <div id="magic-overlay"></div> 
     </div>
   </div>
 
-  <!-- Rodapé -->
   <div id="footer-nav">
     <span id="footer-title">Obra</span>
     <span id="footer-status">SEAMLESS</span>
@@ -166,7 +167,7 @@
     let modoManual = false;
     let modoEspera = false;
     let galeriaIndex = 0;
-    let useVideoBgForFade = false; // Tecla Y
+    let isFirstBoot = true; // Para forçar o preto absoluto na primeira obra
 
     const dom = {
       blackout: document.getElementById('blackout'),
@@ -178,7 +179,7 @@
       btnIniciar: document.getElementById('btn-iniciar')
     };
 
-    // --- GRID INFINITO (Texto) ---
+    // --- GRID INFINITO ---
     function montarGrid() {
       if (typeof APRESENTACAO === 'undefined') return;
       
@@ -186,59 +187,57 @@
         APRESENTACAO.forEach((obra, index) => {
           const item = document.createElement('div');
           item.className = 'grid-item';
-          item.innerHTML = `<span class="grid-ano">${obra.ano}</span> <span class="grid-titulo">${obra.titulo}</span>`;
-          item.onclick = () => {
-            indexAtual = index;
-            carregarObra();
+          item.innerHTML = `<span class="grid-titulo">${obra.titulo}</span> <span class="grid-ano">${obra.ano}</span>`;
+          // O clique é no container, mas visualmente só o texto tem o cursor pointer (via CSS no child)
+          item.onclick = (e) => {
+            if(e.target.classList.contains('grid-titulo') || e.target.classList.contains('grid-ano')) {
+              indexAtual = index;
+              carregarObra();
+            }
           };
           dom.gridScreen.appendChild(item);
         });
       };
       
-      // Repete 3 vezes para simular scroll infinito
-      criarItens(); criarItens(); criarItens();
+      criarItens(); criarItens(); criarItens(); // 3x para scroll infinito
     }
 
     // --- INÍCIO ---
     dom.btnIniciar.addEventListener('click', () => {
-      // Pede Fullscreen
       if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
-      
       dom.startOverlay.style.display = 'none';
       indexAtual = 0;
+      isFirstBoot = true;
       carregarObra();
     });
 
-    // --- TRANSIÇÕES ---
-    function atualizarCorFade() {
-      if (useVideoBgForFade) {
-        dom.blackout.style.backgroundColor = 'transparent';
-      } else {
-        dom.blackout.style.backgroundColor = obraAtiva?.fadeColor || '#000000';
-      }
-    }
-
     function entrarEmEspera() {
       modoEspera = true;
-      atualizarCorFade();
+      dom.blackout.style.transitionDuration = '1.5s';
+      dom.blackout.style.backgroundColor = obraAtiva?.fadeColor || '#000000';
       dom.blackout.classList.add('ativo');
-      // Limpa player por trás da cortina
-      setTimeout(limparMedia, 600);
+      setTimeout(limparMedia, 1500); // Limpa só depois que a cortina fechou 100%
     }
 
     function carregarObra() {
-      if (indexAtual >= APRESENTACAO.length) indexAtual = 0; // Loop na apresentação geral
+      if (indexAtual >= APRESENTACAO.length) indexAtual = 0;
       obraAtiva = APRESENTACAO[indexAtual];
       modoEspera = false;
       
       document.getElementById('footer-title').innerText = `${obraAtiva.titulo} (${obraAtiva.ano})`;
       
-      // Cor transitória neutra (Preto) para entrar na obra
-      dom.blackout.style.backgroundColor = '#000';
+      // Se viemos do grid ou início, força o fundo preto. Se viemos de uma obra, mantém a cor do fadeOut anterior (belíssimo).
+      if (dom.gridScreen.style.display === 'flex' || isFirstBoot) {
+        dom.blackout.style.transitionDuration = '0.5s'; // Mais rápido do menu
+        dom.blackout.style.backgroundColor = '#000000';
+        isFirstBoot = false;
+      }
+      
       dom.blackout.classList.add('ativo');
       
       setTimeout(() => {
         dom.gridScreen.style.display = 'none';
+        dom.startOverlay.style.display = 'none'; // Prevenção
         dom.exhibitionScreen.style.display = 'flex';
         limparMedia();
 
@@ -246,9 +245,12 @@
         else if (obraAtiva.tipo.includes('galeria')) carregarGaleria(obraAtiva);
         else if (obraAtiva.tipo === 'video-nativo') carregarVideoLocal(obraAtiva);
 
-        // O fadeout acontece via eventos do YT ou direto para local/galeria
+        // Se não for YT, o fade out rola direto após o carregamento (Galeria/Local)
         if (obraAtiva.provedor !== 'youtube') {
-          setTimeout(() => dom.blackout.classList.remove('ativo'), 500);
+          setTimeout(() => {
+            dom.blackout.style.transitionDuration = '1.5s';
+            dom.blackout.classList.remove('ativo');
+          }, 800); // 800ms de buffer extra pra renderizar as fotos/video 
         }
       }, 600);
     }
@@ -257,7 +259,6 @@
       if (timeChecker) clearInterval(timeChecker);
       if (ytPlayer && ytPlayer.destroy) ytPlayer.destroy();
       
-      // Remove tudo exceto o magic-overlay
       Array.from(dom.mediaContainer.children).forEach(child => {
         if(child.id !== 'magic-overlay') child.remove();
       });
@@ -286,7 +287,8 @@
           },
           'onStateChange': (event) => {
             if (event.data === YT.PlayerState.PLAYING) {
-              dom.blackout.classList.remove('ativo'); // Revela quando engatar o play
+              dom.blackout.style.transitionDuration = '1.5s';
+              dom.blackout.classList.remove('ativo'); 
               if (!modoManual) {
                 timeChecker = setInterval(obra.tipo === 'video-sequenciado' ? checarSaltosYT : checarFimYT, 100);
               }
@@ -303,9 +305,10 @@
       const currentTime = ytPlayer.getCurrentTime();
       const targetEnd = obraAtiva.segmentos[currentSegment].end;
 
-      // 1 Segundo ANTES, sobe o blackout
-      if (targetEnd - currentTime <= 1.0 && !dom.blackout.classList.contains('ativo')) {
-        dom.blackout.style.backgroundColor = '#000';
+      // 2 Segundos ANTES, sobe o blackout interno
+      if (targetEnd - currentTime <= 2.0 && !dom.blackout.classList.contains('ativo')) {
+        dom.blackout.style.transitionDuration = '1.5s';
+        dom.blackout.style.backgroundColor = '#000000'; // Salto interno é sempre preto
         dom.blackout.classList.add('ativo');
       }
 
@@ -315,12 +318,10 @@
         
         if (currentSegment < obraAtiva.segmentos.length) {
           ytPlayer.pauseVideo();
-          // Espera 5s no preto absoluto
           setTimeout(() => {
             ytPlayer.seekTo(obraAtiva.segmentos[currentSegment].start, true);
             ytPlayer.playVideo();
-            // O evento onStateChange PLAYING vai tirar o blackout automaticamente
-          }, 5000);
+          }, 5000); // 5s no escuro
         } else {
           entrarEmEspera();
         }
@@ -329,7 +330,8 @@
 
     function checarFimYT() {
       if (!ytPlayer || !ytPlayer.getDuration) return;
-      if (ytPlayer.getDuration() - ytPlayer.getCurrentTime() <= 1.0) {
+      // 2s antes de terminar o vídeo, dispara a cor de saída
+      if (ytPlayer.getDuration() - ytPlayer.getCurrentTime() <= 2.0) {
         if(!dom.blackout.classList.contains('ativo')) entrarEmEspera();
       }
     }
@@ -339,18 +341,35 @@
       const vid = document.createElement('video');
       vid.src = obra.src; vid.controls = false; vid.autoplay = true;
       vid.onended = entrarEmEspera;
+      // Check de tempo para local também
+      vid.ontimeupdate = () => {
+        if (vid.duration - vid.currentTime <= 2.0 && !dom.blackout.classList.contains('ativo')) {
+          entrarEmEspera();
+        }
+      };
       dom.mediaContainer.insertBefore(vid, dom.magicOverlay);
     }
 
     function carregarGaleria(obra) {
       const galeria = document.createElement('div');
       galeria.id = 'gallery-container';
-      galeriaIndex = 0;
-      obra.imagens.forEach(src => {
+      galeria.style.gap = `${obra.gap || 24}px`;
+      
+      // Duplicando as imagens para garantir o centralizado no primeiro load (padding virtual)
+      const imagensDuplicadas = [...obra.imagens, ...obra.imagens];
+      
+      imagensDuplicadas.forEach((src, idx) => {
         const img = document.createElement('img'); img.src = src;
         galeria.appendChild(img);
       });
       dom.mediaContainer.insertBefore(galeria, dom.magicOverlay);
+      
+      // Ajusta o scroll pra imagem certa logo após injetar
+      setTimeout(() => {
+        const imgs = galeria.querySelectorAll('img');
+        galeriaIndex = obra.imagens.length; // Cai no início da segunda repetição (perfeitamente centralizado)
+        imgs[galeriaIndex].scrollIntoView({ behavior: 'instant', inline: 'center' });
+      }, 50);
     }
 
     // --- CONTROLE MÁGICO (Clique Falso) ---
@@ -372,12 +391,6 @@
           document.getElementById('footer-nav').classList.toggle('visivel'); 
           break;
 
-        case 'y':
-        case 'Y':
-          useVideoBgForFade = !useVideoBgForFade;
-          if (modoEspera) atualizarCorFade(); // Aplica imediato se estiver esperando
-          break;
-
         case 'b':
         case 'B':
           modoManual = !modoManual;
@@ -392,30 +405,43 @@
 
         case 'g':
         case 'G':
-          dom.blackout.style.backgroundColor = '#000';
+          dom.blackout.style.transitionDuration = '0.5s';
+          dom.blackout.style.backgroundColor = '#000000';
           dom.blackout.classList.add('ativo');
+          
           setTimeout(() => {
             limparMedia(); modoEspera = false;
-            dom.startOverlay.style.display = 'none';
             dom.exhibitionScreen.style.display = 'none';
             dom.gridScreen.style.display = 'flex';
+            
+            // Pula pro bloco B invisivelmente
+            const itens = document.querySelectorAll('.grid-item');
+            const target = itens[indexAtual + APRESENTACAO.length]; 
+            if(target) target.scrollIntoView({ block: 'center', behavior: 'instant' });
+            
             setTimeout(() => dom.blackout.classList.remove('ativo'), 500);
           }, 600);
           break;
 
-        case ' ': // Espaço (só funciona se não estiver no Grid)
+        case ' ': // Play/Pause
           if (dom.gridScreen.style.display === 'flex') return;
           e.preventDefault(); 
-          dom.magicOverlay.click(); // Reutiliza a lógica do clique falso
+          dom.magicOverlay.click();
           break;
 
         case 'ArrowRight':
         case 'ArrowLeft':
           const dir = e.key === 'ArrowRight' ? 1 : -1;
           
-          if (modoEspera) {
-            // Avança para próxima obra (Só seta direita avança natural, esquerda recua)
-            indexAtual = Math.max(0, Math.min(indexAtual + dir, APRESENTACAO.length - 1));
+          // Se for Shift + Seta Direita NA GALERIA, avança a obra
+          if (e.shiftKey && e.key === 'ArrowRight' && obraAtiva?.tipo.includes('galeria')) {
+            indexAtual = (indexAtual + 1) % APRESENTACAO.length;
+            carregarObra();
+            return;
+          }
+
+          if (modoEspera && e.key === 'ArrowRight') {
+            indexAtual = (indexAtual + 1) % APRESENTACAO.length;
             carregarObra();
           } 
           else if (obraAtiva?.tipo.includes('galeria')) {
