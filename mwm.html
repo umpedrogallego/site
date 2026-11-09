@@ -443,8 +443,13 @@
               imgs[galeriaIndex].scrollIntoView({ behavior: 'smooth', inline: 'center' });
             }
           } 
-          else if (modoManual && ytPlayer) {
-            ytPlayer.seekTo(ytPlayer.getCurrentTime() + (5 * dir), true);
+          else if (modoManual) {
+            if (obraAtiva?.provedor === 'youtube' && ytPlayer) {
+              ytPlayer.seekTo(ytPlayer.getCurrentTime() + (30 * dir), true);
+            } else {
+              const vid = dom.mediaContainer.querySelector('video');
+              if (vid) vid.currentTime += (30 * dir);
+            }
           }
           break;
       }
