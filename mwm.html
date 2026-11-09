@@ -104,16 +104,37 @@
     }
     body.modo-manual #magic-overlay { display: block; }
 
-    /* Galeria Horizontal (1 foto por vez, altura máxima) */
+/* Container do carrossel */
     #gallery-container {
-      display: flex; height: 100%; width: 100%; overflow-x: auto;
-      scroll-snap-type: x mandatory; align-items: center; scrollbar-width: none;
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
     }
     #gallery-container::-webkit-scrollbar { display: none; }
-    #gallery-container img { 
-      height: 100vh; width: auto; max-width: 100vw; 
-      object-fit: contain; scroll-snap-align: center; 
-      cursor: default; /* Sem mãozinha */
+
+    /* Cada slide ocupa a tela inteira (100vw) */
+    .gallery-slide {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    /* A foto fica cravada em 100vh no centro do slide */
+    .gallery-slide img { 
+      height: 100vh;
+      width: auto;
+      max-width: 100vw;
+      object-fit: contain;
+      cursor: default;
+      user-select: none;
     }
 
     /* Rodapé Invisível */
@@ -353,19 +374,24 @@
     function carregarGaleria(obra) {
       const galeria = document.createElement('div');
       galeria.id = 'gallery-container';
-      galeria.style.gap = `${obra.gap || 88}px`;
       galeriaIndex = 0;
       
       obra.imagens.forEach((src) => {
-        const img = document.createElement('img'); img.src = src;
-        galeria.appendChild(img);
+        const slide = document.createElement('div');
+        slide.className = 'gallery-slide';
+        
+        const img = document.createElement('img');
+        img.src = src;
+        
+        slide.appendChild(img);
+        galeria.appendChild(slide);
       });
+
       dom.mediaContainer.insertBefore(galeria, dom.magicOverlay);
       
-      // Crava a primeira imagem no centro
       setTimeout(() => {
-        const imgs = galeria.querySelectorAll('img');
-        if(imgs[0]) imgs[0].scrollIntoView({ behavior: 'instant', inline: 'center' });
+        const slides = galeria.querySelectorAll('.gallery-slide');
+        if (slides[0]) slides[0].scrollIntoView({ behavior: 'instant', inline: 'start' });
       }, 50);
     }
 
