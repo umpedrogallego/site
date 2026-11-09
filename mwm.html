@@ -271,6 +271,7 @@
         limparMedia();
 
         if (obraAtiva.provedor === 'youtube') carregarYouTube(obraAtiva);
+        else if (obraAtiva.provedor === 'vimeo') carregarVimeo(obraAtiva);
         else if (obraAtiva.tipo.includes('galeria')) carregarGaleria(obraAtiva);
 
         // Se for galeria, não depende do YT para liberar o fadeout
@@ -338,6 +339,28 @@
           }
         }
       });
+    }
+
+
+    function carregarVimeo(obra) {
+      const iframe = document.createElement('iframe');
+      iframe.id = 'vimeo-player-iframe';
+      // Parâmetros para esconder controles, deixar autoplay e loop se quiser
+      iframe.src = `https://player.vimeo.com/video/${obra.vimeoId}?autoplay=1&background=1&muted=0&controls=0`;
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+      
+      dom.mediaContainer.insertBefore(iframe, dom.magicOverlay);
+
+      // Como o Vimeo não tem o onStateChange do YouTube, 
+      // tiramos a cortina depois que ele dispara o embed (ex: 1.5s)
+      setTimeout(() => {
+        if (dom.blackout.classList.contains('ativo')) {
+          dom.blackout.classList.remove('ativo');
+        }
+      }, 2000);
     }
 
     // 2. O checarSaltosYT com a trava acionada
