@@ -525,5 +525,51 @@
 
     window.addEventListener('load', montarGrid);
   </script>
+
+<!-- ATALHOS DIRETOS (MODO ABERTO / TECLA B) -->
+  <script>
+    (function() {
+      const mapaObras = {
+        'f': 'ficcao',
+        'a': 'acordo',
+        't': 'torcida',
+        'n': 'nada machuca',
+        'd': 'domingo maior',
+        's': 'screensaver'
+      };
+
+      function normalizar(texto) {
+        return (texto || '')
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, '');
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+        // Só executa se o modo manual estiver ativo (mouse visível)
+        if (!document.body.classList.contains('modo-manual')) return;
+
+        const tecla = e.key.toLowerCase();
+        const termoBusca = mapaObras[tecla];
+
+        if (termoBusca && typeof APRESENTACAO !== 'undefined') {
+          const termoLimpo = normalizar(termoBusca);
+          const indexAlvo = APRESENTACAO.findIndex(obra => 
+            normalizar(obra.titulo).includes(termoLimpo)
+          );
+
+          if (indexAlvo !== -1) {
+            e.preventDefault();
+            indexAtual = indexAlvo;
+            iniciarTransicaoObra();
+          }
+        }
+      });
+    })();
+  </script>
+
 </body>
 </html> 
