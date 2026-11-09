@@ -264,13 +264,16 @@
       });
       ytPlayer = null;
     }
+// Crie essa variável junto com as outras lá em cima
+    let pulandoSegmento = false;
 
-    // --- YOUTUBE LOGIC ---
+    // 1. O onStateChange corrigido (com a trava)
     function carregarYouTube(obra) {
       const div = document.createElement('div');
       div.id = 'yt-player-div';
       dom.mediaContainer.insertBefore(div, dom.magicOverlay);
       currentSegment = 0;
+      pulandoSegmento = false;
       
       let startSeconds = obra.tipo === 'video-sequenciado' ? obra.segmentos[0].start : obra.inicio;
 
@@ -286,10 +289,13 @@
             e.target.playVideo();
           },
           'onStateChange': (event) => {
+            // Se estiver no meio de um salto, NÃO deixa abrir a cortina aqui!
             if (event.data === YT.PlayerState.PLAYING && dom.blackout.classList.contains('ativo')) {
-              // Cortina dita as regras: só abre depois que o play engatou de vez
-              dom.blackout.classList.remove('ativo'); 
+              if (!pulandoSegmento) {
+                dom.blackout.classList.remove('ativo'); 
+              }
               if (!modoManual) {
+                clearInterval(timeChecker);
                 timeChecker = setInterval(obra.tipo === 'video-sequenciado' ? checarSaltosYT : checarFimYT, 100);
               }
             }
@@ -298,37 +304,42 @@
       });
     }
 
+    // 2. O checarSaltosYT com a trava acionada
     function checarSaltosYT() {
       if (!ytPlayer || !ytPlayer.getCurrentTime) return;
       const currentTime = ytPlayer.getCurrentTime();
       const targetEnd = obraAtiva.segmentos[currentSegment].end;
 
-      // 2 Segundos ANTES, engole em preto suave
+      // 2s antes, sobe o blackout
       if (targetEnd - currentTime <= 2.0 && !dom.blackout.classList.contains('ativo')) {
         dom.blackout.style.backgroundColor = '#000000';
         dom.blackout.classList.add('ativo');
       }
 
-      // Bateu no tempo final do trecho
       if (currentTime >= targetEnd) {
         clearInterval(timeChecker);
         currentSegment++;
 
         if (currentSegment < obraAtiva.segmentos.length) {
-          // Pula direto por baixo da cortina (SEM pause para não chamar a barra)
+          pulandoSegmento = true; // TRAVA A CORTINA! Ninguém encosta nela
+          
           ytPlayer.seekTo(obraAtiva.segmentos[currentSegment].start, true);
+          ytPlayer.playVideo();
 
-          // Espera 1.2s no escuro para estabilizar e abre o blackout
+          // Agora sim o seu tempo manda de verdade!
+          // 2500ms é perfeito pro YouTube engolir a barra no escuro
           setTimeout(() => {
-            dom.blackout.classList.remove('ativo');
+            pulandoSegmento = false; // Libera
+            dom.blackout.classList.remove('ativo'); // Abre a cortina
             timeChecker = setInterval(checarSaltosYT, 100);
-          }, 6500);
+          }, 2500);
 
         } else {
           entrarEmEspera();
         }
       }
     }
+
     
     function checarFimYT() {
       if (!ytPlayer || !ytPlayer.getDuration) return;
