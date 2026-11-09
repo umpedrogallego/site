@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>★★★★★★★★★★★★★</title>
 
-  <link rel="icon" type="image/x-icon" href="http://umpedrogallego.github.io/site/mwm.ico">
+  <link rel="shortcut icon" href="mwm.ico" type="image/x-icon">
+  <link rel="icon" type="image/x-icon" href="mwm.ico?v=2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-dark: oklch(0.1513 0.0402 194.77 / 98.8%);
+      --bg-dark: rgba(0, 36, 36, 0.88);
       --text-main: oklch(99.733% 0.00913 113.424);
       --text-title: oklch(99.733% 0.00913 113.424 / 97%);
     }
@@ -78,7 +79,7 @@
 
     .grid-item:hover .grid-titulo, 
     .grid-item:hover .grid-ano { 
-      color: rgba(242, 255, 142, 0.88); 
+      color: rgba(242, 255, 142, 0.69); 
     }
     
     .grid-titulo { 
@@ -86,7 +87,7 @@
       font-size: calc(clamp(2.6rem, 6.5vw, 6.5rem) + 6px); /* +30% */
       pointer-events: auto; /* Devolve o clique para o título */
       cursor: pointer; 
-      transition: color 0.38s;
+      transition: color 0.18s;
     }
     
     .grid-ano { 
@@ -94,7 +95,7 @@
       font-size: calc(clamp(1rem, 2.5vw, 2.5rem) + 2px); 
       pointer-events: auto; /* Devolve o clique para o ano */
       cursor: pointer; 
-      transition: color 0.38s;
+      transition: color 0.24s;
     }
 
     /* Exibição */
@@ -211,24 +212,20 @@
       homeVideo: document.getElementById('home-video')
     };
 
-    // --- GRID INFINITO ---
+// --- GRID ÚNICO ---
     function montarGrid() {
       if (typeof APRESENTACAO === 'undefined') return;
       
-      const criarItens = () => {
-        APRESENTACAO.forEach((obra, index) => {
-          const item = document.createElement('div');
-          item.className = 'grid-item';
-          item.innerHTML = `<span class="grid-titulo">${obra.titulo}</span> <span class="grid-ano">${obra.ano}</span>`;
-          item.onclick = () => {
-            indexAtual = index;
-            iniciarTransicaoObra();
-          };
-          dom.gridScreen.appendChild(item);
-        });
-      };
-      
-      criarItens(); criarItens(); criarItens();
+      APRESENTACAO.forEach((obra, index) => {
+        const item = document.createElement('div');
+        item.className = 'grid-item';
+        item.innerHTML = `<span class="grid-titulo">${obra.titulo}</span> <span class="grid-ano">${obra.ano}</span>`;
+        item.onclick = () => {
+          indexAtual = index;
+          iniciarTransicaoObra();
+        };
+        dom.gridScreen.appendChild(item);
+      });
     }
 
     // --- NAVEGAÇÃO E TRANSIÇÕES ---
