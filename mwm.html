@@ -79,7 +79,8 @@
 
     .grid-item:hover .grid-titulo, 
     .grid-item:hover .grid-ano { 
-      color: rgba(242, 255, 142, 0.88); 
+      color: rgba(242, 255, 142, 0.88);
+      font-weight: 600;
       filter: blur(1px);
     }
     
@@ -89,7 +90,7 @@
       letter-spacing: -0.013em;
       pointer-events: auto; /* Devolve o clique para o título */
       cursor: pointer; 
-      transition: color 0.18s, filter 0.24s;
+      transition: color 0.18s, filter 0.24s, font-weight 1.88s;
     }
     
     .grid-ano { 
@@ -98,7 +99,7 @@
       pointer-events: auto; /* Devolve o clique para o ano */
       cursor: pointer; 
       letter-spacing: 0.013em;
-      transition: color 0.24s;
+      transition: color 0.24s, font-weight 1.88s, filter 0.38s;
     }
 
     /* Exibição */
