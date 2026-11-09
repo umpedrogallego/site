@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="https://srv881-files.hstgr.io/73569734360acf18/files/public_html/check/ScreenSaver.ico">
+  <title>★</title>
+  
+  <!-- Tipografia: Familjen Grotesk (Todos os pesos e itálicos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: oklch(0.1513 0.0402 194.77);
+      --text-main: oklch(0.8269 0.096 18.25 / 100%);
+      --text-title: oklch(0.8269 0.096 18.25 / 88%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Familjen Grotesk', sans-serif;
+      overflow: hidden;
+      cursor: none; /* Mouse invisível por padrão */
+    }
+
+    /* Revela o mouse quando estiver no modo manual */
+    body.modo-manual { cursor: auto; }
+
+    /* Cortina Preta para transições seamless */
+    #blackout {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: #000;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease-in-out;
+    }
+    #blackout.ativo { opacity: 1; pointer-events: all; }
+
+    /* Tela Inicial (Vídeo BG + GALLEGO) */
+    #start-screen {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 10;
+    }
+    #bg-video {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.5;
+    }
+    #start-screen h1 {
+      color: var(--text-title);
+      font-weight: 500;
+      font-size: clamp(3rem, 5vw, 6rem);
+      width: 60vw;
+      text-align: center;
+      margin-bottom: 10vh;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+    }
+
+    /* Grid de Trabalhos (Acionado no 'G') */
+    #grid-screen {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: var(--bg-dark);
+      z-index: 20;
+      display: none;
+      padding: 4rem;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      align-content: center;
+      overflow-y: auto;
+    }
+    .thumb-item {
+      aspect-ratio: 16/9;
+      background-size: cover;
+      background-position: center;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: border 0.3s;
+      display: flex;
+      align-items: flex-end;
+      padding: 1rem;
+    }
+    .thumb-item:hover { border-color: var(--text-title); }
+    .thumb-title {
+      background: var(--bg-dark);
+      padding: 0.2rem 0.5rem;
+      font-size: 1rem;
+    }
+
+    /* Container de Exibição (Vídeo ou Galeria) */
+    #exhibition-screen {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      display: none;
+      z-index: 5;
+      background: #000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    /* Blindagem: impede cliques no iframe/vídeo por padrão */
+    #media-container {
+      width: 100%; height: 100%;
+      pointer-events: none; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    body.modo-manual #media-container { pointer-events: auto; }
+
+    iframe, video { width: 100%; height: 100%; object-fit: contain; }
+
+    /* Galeria Scroll Horizontal */
+    #gallery-container {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 24px;
+      padding: 0 24px;
+      align-items: center;
+      scrollbar-width: none; /* Firefox */
+    }
+    #gallery-container::-webkit-scrollbar { display: none; }
+    #gallery-container img {
+      height: 100%;
+      object-fit: contain;
+      scroll-snap-align: center;
+    }
+
+    /* Rodapé Invisível (Acionado no '\') */
+    #footer-nav {
+      position: absolute;
+      bottom: -100px; left: 0; width: 100%;
+      padding: 1.5rem;
+      background: linear-gradient(to top, var(--bg-dark) 0%, transparent 100%);
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      transition: bottom 0.3s ease;
+      font-weight: 300;
+    }
+    #footer-nav.visivel { bottom: 0; }
+  </style>
+</head>
+<body>
+
+  <div id="blackout"></div>
+
+  <!-- Tela 0: Início -->
+  <div id="start-screen">
+    <video id="bg-video" src="https://umpedrogallego.github.io/site/midia/6x1-bg.webm" muted autoplay playsinline></video>
+    <h1 id="btn-iniciar">GALLEGO</h1>
+  </div>
+
+  <!-- Tela Grid (Visão Panorâmica) -->
+  <div id="grid-screen"></div>
+
+  <!-- Tela de Exibição -->
+  <div id="exhibition-screen">
+    <div id="media-container"></div>
+  </div>
+
+  <!-- Rodapé -->
+  <div id="footer-nav">
+    <span id="footer-title">Título da Obra</span>
+    <span id="footer-status">SEAMLESS</span>
+  </div>
+
+  <!-- Youtube API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  
+  <!-- CARREGA O CONFIG EXTERNO -->
+  <script src="config.js"></script>
+
+  <script>
+    /**
+     * BOTA QUE BOTA
+     * Se der o desespero e quiser colar o array APRESENTACAO do config.js direto aqui,
+     * basta colar ele acima desta linha e apagar a tag <script src="config.js"> lá em cima.
+     */
+
+    // ESTADOS GLOBAIS
+    let ytPlayer = null;
+    let obraAtiva = null;
+    let timeChecker = null;
+    let currentSegment = 0;
+    let modoManual = false;
+    let galeriaIndex = 0;
+
+    const dom = {
+      blackout: document.getElementById('blackout'),
+      startScreen: document.getElementById('start-screen'),
+      gridScreen: document.getElementById('grid-screen'),
+      exhibitionScreen: document.getElementById('exhibition-screen'),
+      mediaContainer: document.getElementById('media-container'),
+      footerNav: document.getElementById('footer-nav'),
+      footerTitle: document.getElementById('footer-title'),
+      bgVideo: document.getElementById('bg-video')
+    };
+
+    // --- LÓGICA DO VÍDEO PING-PONG ---
+    // Simula o vai-e-volta suavemente caso o playbackRate negativo falhe
+    dom.bgVideo.addEventListener('ended', () => {
+      // Como o play reverso web é instável, reiniciamos suave para simular o loop
+      dom.bgVideo.currentTime = 0; 
+      dom.bgVideo.play();
+    });
+
+    // --- INICIALIZAÇÃO DA GRADE ---
+    function montarGrid() {
+      if (typeof APRESENTACAO === 'undefined') return;
+      
+      APRESENTACAO.forEach((obra, index) => {
+        const item = document.createElement('div');
+        item.className = 'thumb-item';
+        item.style.backgroundImage = `url(${obra.thumb})`;
+        item.innerHTML = `<span class="thumb-title">${obra.titulo}</span>`;
+        item.onclick = () => carregarObra(index);
+        dom.gridScreen.appendChild(item);
+      });
+    }
+
+    document.getElementById('btn-iniciar').addEventListener('click', () => {
+      dom.startScreen.style.display = 'none';
+      dom.gridScreen.style.display = 'grid'; // Inicia mostrando a grade
+    });
+
+    // --- CONTROLE DE MÍDIA ---
+    function cortinaPreta(callback, delayFadeIn = 500) {
+      dom.blackout.classList.add('ativo');
+      setTimeout(() => {
+        callback();
+        setTimeout(() => dom.blackout.classList.remove('ativo'), delayFadeIn);
+      }, 600); // Tempo do CSS transition
+    }
+
+    function limparMedia() {
+      if (timeChecker) clearInterval(timeChecker);
+      if (ytPlayer && ytPlayer.destroy) ytPlayer.destroy();
+      dom.mediaContainer.innerHTML = '';
+      ytPlayer = null;
+    }
+
+    function carregarObra(index) {
+      obraAtiva = APRESENTACAO[index];
+      dom.footerTitle.innerText = `${obraAtiva.titulo} (${obraAtiva.ano})`;
+      
+      cortinaPreta(() => {
+        dom.gridScreen.style.display = 'none';
+        dom.exhibitionScreen.style.display = 'flex';
+        limparMedia();
+
+        if (obraAtiva.provedor === 'youtube') {
+          carregarYouTube(obraAtiva);
+        } else if (obraAtiva.tipo.includes('galeria')) {
+          carregarGaleria(obraAtiva);
+        } else if (obraAtiva.tipo === 'video-nativo') {
+          carregarVideoLocal(obraAtiva);
+        }
+      });
+    }
+
+    // --- YOUTUBE BUILDER ---
+    function carregarYouTube(obra) {
+      dom.mediaContainer.innerHTML = '<div id="yt-player-div"></div>';
+      currentSegment = 0;
+      
+      let startSeconds = obra.tipo === 'video-sequenciado' ? obra.segmentos[0].start : obra.inicio;
+
+      ytPlayer = new YT.Player('yt-player-div', {
+        videoId: obra.videoId,
+        playerVars: {
+          controls: 0, disablekb: 1, modestbranding: 1, rel: 0, showinfo: 0, fs: 0,
+          cc_load_policy: obra.desabilitarLegenda ? 0 : 1,
+          start: startSeconds
+        },
+        events: {
+          'onReady': (e) => {
+            e.target.setPlaybackQuality(obra.qualidade || 'hd1080');
+            e.target.playVideo();
+          },
+          'onStateChange': onYTStateChange
+        }
+      });
+    }
+
+    function onYTStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING && !modoManual) {
+        if (obraAtiva.tipo === 'video-sequenciado') {
+          timeChecker = setInterval(checarSaltosYT, 100);
+        }
+      } else {
+        clearInterval(timeChecker);
+      }
+    }
+
+    function checarSaltosYT() {
+      if (!ytPlayer || !ytPlayer.getCurrentTime) return;
+      const currentTime = ytPlayer.getCurrentTime();
+      const targetEnd = obraAtiva.segmentos[currentSegment].end;
+
+      if (currentTime >= targetEnd) {
+        currentSegment++;
+        if (currentSegment < obraAtiva.segmentos.length) {
+          cortinaPreta(() => {
+            ytPlayer.seekTo(obraAtiva.segmentos[currentSegment].start, true);
+          }, 1000); // Dá 1s de preto pro YT carregar o buffer do salto
+        } else {
+          // Fim da sequência
+          ytPlayer.pauseVideo();
+          abrirGrid();
+        }
+      }
+    }
+
+    // --- VÍDEO LOCAL BUILDER ---
+    function carregarVideoLocal(obra) {
+      const vid = document.createElement('video');
+      vid.src = obra.src;
+      vid.controls = false;
+      vid.autoplay = true;
+      dom.mediaContainer.appendChild(vid);
+    }
+
+    // --- GALERIA BUILDER ---
+    function carregarGaleria(obra) {
+      const galeria = document.createElement('div');
+      galeria.id = 'gallery-container';
+      galeriaIndex = 0;
+      
+      obra.imagens.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        galeria.appendChild(img);
+      });
+      dom.mediaContainer.appendChild(galeria);
+    }
+
+    function abrirGrid() {
+      cortinaPreta(() => {
+        limparMedia();
+        dom.exhibitionScreen.style.display = 'none';
+        dom.gridScreen.style.display = 'grid';
+      });
+    }
+
+    // --- ATALHOS DE TECLADO MÁGICOS ---
+    document.addEventListener('keydown', (e) => {
+      // Evita disparar se usuário pressionar Ctrl/Alt junto
+      if (e.ctrlKey || e.altKey) return;
+
+      switch(e.key) {
+        case '\\': // Alternar Rodapé
+          dom.footerNav.classList.toggle('visivel');
+          break;
+
+        case 'b': // Alternar Blindagem (B)
+        case 'B':
+          modoManual = !modoManual;
+          document.body.classList.toggle('modo-manual', modoManual);
+          dom.footerStatus.innerText = modoManual ? "MANUAL (MOUSE LIBERADO)" : "SEAMLESS";
+          
+          if (!modoManual && ytPlayer && ytPlayer.getPlayerState() === 1) {
+            // Reativa loop de checagem de pulo se for vídeo sequenciado
+            if (obraAtiva?.tipo === 'video-sequenciado') {
+              clearInterval(timeChecker);
+              timeChecker = setInterval(checarSaltosYT, 100);
+            }
+          }
+          break;
+
+        case 'g': // Voltar pro Grid (G)
+        case 'G':
+          abrirGrid();
+          break;
+
+        case ' ': // Espaço: Play/Pause universal
+          e.preventDefault(); // Evita scroll da página
+          if (obraAtiva?.provedor === 'youtube' && ytPlayer) {
+            const state = ytPlayer.getPlayerState();
+            state === 1 ? ytPlayer.pauseVideo() : ytPlayer.playVideo();
+          } else {
+            const vid = dom.mediaContainer.querySelector('video');
+            if (vid) { vid.paused ? vid.play() : vid.pause(); }
+          }
+          break;
+
+        case 'ArrowRight': // Seta Direita
+        case 'ArrowLeft':  // Seta Esquerda
+          const direcao = e.key === 'ArrowRight' ? 1 : -1;
+          
+          if (obraAtiva?.tipo.includes('galeria')) {
+            // Navega na galeria
+            const galeria = document.getElementById('gallery-container');
+            if (galeria) {
+              const imgs = galeria.querySelectorAll('img');
+              galeriaIndex = Math.max(0, Math.min(galeriaIndex + direcao, imgs.length - 1));
+              imgs[galeriaIndex].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+            }
+          } else if (modoManual) {
+            // Seek 5s no modo manual
+            if (obraAtiva?.provedor === 'youtube' && ytPlayer) {
+              ytPlayer.seekTo(ytPlayer.getCurrentTime() + (5 * direcao), true);
+            } else {
+              const vid = dom.mediaContainer.querySelector('video');
+              if (vid) vid.currentTime += (5 * direcao);
+            }
+          }
+          break;
+      }
+    });
+
+    // Inicia gerando os itens da grade quando a página carrega
+    window.addEventListener('load', montarGrid);
+  </script>
+</body>
+</html>
