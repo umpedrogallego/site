@@ -13,7 +13,7 @@
 
   <style>
     :root {
-      --bg-dark: oklch(0.1513 0.0402 194.77);
+      --bg-dark: oklch(0.1513 0.0402 194.77 / 98.8%);
       --text-main: oklch(99.733% 0.00913 113.424);
       --text-title: oklch(99.733% 0.00913 113.424 / 97%);
     }
@@ -64,7 +64,7 @@
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background-color: var(--bg-dark); z-index: 20;
       display: none; flex-direction: column;
-      overflow-y: auto; scroll-snap-type: y mandatory;
+      overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth;
       scrollbar-width: none; 
       padding: 33.33vh 0; /* Permite que o topo e a base parem no centro exato */
     }
@@ -72,11 +72,11 @@
     
     .grid-item {
       display: flex; justify-content: space-between; align-items: baseline;
-      min-height: 25vh; padding: 0 66px;
-      scroll-snap-align: center; transition: color 0.38s; cursor: pointer;
+      min-height: 25vh; padding: 0 66px; 
+      scroll-snap-align: center; scroll-behavior: smooth; transition: color 0.38s; cursor: pointer;
     }
-    
-    .grid-item:hover { color: var(--text-main); }
+
+    .grid-item:hover { color:rgba(242, 255, 142, 0.88); }
     .grid-titulo { 
       font-weight: 700; text-align: left; color: var(--text-title); 
       font-size: calc(clamp(2.6rem, 6.5vw, 6.5rem) + 6px); /* +30% */
@@ -114,6 +114,7 @@
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
+      scroll-behavior: smooth;
       background-color: var(--text-title);
     }
     #gallery-container::-webkit-scrollbar { display: none; }
@@ -394,7 +395,7 @@
       
       setTimeout(() => {
         const slides = galeria.querySelectorAll('.gallery-slide');
-        if (slides[0]) slides[0].scrollIntoView({ behavior: 'instant', inline: 'start' });
+        if (slides[0]) slides[0].scrollIntoView({ behavior: 'smooth', inline: 'start' });
       }, 50);
     }
 
@@ -437,7 +438,7 @@
             // Pula pro bloco B centralizado
             const itens = document.querySelectorAll('.grid-item');
             const target = itens[indexAtual + APRESENTACAO.length]; 
-            if(target) target.scrollIntoView({ block: 'center', behavior: 'instant' });
+            if(target) target.scrollIntoView({ block: 'center', behavior: 'smooth' });
             
             setTimeout(() => dom.blackout.classList.remove('ativo'), 500);
           }, 1500);
