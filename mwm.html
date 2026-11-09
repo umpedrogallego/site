@@ -198,7 +198,8 @@
 
     // --- NAVEGAÇÃO E TRANSIÇÕES ---
     dom.btnIniciar.addEventListener('click', () => {
-      if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
+      // APAGUE ESTA LINHA DO SEU CLIQUE INICIAL:
+      // if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
       indexAtual = 0;
       iniciarTransicaoObra();
     });
