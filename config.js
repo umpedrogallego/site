@@ -14,7 +14,7 @@ const APRESENTACAO = [
     desabilitarLegenda: true,
     segmentos: [
       { start: 7, end: 20 },
-      { start: 230, end: 391 },
+      { start: 224, end: 391 },
       { start: 1485, end: 1620 }
     ],
     fadeColor: "#000000"
