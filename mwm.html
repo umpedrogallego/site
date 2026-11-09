@@ -303,30 +303,33 @@
       const currentTime = ytPlayer.getCurrentTime();
       const targetEnd = obraAtiva.segmentos[currentSegment].end;
 
-      // 2 Segundos ANTES, engole em preto
+      // 2 Segundos ANTES, engole em preto suave
       if (targetEnd - currentTime <= 2.0 && !dom.blackout.classList.contains('ativo')) {
-        dom.blackout.style.backgroundColor = '#000000'; 
+        dom.blackout.style.backgroundColor = '#000000';
         dom.blackout.classList.add('ativo');
       }
 
+      // Bateu no tempo final do trecho
       if (currentTime >= targetEnd) {
         clearInterval(timeChecker);
         currentSegment++;
-        
-        if (currentSegment < obraAtiva.segmentos.length) {
 
-            ytPlayer.seekTo(obraAtiva.segmentos[currentSegment].start, true);
-          
-            setTimeout(() => {
-              dom.blackout.classList.remove('ativo');
-              timeChecker = setInterval(checarSaltosYT, 100);
-            }, 1500); 
-          
-         } else {
+        if (currentSegment < obraAtiva.segmentos.length) {
+          // Pula direto por baixo da cortina (SEM pause para não chamar a barra)
+          ytPlayer.seekTo(obraAtiva.segmentos[currentSegment].start, true);
+
+          // Espera 1.2s no escuro para estabilizar e abre o blackout
+          setTimeout(() => {
+            dom.blackout.classList.remove('ativo');
+            timeChecker = setInterval(checarSaltosYT, 100);
+          }, 1500);
+
+        } else {
           entrarEmEspera();
         }
       }
-
+    }
+    
     function checarFimYT() {
       if (!ytPlayer || !ytPlayer.getDuration) return;
       if (ytPlayer.getDuration() - ytPlayer.getCurrentTime() <= 2.0) {
