@@ -17,11 +17,11 @@ const APRESENTACAO = [
       { start: 230, end: 391 },
       { start: 1485, end: 1620 }
     ],
-    fadeColor: "#000000"
+    fadeColor: "#000000" // Cor de saída pro modo espera
   },
   {
     id: "obra-02",
-    titulo: "acordo de Emergência",
+    titulo: "Acordo de Emergência",
     ano: "2020",
     tipo: "video-continuo",
     provedor: "youtube",
@@ -31,14 +31,14 @@ const APRESENTACAO = [
     desabilitarLegenda: true,
     inicio: 0,
     fim: null,
-    fadeColor: "#002d85"
+    fadeColor: "#002d85" // Azul bafo
   },
   {
     id: "obra-03",
     titulo: "Torcida",
     ano: "2025",
     tipo: "galeria-horizontal",
-    gap: 24,
+    gap: 88,
     imagens: [
       "https://umpedrogallego.github.io/site/thumb/25-torcida-a.avif",
       "https://umpedrogallego.github.io/site/thumb/25-torcida-d.avif",
@@ -46,7 +46,7 @@ const APRESENTACAO = [
       "https://umpedrogallego.github.io/site/thumb/25-torcida-e.avif",
       "https://umpedrogallego.github.io/site/thumb/25-torcida-b.avif"
     ],
-    fadeColor: "#000000"
+    fadeColor: "#000000" // Galerias não entram em espera, mas se precisarem de cor de saída, tá aqui
   },
   {
     id: "obra-04",
@@ -60,31 +60,19 @@ const APRESENTACAO = [
     desabilitarLegenda: true,
     inicio: 0,
     fim: null,
-    fadeColor: "#ff0000"
+    fadeColor: "#ff0000" // Vermelho sangrando pro próximo
   },
   {
     id: "obra-05",
     titulo: "Domingo Maior",
     ano: "2013",
     tipo: "publicacao-galeria",
-    gap: 24,
+    gap: 88,
     imagens: [
       "https://umpedrogallego.github.io/site/thumb/13-dm-a.avif",
       "https://umpedrogallego.github.io/site/thumb/13-dm-b.avif",
       "https://umpedrogallego.github.io/site/thumb/13-dm-c.avif"
     ],
-    fadeColor: "#000000"
-  },
-  {
-    id: "obra-06",
-    titulo: "Reprise",
-    ano: "2017",
-    tipo: "video-nativo",
-    provedor: "local",
-    src: "reprise-2017.mp4",
-    aspectRatio: "16:9",
-    inicio: 0,
-    fim: null,
     fadeColor: "#000000"
   }
 ];
